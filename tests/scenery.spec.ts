@@ -7,7 +7,7 @@ for (const [name, code, isDay] of [['day', 0, 1], ['overcast', 3, 1], ['night', 
       selected: place, places: [place], preferences: { units: 'imperial', reducedMotion: false },
     })), asheville);
     await page.route('https://api.open-meteo.com/**', route => route.fulfill({
-      contentType: 'application/json', body: JSON.stringify(forecastFixture(Date.now(), code, isDay)),
+      contentType: 'application/json', body: JSON.stringify({ ...forecastFixture(Date.now(), code, isDay), daily: { ...forecastFixture(Date.now()).daily, sunrise:[], sunset:[] } }),
     }));
     await page.goto('/');
     await expect(page.getByRole('heading', { name: '7-day forecast' })).toBeVisible();
@@ -17,17 +17,17 @@ for (const [name, code, isDay] of [['day', 0, 1], ['overcast', 3, 1], ['night', 
       const offsets = await page.evaluate(() => {
         const image = document.querySelector<HTMLImageElement>('.landscape-art')!;
         const rect = image.getBoundingClientRect();
-        const scale = Math.max(rect.width / image.naturalWidth, rect.height / image.naturalHeight);
+        const scale = Math.max(rect.width / 960, rect.height / 801);
         // The mast's pivot is authored at (195, 511) in the original landscape.
         // Derive its screen position from the raster's cover / center-bottom crop,
         // independently of the animation's SVG transform.
-        const x = rect.left + (rect.width - image.naturalWidth * scale) / 2 + 195 * scale;
-        const y = rect.bottom - image.naturalHeight * scale + 511 * scale;
+        const x = rect.left + (rect.width - 960 * scale) / 2 + 195 * scale;
+        const y = rect.bottom - 801 * scale + 511 * scale;
         const animation = document.querySelector('.station-rotor-strip')!.getAnimations()[0];
         animation.pause();
         const result = [];
         for (let frame = 0; frame < 12; frame++) {
-          animation.currentTime = frame * 300 + 150;
+          animation.currentTime = Number(animation.effect!.getTiming().duration) * (frame + .5) / 12;
           const hub = document.querySelector('.station-hub')!.getBoundingClientRect();
           result.push(Math.hypot(hub.x + hub.width / 2 - x, hub.y + hub.height / 2 - y));
         }
@@ -54,10 +54,10 @@ test('station follows the taller first-use landscape crop', async ({ page }) => 
     const offset = await page.evaluate(() => {
       const image = document.querySelector<HTMLImageElement>('.landscape-art')!;
       const rect = image.getBoundingClientRect();
-      const scale = Math.max(rect.width / image.naturalWidth, rect.height / image.naturalHeight);
+      const scale = Math.max(rect.width / 960, rect.height / 801);
       const hub = document.querySelector('.station-hub')!.getBoundingClientRect();
-      return Math.hypot(hub.x + hub.width / 2 - (rect.left + (rect.width - image.naturalWidth * scale) / 2 + 195 * scale),
-        hub.y + hub.height / 2 - (rect.bottom - image.naturalHeight * scale + 511 * scale));
+      return Math.hypot(hub.x + hub.width / 2 - (rect.left + (rect.width - 960 * scale) / 2 + 195 * scale),
+        hub.y + hub.height / 2 - (rect.bottom - 801 * scale + 511 * scale));
     });
     expect(offset).toBeLessThan(.5);
   }

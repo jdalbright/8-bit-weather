@@ -1,7 +1,17 @@
 export type Units = 'imperial' | 'metric';
 export type View = 'today' | 'places' | 'settings';
 export type WeatherKind = 'clear' | 'partly-cloudy' | 'cloudy' | 'fog' | 'rain' | 'snow' | 'storm' | 'unknown';
-export type SceneState = { kind: WeatherKind; isDay: boolean; wind: number };
+export type LightingPhase = 'dawn' | 'day' | 'dusk' | 'night';
+export type Discovery = 'river' | 'station';
+export type SceneState = {
+  kind: WeatherKind; isDay: boolean; wind: number;
+  phase: LightingPhase;
+  /** Progress through a dawn/dusk window, from 0 to 1. */
+  transition: number;
+  daylight: number;
+  windStrength: number;
+  precipitationIntensity: number;
+};
 
 export interface Place {
   id: string;

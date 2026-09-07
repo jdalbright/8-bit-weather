@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import type { Place, SceneState, Units, WeatherSnapshot } from '../types';
+import type { Discovery, Place, SceneState, Units, WeatherSnapshot } from '../types';
 import { futureDays, localDate, localTime, percent, STALE_AFTER, temperature, updatedLabel, weatherInfo, windSpeed } from '../lib/weather';
 import { Icon, WeatherIcon } from './Icons';
 import { Scenery } from './Scenery';
@@ -8,8 +8,9 @@ interface Props {
   place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean;
   loading: boolean; error: string | null; online: boolean; now: number; locating: boolean;
   onLocate: () => void; onPlaces: () => void; onRefresh: () => void;
+  onDiscover: (discovery: Discovery) => void;
 }
-export default function Today({ place, snapshot, scene, units, animate, loading, error, online, now, locating, onLocate, onPlaces, onRefresh }: Props) {
+export default function Today({ place, snapshot, scene, units, animate, loading, error, online, now, locating, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
   const hourlyRef = useRef<HTMLDivElement>(null);
   const days = snapshot ? futureDays(snapshot.daily, snapshot.timezone, now) : [];
   const todayDate = snapshot ? localDate(now, snapshot.timezone) : '';
@@ -23,7 +24,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
   const span = Math.max(1, maximum - minimum);
   const degree = snapshot ? temperature(snapshot.current.temperature, units) : '—';
   return <main id="main-content" className="today-view">
-    <Scenery scene={scene} animate={animate} className={!place ? 'welcome-scene' : ''}>
+    <Scenery key={snapshot ? place?.id : 'loading'} scene={scene} animate={animate} onDiscover={onDiscover} className={!place ? 'welcome-scene' : ''}>
       {!place ? <div className="welcome-content">
         <h1>Find your weather</h1>
         <p>A little pixel world.<br/>Your real forecast.</p>

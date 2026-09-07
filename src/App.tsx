@@ -10,8 +10,8 @@ import { useMotion } from './hooks/useMotion';
 import { useInstall } from './hooks/useInstall';
 import { clearSavedData, defaultPreferences, loadState, saveState } from './lib/storage';
 import { locate } from './lib/api';
-import { weatherInfo } from './lib/weather';
-import type { Place, SceneState, View } from './types';
+import { deriveScene } from './lib/scene';
+import type { Place, View } from './types';
 
 const navigation: { view: View; label: string; icon: 'home' | 'places' | 'settings' }[] = [{ view: 'today', label: 'Today', icon: 'home' }, { view: 'places', label: 'Places', icon: 'places' }, { view: 'settings', label: 'Settings', icon: 'settings' }];
 export default function App() {
@@ -26,7 +26,7 @@ export default function App() {
   const locationRequest = useRef(0);
   const weather = useWeather(place);
   const motion = useMotion(preferences.reducedMotion);
-  const scene: SceneState = weather.snapshot ? { kind: weatherInfo(weather.snapshot.current.code).kind, isDay: weather.snapshot.current.isDay, wind: weather.snapshot.current.wind ?? 0 } : { kind: 'clear', isDay: true, wind: 0 };
+  const scene = deriveScene(weather.snapshot, weather.now, weather.online);
   const audio = useAudio(preferences, scene);
   const install = useInstall();
   const { needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker } = useRegisterSW();
@@ -57,7 +57,7 @@ export default function App() {
     {needRefresh ? <div className="update-notice" role="status"><span>A fresh version is ready.</span><button className="text-button" onClick={() => void updateServiceWorker(true)}>Update app</button><button className="icon-button" aria-label="Dismiss update" onClick={() => setNeedRefresh(false)}><Icon name="close" size={14}/></button></div> : null}
     {notice || audio.error ? <div className="app-notice" role="alert"><span>{notice ?? audio.error}</span>{notice ? <button className="icon-button" aria-label="Dismiss message" onClick={() => setNotice(null)}><Icon name="close" size={14}/></button> : null}</div> : null}
     {storageUnavailable ? <p className="offline-notice" role="status">Browser storage is unavailable. Your choices will last for this visit.</p> : null}
-    {view === 'today' ? <Today place={place} {...weather} scene={scene} units={preferences.units} animate={motion.animate} locating={locating} onLocate={() => void handleLocate()} onPlaces={() => navigate('places')} onRefresh={() => { audio.effect(); void weather.refresh(true); }}/>
+    {view === 'today' ? <Today place={place} {...weather} scene={scene} units={preferences.units} animate={motion.animate} locating={locating} onDiscover={audio.effect} onLocate={() => void handleLocate()} onPlaces={() => navigate('places')} onRefresh={() => { audio.effect(); void weather.refresh(true); }}/>
       : view === 'places' ? <Places places={places} selected={place} locating={locating} onLocate={() => void handleLocate()} onSelect={choosePlace} onRemove={id => { setPlaces(current => current.filter(saved => saved.id !== id)); audio.effect('remove'); }}/>
       : <Settings preferences={preferences} onChange={setPreferences} audio={audio} install={install} systemReduced={motion.systemReduced} onClear={clearData}/>}
     <nav className="bottom-nav" aria-label="Main navigation">{navigation.map(item => <button key={item.view} aria-current={view === item.view ? 'page' : undefined} onClick={() => navigate(item.view)}><Icon name={item.icon} size={24}/><span>{item.label}</span></button>)}</nav>

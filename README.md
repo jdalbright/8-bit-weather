@@ -53,7 +53,13 @@ Forecasts refresh every 15 minutes while the app is visible, when returning to s
 
 Sound starts off on each page load. Tap Sound to activate Web Audio. Music, weather ambience, and interface sounds have independent switches and volume sliders. Six original compositions respond to sunshine, clouds, rain, snow, storms, and nighttime. No music files or audio services are downloaded.
 
-The sound engine uses scheduled oscillators, generated noise, gain envelopes, crossfades, and a compressor. It pauses when the document is hidden. Animations pause offscreen or in the background; both the device's reduced-motion preference and the app's motion setting are respected. Storm lighting uses a slow, subtle glimmer instead of rapid flashes.
+The sound engine uses scheduled oscillators, generated noise, gain envelopes, crossfades, and a compressor. Each theme has original A/B sections that alternate without restarting on a normal weather refresh. Dawn and dusk use a softer, sparser arrangement. It pauses when the document is hidden. Animations pause offscreen or in the background; both the device's reduced-motion preference and the app's motion setting are respected. Storm lighting uses a slow, subtle glimmer instead of rapid flashes.
+
+### Living Meadow — version 1.1
+
+The same mountain meadow now blends daylight and night artwork through warm dawn and violet dusk. Each twilight window spans 30 minutes before and after the selected location's sunrise or sunset. Missing or unsuitable solar times fall back to the provider's day/night flag; stale or offline weather retains the lighting of its saved observation. Lighting, wildlife, and precipitation effects are atmospheric illustrations, not extra weather measurements.
+
+Clouds, grass, and the station rotor respond to wind speed. Rain adds creek ripples; snow drifts; fog rolls low across the valley. Occasional birds and nighttime fireflies disappear during storms and snowfall. Tap the river for a ripple or the station for its indicator light; these accessible controls keep sound off until you enable it, then follow the interface sounds channel. Reduced motion uses brief static feedback.
 
 ## Verification
 
@@ -63,12 +69,17 @@ npm run lint
 npm test
 npx playwright install chromium webkit
 npm run build
+npm run check:assets
 npm run test:e2e
 ```
 
 The browser tests start a production preview server on port 4177. They use explicitly mocked weather and coordinates for reproducibility; the normal app has no sample weather. Test artifacts are written under `/tmp/8bit-weather-*`, outside the project. The app has also been exercised against the live Open-Meteo APIs through the in-app browser.
 
 Tests cover units, WMO codes, missing measurements, time zones/DST, stale caches, request races, API failures, permission denial/timeouts, search and saved places, audio activation/background suspension, all scene families, small screens, and production offline caching. Chromium and iPhone-sized WebKit tests are browser verification, not proof of physical-device installation, hardware silent-switch behavior, or lock-screen playback.
+
+The Living Meadow tests also cover all 32 weather/lighting combinations, shared layer alignment, 44-pixel scenery controls, keyboard interaction, and offscreen/reduced-motion behavior. The audio suite renders two complete A/B cycles of all six production soundtracks with an offline audio clock, checks sample peaks and loop boundaries, and exercises real-time crossfades, phrase continuity, and independent channel muting in both browsers. Sample analysis does not replace listening on phone speakers or headphones; physical-device listening and installation remain separate checks.
+
+GitHub Actions runs type checking, lint, unit tests, production build, the asset budget, and Chromium/WebKit tests on pull requests and pushes to `main` or `codex/**`. The asset check limits the entire build output (a stricter check than just the precache) to 1.5 MB. Validate the branch's Vercel preview before moving a release to `main`.
 
 ## Project structure
 

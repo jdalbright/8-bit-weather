@@ -9,7 +9,8 @@ async function seed(page: Page) {
   await page.addInitScript(({ key, place, prefs }) => { if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify({ preferences: prefs, places: [place], selected: place })); }, { key, place: asheville, prefs });
 }
 async function mockForecast(page: Page, code = 1, isDay = 1) {
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ headers, body: JSON.stringify(forecastFixture(Date.now(), code, isDay)) }));
+  // Explicit provider day/night fixtures; solar-clock behavior has its own fixed-time suite.
+  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ headers, body: JSON.stringify({ ...forecastFixture(Date.now(), code, isDay), daily: { ...forecastFixture(Date.now()).daily, sunrise:[], sunset:[] } }) }));
 }
 async function mockCities(page: Page) {
   await page.route('https://geocoding-api.open-meteo.com/**', route => {

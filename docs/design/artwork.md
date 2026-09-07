@@ -18,6 +18,14 @@ The corrected assets are `public/art/scene-day-v2.webp`, `scene-night-v2.webp`, 
 
 The native grids are 960×800 for daylight and 960×801 for the other variants. The SVG detail layer uses the matching view box with `xMidYMax slice`, equivalent to the image's `object-fit: cover; object-position: center bottom`. Its rotor pivot is fixed at `(195, 511)`. Twelve discrete rotor frames animate the cups independently of that mounting point. Water highlights also use the artwork's coordinates. Browser regression tests verify attachment through every frame and across forecast and first-use crops at mobile and desktop widths.
 
+## Living Meadow registration and lighting (1.1)
+
+Version 1.1 keeps these generated plates and registers all three into one 960×801 stage (the daylight plate gains one display pixel of height). A single measured, center-bottom cover transform positions the complete stage. The rotor pivot remains `(195, 511)`, the station indicator is `(229, 579)`, and the river discovery is `(701, 744)`. Native HTML hotspots use that same transform, with 44-pixel hit areas clamped inside the visible scene. Sprite and hotspot regression checks cover all four lighting phases and both scene crops.
+
+Dawn and dusk reuse the existing day/overcast/night artwork through opacity blends and restrained, phase-specific warm/violet lighting layers. These are the lighting changes explicitly requested for 1.1; no replacement scenery or generated geometry is introduced. Small stepped SVG foliage, birds, fireflies, and ripple sprites extend the original station/detail treatment. The three landscape files and original reference stay unchanged, avoiding additional offline artwork downloads or another generative alignment drift.
+
+Forecast text, the warm panels, pixel typography, navigation, and page composition retain the approved design. A one-pixel light/dark text outline maintains legibility through intermediate lighting. Initial weather renders directly into its correct lighting; subsequent changes blend. The only new visible explanatory copy is the discovery hint in Settings and the version number. There is no added tutorial or overlay on the forecast.
+
 ## Deliberate implementation accommodations
 
 - The image generator's transparent exports contained a baked-in checkerboard. Clean opaque landscape plates replace those rejected exports; clouds, celestial icons, stars, precipitation, water glints, and the anemometer animate independently above them.

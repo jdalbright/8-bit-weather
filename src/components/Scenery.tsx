@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
-import type { SceneState } from '../types';
+import type { Discovery, SceneState } from '../types';
+import { anchors, ART, sceneGeometry } from '../lib/scene';
 import { SceneCloud, WeatherIcon } from './Icons';
 
 // All station coordinates are authored in the landscape's 960-pixel-wide grid.
@@ -31,34 +32,100 @@ function StationRotor() {
   </g>;
 }
 
-export function Scenery({ scene, animate, children, className = '' }: { scene: SceneState; animate: boolean; children?: ReactNode; className?: string }) {
+const grass = [[67, 778], [121, 755], [314, 781], [359, 729], [401, 765], [875, 703], [913, 755]];
+const fireflies = [[115, 664], [327, 699], [413, 661], [491, 709], [558, 639], [718, 662], [840, 689], [892, 621]];
+const ripples = [[568, 703], [648, 732], [789, 766]];
+
+export function Scenery({ scene, animate, onDiscover, children, className = '' }: {
+  scene: SceneState; animate: boolean; onDiscover: (discovery: Discovery) => void; children?: ReactNode; className?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(true);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [discovery, setDiscovery] = useState<{ kind: Discovery; id: number } | null>(null);
+  const feedbackTimer = useRef<number | undefined>(undefined);
+  const lastTap = useRef(-Infinity);
+  useLayoutEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const measure = () => { const { width, height } = node.getBoundingClientRect(); setSize({ width, height }); };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     if (!ref.current || !('IntersectionObserver' in window)) return;
     const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting));
     observer.observe(ref.current); return () => observer.disconnect();
   }, []);
+  useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
+  useEffect(() => {
+    const clear = () => { if (document.hidden) { window.clearTimeout(feedbackTimer.current); setDiscovery(null); } };
+    document.addEventListener('visibilitychange', clear);
+    return () => document.removeEventListener('visibilitychange', clear);
+  }, []);
+  function discover(kind: Discovery) {
+    if (!inView || document.hidden || performance.now() - lastTap.current < 180) return;
+    lastTap.current = performance.now();
+    window.clearTimeout(feedbackTimer.current);
+    setDiscovery(previous => ({ kind, id: (previous?.id ?? 0) + 1 }));
+    onDiscover(kind);
+    feedbackTimer.current = window.setTimeout(() => setDiscovery(null), animate ? 1600 : 650);
+  }
   const wet = ['cloudy', 'fog', 'rain', 'snow', 'storm'].includes(scene.kind);
-  const art = !scene.isDay ? 'night' : wet ? 'overcast' : 'day';
-  const artHeight = art === 'day' ? 800 : 801;
   const precip = ['rain', 'storm', 'snow'].includes(scene.kind);
-  return <div ref={ref} className={`scenery ${className} scene-${scene.kind} ${scene.isDay ? 'daytime' : 'nighttime'}`} data-animate={animate && inView} data-scene={`${scene.kind}-${scene.isDay ? 'day' : 'night'}`}>
+  const wildlife = !['storm', 'snow', 'unknown'].includes(scene.kind);
+  const twilight = scene.phase === 'dawn' || scene.phase === 'dusk' ? Math.sin(Math.PI * scene.transition) : 0;
+  const geometry = sceneGeometry(size.width, size.height);
+  const style = {
+    '--cover-scale': geometry.scale, '--cover-left': `${geometry.left}px`, '--cover-top': `${geometry.top}px`,
+    '--cloud-duration': `${80 - scene.windStrength * 50}s`, '--grass-duration': `${5 - scene.windStrength * 3}s`,
+    '--grass-lean': `${1 + scene.windStrength * 5}deg`, '--rotor-duration': `${12 - scene.windStrength * 10}s`,
+    '--rain-slant': `${-10 - scene.windStrength * 22}deg`, '--night': 1 - scene.daylight,
+    '--twilight': twilight, '--precip-opacity': .35 + scene.precipitationIntensity * .4,
+  } as CSSProperties;
+  return <div ref={ref} className={`scenery ${className} scene-${scene.kind} ${scene.isDay ? 'daytime' : 'nighttime'}`} style={style}
+    data-animate={animate && inView} data-in-view={inView} data-scene={`${scene.kind}-${scene.isDay ? 'day' : 'night'}`} data-phase={scene.phase} data-calm={scene.wind < .5}>
     <div className="landscape" aria-hidden="true">
-      <img className="landscape-art" src={`/art/scene-${art}-v2.webp`} alt="" width="960" height={artHeight} fetchPriority="high" draggable="false" />
-      {/* Match object-fit: cover / center bottom so details follow the image crop. */}
-      <svg className="landscape-details" viewBox={`0 0 960 ${artHeight}`} preserveAspectRatio="xMidYMax slice" shapeRendering="crispEdges">
+      <div className="landscape-stage">
+      {(['day', 'overcast', 'night'] as const).map(art => <img key={art} className={`art-layer ${art === 'day' ? 'landscape-art' : ''}`} data-art={art}
+        src={`/art/scene-${art}-v2.webp`} alt="" width={ART.width} height={ART.height} fetchPriority={art === 'day' ? 'high' : 'auto'} draggable="false"
+        style={{ opacity: art === 'night' ? 1 - scene.daylight : art === 'overcast' ? wet ? 1 : 0 : 1 }} />)}
+      <div className="twilight-light" />
+      <svg className="landscape-details" viewBox={`0 0 ${ART.width} ${ART.height}`} shapeRendering="crispEdges">
         <g className="water-glints"><path d="M691 744h30v4h-30z"/><path d="M806 768h44v4h-44z"/><path d="M595 704h25v4h-25z"/><path d="M538 688h14v4h-14z"/></g>
+        {grass.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}><g className="meadow-grass" style={{ animationDelay: `${i * -.7}s` }}>
+          <path fill="#315b3c" d="M0 0v-10h-4v-10h-4v-8h4v4h4v9h4v15zm8 0v-18h4v-14h4v-7h4v11h-4v16h-4v12z"/>
+          <path fill="#789747" d="M4 0v-27H0v-8h4v7h4v28zm12 0v-9h4v-9h8v4h-4v8h-4v6z"/>
+        </g></g>)}
+        {(scene.kind === 'rain' || scene.kind === 'storm') ? <g className="rain-ripples">{ripples.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}><path className="river-ring ambient-ripple" d="M-18 0h-8v4h8m36-4h8v4h-8M-18-3h36M-18 7h36" style={{ animationDelay: `${i * -.8}s` }}/></g>)}</g> : null}
         <StationRotor />
+        <rect className={`station-indicator ${discovery?.kind === 'station' ? 'indicator-active' : ''}`} x={anchors.station.x - 4} y={anchors.station.y - 4} width="8" height="8" />
+        {wildlife && scene.isDay && ['clear', 'partly-cloudy', 'cloudy'].includes(scene.kind) ? <g className="meadow-birds">{[0, 1].map(i => <g key={i} transform={`translate(${380 + i * 104} ${576 - i * 24})`}><g className="meadow-bird" style={{ animationDelay: `${-i * 19}s` }}>
+          <path fill="#29294a" d="M-15-4h6v3h6v4h6v-4h6v-3h6v4h-6v4H6v3H-6V4h-6V0h-3z"/><path fill="#d9c8ab" d="M-3 1h6v3h-6z"/>
+        </g></g>)}</g> : null}
+        {wildlife && !scene.isDay ? <g className="meadow-fireflies">{fireflies.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}><g className="meadow-firefly" style={{ animationDelay: `${i * -1.3}s` }}><rect x="-4" y="-4" width="8" height="8" fill="#ffe898" opacity=".18"/><rect x="-1" y="-1" width="3" height="3" fill="#fbea9c"/></g></g>)}</g> : null}
+        {discovery?.kind === 'river' ? <g transform={`translate(${anchors.river.x} ${anchors.river.y})`}><g key={discovery.id} className="river-discovery"><path className="river-ring" d="M-23-4h46M-23 7h46M-23-1h-8v4h8m46-4h8v4h-8"/><path className="river-ring inner-ring" d="M-11-1h22M-11 4h22"/></g></g> : null}
       </svg>
       {!scene.isDay ? <div className="stars">{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ left: `${8 + (i * 23) % 87}%`, top: `${3 + (i * 13) % 45}%`, animationDelay: `${i * -0.8}s` }} />)}</div> : null}
-      {!wet || !scene.isDay ? <WeatherIcon className="celestial" kind="clear" isDay={scene.isDay} size={56} /> : null}
+      {!wet || !scene.isDay ? <WeatherIcon className="celestial" kind="clear" isDay={scene.isDay} size={112} /> : null}
       {[0, 1, 2, ...(wet ? [3, 4] : [])].map(i => <svg key={i} className={`scene-cloud cloud-${i}`} viewBox="0 0 60 28" shapeRendering="crispEdges"><SceneCloud dark={scene.kind === 'storm' || !scene.isDay} /></svg>)}
       {scene.kind === 'fog' ? <div className="fog-banks"><i/><i/></div> : null}
       {precip ? <div className={`precipitation ${scene.kind === 'snow' ? 'snowfall' : 'rainfall'}`}>
-        {Array.from({ length: scene.kind === 'snow' ? 20 : 28 }, (_, i) => <i key={i} style={{ '--x': `${(i * 37 + 3) % 100}%`, '--delay': `${-((i * 1.7) % 12)}s`, '--duration': `${scene.kind === 'snow' ? 5 + (i % 5) : 0.9 + (i % 5) * 0.15}s` } as CSSProperties}/>)}</div> : null}
+        {Array.from({ length: Math.round((scene.kind === 'snow' ? 10 : 12) + scene.precipitationIntensity * (scene.kind === 'snow' ? 10 : 16)) }, (_, i) => <i key={i} style={{ '--x': `${(i * 37 + 3) % 100}%`, '--delay': `${-((i * 1.7) % 12)}s`, '--duration': `${scene.kind === 'snow' ? 7 + (i % 5) : 1.3 + (i % 5) * 0.2}s` } as CSSProperties}/>)}</div> : null}
       {scene.kind === 'storm' ? <div className="distant-lightning" /> : null}
+      </div>
     </div>
     <div className="scene-content">{children}</div>
+    <div className="scene-hotspots">
+      {(['station', 'river'] as const).map(kind => {
+        const anchor = anchors[kind];
+        const x = Math.max(22, Math.min(size.width - 22, geometry.left + anchor.x * geometry.scale));
+        const y = Math.max(22, Math.min(size.height - 22, geometry.top + anchor.y * geometry.scale));
+        return <button key={kind} className="scene-hotspot" data-discovery={kind} data-active={discovery?.kind === kind}
+          style={{ left: x, top: y }} aria-label={kind === 'river' ? 'Make a river ripple' : 'Blink the weather station light'} onClick={() => discover(kind)} />;
+      })}
+    </div>
   </div>;
 }

@@ -1,5 +1,6 @@
-import type { Preferences, SceneState } from '../types';
-import { compositions, frequency, moodFor } from './compositions';
+import type { Discovery, Preferences, SceneState } from '../types';
+import { welcomeScene } from '../lib/scene';
+import { compositions, frequency, moodFor, scoreStep } from './compositions';
 import type { Mood } from './compositions';
 
 type Track = { mood: Mood; gain: GainNode; step: number; next: number; retireAt: number | null };
@@ -13,11 +14,12 @@ export class WeatherAudio {
   private atmosphereGain: GainNode;
   private tracks: Track[] = [];
   private timer: number | null = null;
-  private scene: SceneState = { kind: 'clear', isDay: true, wind: 0 };
+  private scene: SceneState = welcomeScene;
   private preferences: Preferences;
   private enabled = false;
   private activity = 0;
   private lastAmbient = 0;
+  private lastEffect = -Infinity;
   private voices = new Set<AudioScheduledSourceNode>();
 
   constructor(preferences: Preferences, onState: () => void) {
@@ -50,12 +52,13 @@ export class WeatherAudio {
   }
   configure(preferences: Preferences, scene: SceneState) {
     this.preferences = preferences; this.scene = scene;
-    this.ramp(this.music.gain, preferences.music ? preferences.musicVolume * 0.42 : 0);
+    const soft = scene.phase === 'dawn' || scene.phase === 'dusk';
+    this.ramp(this.music.gain, preferences.music ? preferences.musicVolume * (soft ? .29 : .42) : 0, preferences.music ? 1.5 : .12);
     this.ramp(this.ambience.gain, preferences.ambience ? preferences.ambienceVolume * 0.32 : 0);
     this.ramp(this.effects.gain, preferences.effects ? preferences.effectsVolume * 0.32 : 0);
     const wet = scene.kind === 'rain' || scene.kind === 'storm';
     this.ramp(this.atmosphere.frequency, wet ? 4200 : scene.kind === 'snow' ? 340 : 650, 1.5);
-    this.ramp(this.atmosphereGain.gain, wet ? 0.45 : scene.kind === 'snow' ? 0.12 : 0.1 + Math.min(scene.wind, 40) / 180, 1.5);
+    this.ramp(this.atmosphereGain.gain, wet ? .2 + scene.precipitationIntensity * .25 : scene.kind === 'snow' ? 0.12 : 0.1 + Math.min(scene.wind, 40) / 180, 1.5);
     const mood = moodFor(scene);
     if (this.tracks.at(-1)?.mood !== mood) {
       const time = this.context.currentTime;
@@ -105,10 +108,12 @@ export class WeatherAudio {
       if (track.next < time - 0.2) track.next = time + 0.03;
       while (track.next < time + 0.15) {
         if (this.preferences.music) {
-          const root = score.roots[Math.floor(track.step / 8) % 4];
-          this.note(score.melody[track.step % 32], track.next, stepLength * 1.5, track.gain, score.wave, 0.28);
+          const { root, note, section } = scoreStep(score, track.step);
+          const soft = this.scene.phase === 'dawn' || this.scene.phase === 'dusk';
+          this.note(note, track.next, stepLength * 1.5, track.gain, score.wave, 0.28);
           if (track.step % 4 === 0) this.note(root, track.next, stepLength * 3, track.gain, 'triangle', 0.23);
-          if (track.step % 2 === 1) this.note(root + (track.step % 4 === 1 ? 12 : 19), track.next, stepLength * 0.7, track.gain, 'square', 0.035);
+          if (track.step % (soft ? 8 : 2) === 1) this.note(root + (track.step % 4 === 1 ? 12 : 19), track.next, stepLength * 0.7, track.gain, 'square', 0.035);
+          if (section === 1 && !soft && track.step % 8 === 6) this.note(root + 24, track.next, stepLength * 2, track.gain, 'sine', .045);
         }
         track.step++; track.next += stepLength;
       }
@@ -129,8 +134,15 @@ export class WeatherAudio {
       }
     }
   }
-  effect(type: 'tap' | 'success' | 'remove' = 'tap') {
+  effect(type: 'tap' | 'success' | 'remove' | Discovery = 'tap') {
     if (!this.enabled || !this.preferences.effects || this.context.state !== 'running') return;
+    if (this.context.currentTime - this.lastEffect < .07) return;
+    this.lastEffect = this.context.currentTime;
+    if (type === 'river' || type === 'station') {
+      const notes = type === 'river' ? [88, 95] : [72];
+      notes.forEach((midi, i) => this.note(midi, this.context.currentTime + .01 + i * .09, type === 'river' ? .3 : .08, this.effects, type === 'river' ? 'sine' : 'triangle', .065));
+      return;
+    }
     const notes = type === 'success' ? [72, 76, 79] : type === 'remove' ? [76, 69] : [84];
     notes.forEach((midi, index) => this.note(midi, this.context.currentTime + 0.01 + index * 0.055, 0.1, this.effects, 'square', 0.09));
   }
