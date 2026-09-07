@@ -2,6 +2,8 @@
 
 A little pixel world, with your real weather. A mobile-first React app with animated landscapes, original weather-reactive chiptunes, saved places, and offline PWA support.
 
+**[Open 8-Bit Weather](https://8-bit-weather.vercel.app/)**
+
 ## Run locally
 
 Use Node.js 22.12 or newer.
