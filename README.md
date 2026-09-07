@@ -1,0 +1,74 @@
+# 8-Bit Weather
+
+A little pixel world, with your real weather. A mobile-first React app with animated landscapes, original weather-reactive chiptunes, saved places, and offline PWA support.
+
+## Run locally
+
+Use Node.js 22.12 or newer.
+
+```sh
+npm ci
+npm run dev
+```
+
+Open the local URL printed by Vite. It starts on `http://127.0.0.1:5173` and chooses the next available port if that port is occupied. No `.env` file, API key, account, or backend is needed.
+
+The first screen asks you to use your location or search for a city. Selecting a city also saves it on this device. GPS weather is labeled **Current location**; use the location button again when you want a fresh position. The app does not continuously track your location.
+
+## Build and install
+
+```sh
+npm run build
+npm run preview
+```
+
+The complete static site is in `dist/`. Service-worker caching and update prompts run in the production build, not the development server. Serve `dist/` at the root of an HTTPS site when ready to publish; no server functions are required. Public deployment has deliberately not been performed.
+
+- **Android / Chromium:** Use the app's Settings → Install app when the browser provides an install prompt, or the browser's install menu.
+- **iPhone / iPad:** In Safari, use Share → Add to Home Screen.
+- **Safari on Mac:** File → Add to Dock.
+- An HTTP LAN address is not enough for phone installation or geolocation. Localhost works on the same computer; phones need HTTPS.
+
+After one successful online visit, the application shell, fonts, icons, and all landscape variants are cached. The last fetched forecasts can be read offline. Cached information shows its age; expired forecast rows are removed. When a new app version is available, an Update app notice allows a controlled reload while keeping saved preferences and places.
+
+## Weather and privacy
+
+Forecasts and city search come directly from [Open-Meteo](https://open-meteo.com/). Its public hosted API requires no key for **noncommercial** apps and has usage limits. Keep this app free of advertising and subscriptions under the current provider arrangement. See [the terms](https://open-meteo.com/en/terms).
+
+Current conditions, hourly data, and daily forecasts are model-derived weather data. WMO weather codes are translated to readable labels, timestamps are displayed in the selected location's time zone, and Celsius/km/h values are converted locally for Fahrenheit/mph. Weather data is [CC BY 4.0](https://open-meteo.com/en/licence); location names originate from [GeoNames](https://www.geonames.org/).
+
+Preferences, saved places, the selected location, and up to 12 recent forecast snapshots are stored only in this browser. Coordinates (rounded to three decimal places for GPS selections) are sent to Open-Meteo to request weather; search terms are sent to its geocoding service. Open-Meteo's own [privacy policy](https://open-meteo.com/en/terms#privacy) applies to those requests. The app has no accounts, analytics, ads, or runtime AI calls. Settings → Clear saved data removes the app's stored choices and forecasts.
+
+Forecasts refresh every 15 minutes while the app is visible, when returning to stale data, or through Refresh. Searches are debounced, superseded requests are canceled, and provider rate-limit cooldowns are respected. A GPS cache is never reused at changed coordinates.
+
+## Sound and motion
+
+Sound starts off on each page load. Tap Sound to activate Web Audio. Music, weather ambience, and interface sounds have independent switches and volume sliders. Six original compositions respond to sunshine, clouds, rain, snow, storms, and nighttime. No music files or audio services are downloaded.
+
+The sound engine uses scheduled oscillators, generated noise, gain envelopes, crossfades, and a compressor. It pauses when the document is hidden. Animations pause offscreen or in the background; both the device's reduced-motion preference and the app's motion setting are respected. Storm lighting uses a slow, subtle glimmer instead of rapid flashes.
+
+## Verification
+
+```sh
+npm run typecheck
+npm run lint
+npm test
+npx playwright install chromium webkit
+npm run build
+npm run test:e2e
+```
+
+The browser tests start a production preview server on port 4177. They use explicitly mocked weather and coordinates for reproducibility; the normal app has no sample weather. Test artifacts are written under `/tmp/8bit-weather-*`, outside the project. The app has also been exercised against the live Open-Meteo APIs through the in-app browser.
+
+Tests cover units, WMO codes, missing measurements, time zones/DST, stale caches, request races, API failures, permission denial/timeouts, search and saved places, audio activation/background suspension, all scene families, small screens, and production offline caching. Chromium and iPhone-sized WebKit tests are browser verification, not proof of physical-device installation, hardware silent-switch behavior, or lock-screen playback.
+
+## Project structure
+
+- `src/components`: Today, Places, Settings, pixel icons, and scene rendering.
+- `src/hooks`: weather requests, audio lifetime, motion, and installation.
+- `src/lib`: provider adapters, formatting, and versioned browser storage.
+- `src/audio`: original musical compositions and Web Audio engine.
+- `public/art`: optimized generated landscape variants, with UI text kept in HTML.
+- `docs/design`: approved visual reference and asset notes.
+
+Pixelify Sans and IBM Plex Mono are bundled locally under the SIL Open Font License. Their license files are included in `docs/licenses/`.
