@@ -54,7 +54,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
             const useCurrent = isCurrentHour && !stale;
             return <div className="hour" key={hour.time}>
             <span className="hour-label">{isCurrentHour ? 'Now' : localTime(hour.time, snapshot.timezone, { hour: 'numeric' })}</span>
-            <WeatherIcon kind={weatherInfo(useCurrent ? snapshot.current.code : hour.code).kind} isDay={useCurrent ? snapshot.current.isDay : hour.isDay} size={30}/>
+            <WeatherIcon kind={weatherInfo(useCurrent ? snapshot.current.code : hour.code).kind} isDay={useCurrent ? scene.isDay : hour.isDay} size={30}/>
             <span className="hour-temperature">{temperature(useCurrent ? snapshot.current.temperature : hour.temperature, units)}</span>
             <span className="hour-precipitation"><Icon name="drop" size={10}/>{percent(hour.precipitation)}</span>
           </div>; })}</div> : <p className="empty-forecast">This hourly forecast has expired. Connect and refresh for the next 24 hours.</p>}

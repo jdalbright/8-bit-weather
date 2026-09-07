@@ -123,3 +123,15 @@ test('welcome crop keeps both discovery targets fully usable',async({page})=>{
     await expect(page.locator('.indicator-active')).toHaveCount(0);
   }
 });
+
+test('the Now icon follows sunset even before the next provider day/night update',async({page})=>{
+  await meadow(page,'dusk');
+  const now=Date.parse('2026-09-07T23:15:00Z');
+  const data=forecastFixture(now,0,1);data.current.time=now/1000-15*60;
+  await page.unroute('https://api.open-meteo.com/**');
+  await page.route('https://api.open-meteo.com/**',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(data)}));
+  await page.getByRole('button',{name:'Refresh',exact:true}).click();
+  await expect(page.locator('.scenery')).toHaveAttribute('data-scene','clear-night');
+  const moon=await page.locator('.celestial').innerHTML();
+  await expect.poll(()=>page.locator('.hour').first().locator('.weather-icon').innerHTML()).toBe(moon);
+});
