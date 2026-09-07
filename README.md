@@ -22,7 +22,13 @@ npm run build
 npm run preview
 ```
 
-The complete static site is in `dist/`. Service-worker caching and update prompts run in the production build, not the development server. Serve `dist/` at the root of an HTTPS site when ready to publish; no server functions are required. Public deployment has deliberately not been performed.
+The complete static site is in `dist/`. Service-worker caching and update prompts run in the production build, not the development server. Serve `dist/` at the root of an HTTPS site; no server functions are required.
+
+## GitHub and Vercel hosting
+
+The source repository is [jdalbright/8-bit-weather](https://github.com/jdalbright/8-bit-weather). Vercel builds the linked GitHub repository with `npm run build` and serves `dist/`. Pushes to `main` deploy to production; other branches receive preview deployments. No environment variables or paid services are required. `vercel.json` keeps the service worker fresh so installed apps can discover updates.
+
+## Install on your device
 
 - **Android / Chromium:** Use the app's Settings → Install app when the browser provides an install prompt, or the browser's install menu.
 - **iPhone / iPad:** In Safari, use Share → Add to Home Screen.
