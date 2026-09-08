@@ -4,6 +4,8 @@ The visual source is `approved-concept.png`, approved in the planning conversati
 
 The production landscape images were created with the built-in Imagegen tool, then resized and encoded as WebP for delivery. All interactive text, weather values, controls, and forecasts are native HTML. Pixel SVG weather/utility icons and animated cloud sprites use a consistent stepped grid.
 
+A [Raleigh scene set](raleigh-v1/README.md) follows this same generation and delivery workflow. Its daylight, overcast, and night variants are used for locations within 25 km of central Raleigh; other locations retain the original meadow.
+
 ## Production prompts
 
 **Daylight scene:** Extract the complete background art of the approved current-weather view: peach-to-butter-yellow sky, lavender mountains, pine trees, meadow, creek, and small weather station. Preserve the source pixel-art style and composition. Leave the upper sky empty for HTML weather text; remove all UI, lettering, values, sun, and clouds. Render fully opaque colored artwork with no transparency grid.
@@ -25,6 +27,14 @@ Version 1.1 keeps these generated plates and registers all three into one 960×8
 Dawn and dusk reuse the existing day/overcast/night artwork through opacity blends and restrained, phase-specific warm/violet lighting layers. These are the lighting changes explicitly requested for 1.1; no replacement scenery or generated geometry is introduced. Small stepped SVG foliage, birds, fireflies, and ripple sprites extend the original station/detail treatment. The three landscape files and original reference stay unchanged, avoiding additional offline artwork downloads or another generative alignment drift.
 
 Forecast text, the warm panels, pixel typography, navigation, and page composition retain the approved design. A one-pixel light/dark text outline maintains legibility through intermediate lighting. Initial weather renders directly into its correct lighting; subsequent changes blend. The only new visible explanatory copy is the discovery hint in Settings and the version number. There is no added tutorial or overlay on the forecast.
+
+## Stream movement in both landscapes
+
+The creek now uses a shared native SVG layer in `src/components/Stream.tsx`. Five authored flow paths follow the stream's bends, with independently phased pale reflections over wider blue currents. Moving dash patterns carry the reflections downstream; small stepped eddies expand and drift beside rocks. A water-only clip keeps the currents, rain ripples, and tap feedback inside the creek. Both illustrations preserve the stream's composition, so they share this registration without changing the generated artwork.
+
+The water palette follows continuous daylight blending. Rain modestly increases the surface movement and adds the existing impact rings; this is atmospheric artwork, not a claimed measurement of water level or stream speed. Tapped ripples now drift with the current. All motion follows the existing app/device reduced-motion settings, pauses offscreen and while the document is hidden, and uses CSS/SVG animation without a JavaScript frame loop or new dependency.
+
+The Raleigh delivery images are copied into `public/art` and precached with the original scenery. Selection uses coordinates rather than the location label, so Raleigh city search and nearby GPS positions choose the same artwork. The 25 km radius is an illustration-selection rule, not a municipal boundary. No additional location request is made.
 
 ## Deliberate implementation accommodations
 

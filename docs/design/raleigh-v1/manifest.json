@@ -1,0 +1,63 @@
+{
+  "created": "2026-09-08",
+  "generation": "Built-in Imagegen",
+  "delivery": {
+    "width": 960,
+    "height": 801,
+    "format": "webp",
+    "quality": 86,
+    "effort": 6,
+    "resizeKernel": "nearest",
+    "bytes": 283074
+  },
+  "files": [
+    {
+      "path": "scene-raleigh-day-v1.webp",
+      "width": 960,
+      "height": 801,
+      "bytes": 109844,
+      "opaque": true,
+      "sha256": "ec8aefba6a2dd83e4e3915d757e25d0ba0b35f90020984658c2e58a6b6f9043b"
+    },
+    {
+      "path": "sources/scene-raleigh-day-v1.png",
+      "width": 1374,
+      "height": 1145,
+      "bytes": 1694987,
+      "opaque": true,
+      "sha256": "a21bcea4a0c509f3b46c39d0c031c39b5b38f353932eb112742bf757bfd9850d"
+    },
+    {
+      "path": "scene-raleigh-overcast-v1.webp",
+      "width": 960,
+      "height": 801,
+      "bytes": 89814,
+      "opaque": true,
+      "sha256": "89e26ddd9de132f72709b7b06a4d4a6e627e3a284d0c0650d5a4cdc4242620cb"
+    },
+    {
+      "path": "sources/scene-raleigh-overcast-v1.png",
+      "width": 1374,
+      "height": 1145,
+      "bytes": 1680122,
+      "opaque": true,
+      "sha256": "a81ece3e1e6894515edaf7578b6ea0dbba51933e9c876b92ec1839483774d0d6"
+    },
+    {
+      "path": "scene-raleigh-night-v1.webp",
+      "width": 960,
+      "height": 801,
+      "bytes": 83416,
+      "opaque": true,
+      "sha256": "e91dd5a5314fc370b2c57d8f38235dff866a28e3ddbf78c3546839537c3ec46a"
+    },
+    {
+      "path": "sources/scene-raleigh-night-v1.png",
+      "width": 1374,
+      "height": 1145,
+      "bytes": 1590528,
+      "opaque": true,
+      "sha256": "51fdacdb3c93d91ea21469f759544b3fea19b49ce16ea9ddeeb6ae9f951130e4"
+    }
+  ]
+}

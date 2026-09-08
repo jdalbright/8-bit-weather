@@ -71,10 +71,10 @@
   .cloud-4 { top: 2%; right: 30%; width: 26%; animation-delay: -16s; opacity: .65; }
   .nighttime .scene-cloud { opacity: .55; }
   .stars i { position: absolute; width: 4px; height: 4px; background: #fff1bd; box-shadow: 0 0 0 1px #b9b3d688; animation: star-twinkle 5s steps(3) infinite; }
-  .water-glints path { fill: #d9f4ea; opacity: .5; animation: water-shimmer 3s steps(4) infinite; }
-  .water-glints path:nth-child(2) { animation-delay: -.7s; }
-  .water-glints path:nth-child(3) { animation-delay: -1.6s; }
-  .water-glints path:nth-child(4) { animation-delay: -2.4s; }
+  .stream-current { fill: none; stroke-linecap: butt; animation: stream-flow var(--stream-duration) linear infinite; }
+  .stream-undercurrent { stroke: var(--stream-blue); stroke-width: 10; stroke-dasharray: 32 23 14 24; opacity: .18; }
+  .stream-highlight { stroke: var(--stream-light); stroke-dasharray: 10 31 5 47; opacity: var(--stream-opacity); }
+  .stream-eddy { fill: none; stroke: var(--stream-light); stroke-width: 2; opacity: 0; animation: stream-eddy 2.6s steps(12, end) infinite; }
   .station-animation { --station-outline: #242629; --station-metal: #9d9d91; --station-highlight: #e4e2d6; }
   .nighttime .station-animation { --station-outline: #171a2c; --station-metal: #7675a5; --station-highlight: #b8b8e2; }
   .station-post-outline { fill: var(--station-outline); }
@@ -88,7 +88,7 @@
   .station-indicator.indicator-active { fill: #ffed8c; animation: station-blink 1.6s steps(2, end); }
   .meadow-grass { transform-origin: 8px 0; animation: grass-sway var(--grass-duration) steps(6, end) infinite alternate; }
   .nighttime .meadow-grass { opacity: .5; }
-  .river-ring { fill: none; stroke: #ddf6ee; stroke-width: 3; }
+  .river-ring { fill: none; stroke: var(--stream-light); stroke-width: 3; }
   .ambient-ripple { animation: river-ripple 2.8s steps(8, end) infinite; transform-origin: 0 0; opacity: .65; }
   .river-discovery { animation: discovery-ripple 1.6s steps(10, end) forwards; transform-origin: 0 0; }
   .river-discovery .inner-ring { opacity: .7; }
@@ -245,13 +245,14 @@
   @keyframes cloud-drift { from { transform: translateX(-32px); } to { transform: translateX(76px); } }
   @keyframes sun-bob { 50% { transform: translateY(-4px); } }
   @keyframes star-twinkle { 50% { opacity: .2; } }
-  @keyframes water-shimmer { 50% { transform: translateX(4px); opacity: .15; } }
+  @keyframes stream-flow { to { stroke-dashoffset: -93; } }
+  @keyframes stream-eddy { 0% { transform: translate(0, 0) scale(.65); opacity: 0; } 20% { opacity: .55; } 100% { transform: translate(15px, 5px) scale(1.3); opacity: 0; } }
   @keyframes vane-spin { to { transform: translateX(-864px); } }
   @keyframes rain-fall { from { transform: translateY(-30px) skewX(var(--rain-slant)); } to { transform: translate(-90px, 850px) skewX(var(--rain-slant)); } }
   @keyframes snow-fall { from { transform: translate(0, -30px); } 50% { transform: translate(32px, 410px); } to { transform: translate(-20px, 850px); } }
   @keyframes grass-sway { from { transform: skewX(-1deg); } to { transform: skewX(var(--grass-lean)); } }
   @keyframes river-ripple { 0% { transform: scale(.45); opacity: 0; } 25% { opacity: .65; } 100% { transform: scale(1.4); opacity: 0; } }
-  @keyframes discovery-ripple { 0% { transform: scale(.4); opacity: .9; } 100% { transform: scale(1.7); opacity: 0; } }
+  @keyframes discovery-ripple { 0% { transform: scale(.4); opacity: .9; } 100% { transform: translate(22px, 8px) scale(1.9); opacity: 0; } }
   @keyframes station-blink { 0%, 40%, 80% { opacity: 1; } 20%, 60% { opacity: .25; } }
   @keyframes bird-visit { 0%, 72% { opacity: 0; transform: translate(-24px, 3px); } 76% { opacity: .85; } 88% { transform: translate(60px, -18px); } 96%, 100% { opacity: 0; transform: translate(160px, -25px); } }
   @keyframes firefly-drift { 0%, 100% { transform: translate(0, 0); opacity: .25; } 35% { opacity: .9; } 60% { transform: translate(12px, -16px); opacity: .65; } }

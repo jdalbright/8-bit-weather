@@ -3,6 +3,9 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { Discovery, SceneState } from '../types';
 import { anchors, ART, sceneGeometry } from '../lib/scene';
 import { SceneCloud, WeatherIcon } from './Icons';
+import { landscapeSource } from '../lib/landscapes';
+import type { Landscape } from '../lib/landscapes';
+import { Stream } from './Stream';
 
 // All station coordinates are authored in the landscape's 960-pixel-wide grid.
 // Discrete sprite frames keep the cups upright as they circle the fixed mast.
@@ -34,10 +37,9 @@ function StationRotor() {
 
 const grass = [[67, 778], [121, 755], [314, 781], [359, 729], [401, 765], [875, 703], [913, 755]];
 const fireflies = [[115, 664], [327, 699], [413, 661], [491, 709], [558, 639], [718, 662], [840, 689], [892, 621]];
-const ripples = [[568, 703], [648, 732], [789, 766]];
 
-export function Scenery({ scene, animate, onDiscover, children, className = '' }: {
-  scene: SceneState; animate: boolean; onDiscover: (discovery: Discovery) => void; children?: ReactNode; className?: string;
+export function Scenery({ scene, animate, onDiscover, children, className = '', landscape = 'meadow' }: {
+  scene: SceneState; animate: boolean; onDiscover: (discovery: Discovery) => void; children?: ReactNode; className?: string; landscape?: Landscape;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(true);
@@ -86,27 +88,25 @@ export function Scenery({ scene, animate, onDiscover, children, className = '' }
     '--twilight': twilight, '--precip-opacity': .35 + scene.precipitationIntensity * .4,
   } as CSSProperties;
   return <div ref={ref} className={`scenery ${className} scene-${scene.kind} ${scene.isDay ? 'daytime' : 'nighttime'}`} style={style}
-    data-animate={animate && inView} data-in-view={inView} data-scene={`${scene.kind}-${scene.isDay ? 'day' : 'night'}`} data-phase={scene.phase} data-calm={scene.wind < .5}>
+    data-animate={animate && inView} data-in-view={inView} data-landscape={landscape} data-scene={`${scene.kind}-${scene.isDay ? 'day' : 'night'}`} data-phase={scene.phase} data-calm={scene.wind < .5}>
     <div className="landscape" aria-hidden="true">
       <div className="landscape-stage">
       {(['day', 'overcast', 'night'] as const).map(art => <img key={art} className={`art-layer ${art === 'day' ? 'landscape-art' : ''}`} data-art={art}
-        src={`/art/scene-${art}-v2.webp`} alt="" width={ART.width} height={ART.height} fetchPriority={art === 'day' ? 'high' : 'auto'} draggable="false"
+        src={landscapeSource(landscape, art)} alt="" width={ART.width} height={ART.height} fetchPriority={art === 'day' ? 'high' : 'auto'} draggable="false"
         style={{ opacity: art === 'night' ? 1 - scene.daylight : art === 'overcast' ? wet ? 1 : 0 : 1 }} />)}
       <div className="twilight-light" />
       <svg className="landscape-details" viewBox={`0 0 ${ART.width} ${ART.height}`} shapeRendering="crispEdges">
-        <g className="water-glints"><path d="M691 744h30v4h-30z"/><path d="M806 768h44v4h-44z"/><path d="M595 704h25v4h-25z"/><path d="M538 688h14v4h-14z"/></g>
+        <Stream scene={scene} landscape={landscape} discoveryId={discovery?.kind === 'river' ? discovery.id : undefined}/>
         {grass.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}><g className="meadow-grass" style={{ animationDelay: `${i * -.7}s` }}>
           <path fill="#315b3c" d="M0 0v-10h-4v-10h-4v-8h4v4h4v9h4v15zm8 0v-18h4v-14h4v-7h4v11h-4v16h-4v12z"/>
           <path fill="#789747" d="M4 0v-27H0v-8h4v7h4v28zm12 0v-9h4v-9h8v4h-4v8h-4v6z"/>
         </g></g>)}
-        {(scene.kind === 'rain' || scene.kind === 'storm') ? <g className="rain-ripples">{ripples.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}><path className="river-ring ambient-ripple" d="M-18 0h-8v4h8m36-4h8v4h-8M-18-3h36M-18 7h36" style={{ animationDelay: `${i * -.8}s` }}/></g>)}</g> : null}
         <StationRotor />
         <rect className={`station-indicator ${discovery?.kind === 'station' ? 'indicator-active' : ''}`} x={anchors.station.x - 4} y={anchors.station.y - 4} width="8" height="8" />
         {wildlife && scene.isDay && ['clear', 'partly-cloudy', 'cloudy'].includes(scene.kind) ? <g className="meadow-birds">{[0, 1].map(i => <g key={i} transform={`translate(${380 + i * 104} ${576 - i * 24})`}><g className="meadow-bird" style={{ animationDelay: `${-i * 19}s` }}>
           <path fill="#29294a" d="M-15-4h6v3h6v4h6v-4h6v-3h6v4h-6v4H6v3H-6V4h-6V0h-3z"/><path fill="#d9c8ab" d="M-3 1h6v3h-6z"/>
         </g></g>)}</g> : null}
         {wildlife && !scene.isDay ? <g className="meadow-fireflies">{fireflies.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}><g className="meadow-firefly" style={{ animationDelay: `${i * -1.3}s` }}><rect x="-4" y="-4" width="8" height="8" fill="#ffe898" opacity=".18"/><rect x="-1" y="-1" width="3" height="3" fill="#fbea9c"/></g></g>)}</g> : null}
-        {discovery?.kind === 'river' ? <g transform={`translate(${anchors.river.x} ${anchors.river.y})`}><g key={discovery.id} className="river-discovery"><path className="river-ring" d="M-23-4h46M-23 7h46M-23-1h-8v4h8m46-4h8v4h-8"/><path className="river-ring inner-ring" d="M-11-1h22M-11 4h22"/></g></g> : null}
       </svg>
       {!scene.isDay ? <div className="stars">{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ left: `${8 + (i * 23) % 87}%`, top: `${3 + (i * 13) % 45}%`, animationDelay: `${i * -0.8}s` }} />)}</div> : null}
       {!wet || !scene.isDay ? <WeatherIcon className="celestial" kind="clear" isDay={scene.isDay} size={112} /> : null}

@@ -61,6 +61,8 @@ The same mountain meadow now blends daylight and night artwork through warm dawn
 
 Clouds, grass, and the station rotor respond to wind speed. Rain adds creek ripples; snow drifts; fog rolls low across the valley. Occasional birds and nighttime fireflies disappear during storms and snowfall. Tap the river for a ripple or the station for its indicator light; these accessible controls keep sound off until you enable it, then follow the interface sounds channel. Reduced motion uses brief static feedback.
 
+The stream has flowing currents, layered reflections, and small eddies around its rocks. Highlights follow the bends downstream, and tapped ripples drift with the current. The same animation runs in the original meadow and the Raleigh scene, whose skyline and oak trees appear for selected locations within 25 km of central Raleigh. Both scene sets include day, overcast, and night artwork, work offline, and respect the existing motion controls.
+
 ## Verification
 
 ```sh

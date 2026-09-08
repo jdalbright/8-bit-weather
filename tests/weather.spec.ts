@@ -175,4 +175,10 @@ test('production PWA has valid icons and opens offline after installation cachin
   await context.setOffline(true); await page.reload(); await loaded(page);
   await expect(page.getByText('You’re offline. Showing your saved forecast.',{exact:true})).toBeVisible();
   expect(await page.locator('.landscape-art').evaluate((image: HTMLImageElement)=>image.complete&&image.naturalWidth>0)).toBe(true);
+  const raleighPlates = await page.evaluate(async () => Promise.all(['day', 'overcast', 'night'].map(async light => {
+    const response = await fetch(`/art/scene-raleigh-${light}-v1.webp`);
+    const blob = await response.blob();
+    return { ok: response.ok, type: blob.type, present: blob.size > 0 };
+  })));
+  expect(raleighPlates).toEqual(Array.from({ length: 3 }, () => ({ ok: true, type: 'image/webp', present: true })));
 });
