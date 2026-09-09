@@ -37,6 +37,15 @@ export function localDate(timestamp: number, timezone: string): string {
 export function localTime(unixSeconds: number, timezone: string, options: Intl.DateTimeFormatOptions = {}): string {
   return new Intl.DateTimeFormat('en-US', { timeZone: timezone, ...options }).format(unixSeconds * 1000);
 }
+export function dayLabel(date: string): string {
+  const timestamp = Date.parse(`${date}T12:00:00Z`);
+  return Number.isFinite(timestamp) ? localTime(timestamp / 1000, 'UTC', { weekday: 'short' }) : '—';
+}
+// Hourly precipitation describes the interval ending at its timestamp.
+// Keep stored provider values intact; pair them with the following hour at display time.
+export function precipitationForHour(hours: WeatherSnapshot['hourly'], start: number | undefined): number | null {
+  return start === undefined ? null : hours.find(hour => hour.time === start + 3600)?.precipitation ?? null;
+}
 export function futureDays(days: DayWeather[], timezone: string, now = Date.now()): DayWeather[] {
   const today = localDate(now, timezone);
   return days.filter(day => day.date >= today).slice(0, 7);
@@ -92,7 +101,9 @@ export function normalizeWeather(raw: unknown, place: Place, now = Date.now()): 
       uv: nonnegative(series(hourly, 'uv_index', index)),
     }]),
     daily: daily.time.flatMap((time, index) => numeric(time) === null ? [] : [{
-      time: time as number, date: localDate((time as number) * 1000, timezone), high: series(daily, 'temperature_2m_max', index),
+      // Daily timestamps use the response's fixed offset, including across DST.
+      time: time as number, date: numeric(data.utc_offset_seconds) === null ? localDate((time as number) * 1000, timezone)
+        : new Date(((time as number) + (data.utc_offset_seconds as number)) * 1000).toISOString().slice(0, 10), high: series(daily, 'temperature_2m_max', index),
       low: series(daily, 'temperature_2m_min', index), precipitation: series(daily, 'precipitation_probability_max', index),
       code: series(daily, 'weather_code', index), sunrise: series(daily, 'sunrise', index), sunset: series(daily, 'sunset', index),
       uvMax: nonnegative(series(daily, 'uv_index_max', index)),

@@ -11,7 +11,7 @@ interface Props { preferences: Preferences; onChange: (preferences: Preferences)
 export default function Settings({ preferences, onChange, audio, install, systemReduced, onClear }: Props) {
   const [confirmClear, setConfirmClear] = useState(false);
   const change = <K extends keyof Preferences>(key: K, value: Preferences[K]) => { onChange({ ...preferences, [key]: value }); };
-  return <main id="main-content" className="utility-view settings-view">
+  return <main id="main-content" tabIndex={-1} className="utility-view settings-view">
     <div className="view-title"><Icon name="settings" size={26}/><h1>Settings</h1></div><p className="view-intro">Make yourself at home.</p>
     <section className="settings-section" aria-labelledby="units-title"><h2 id="units-title">Weather units</h2><div className="segmented-control" role="group" aria-label="Weather units"><button aria-pressed={preferences.units === 'imperial'} onClick={() => change('units', 'imperial')}>°F / mph</button><button aria-pressed={preferences.units === 'metric'} onClick={() => change('units', 'metric')}>°C / km/h</button></div></section>
     <section className="settings-section" aria-labelledby="sound-title"><div className="settings-title-row"><h2 id="sound-title">A little atmosphere</h2><button className="pixel-button small" aria-pressed={audio.enabled} onClick={() => void audio.toggle()}><Icon name={audio.enabled ? 'sound' : 'muted'} size={16}/>{audio.enabled ? 'Sound on' : 'Sound off'}</button></div>

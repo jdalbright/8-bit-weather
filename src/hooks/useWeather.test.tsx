@@ -39,3 +39,32 @@ describe('weather request lifecycle', () => {
     await waitFor(() => expect(result.current.error).toContain('offline')); expect(result.current.snapshot).toBeNull(); expect(mockedFetch).not.toHaveBeenCalled();
   });
 });
+
+it('retains the latest live forecast when storage fails, including offline resume and failed refresh', async () => {
+  const old = normalizeWeather(forecastFixture(Date.now()), asheville, Date.now() - 3600000);
+  cacheWeather(old);
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Quota exceeded', 'QuotaExceededError'); });
+  const fresh = normalizeWeather(forecastFixture(Date.now()), asheville);
+  mockedFetch.mockResolvedValueOnce(fresh);
+  const { result } = renderHook(() => useWeather(asheville));
+  await waitFor(() => expect(result.current.snapshot).toEqual(fresh));
+  mockedFetch.mockRejectedValueOnce(new Error('Network failed'));
+  await act(async () => result.current.refresh(true));
+  expect(result.current.snapshot).toEqual(fresh);
+  Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+  vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+  await act(async () => { window.dispatchEvent(new Event('offline')); document.dispatchEvent(new Event('visibilitychange')); });
+  expect(result.current.snapshot).toEqual(fresh); expect(result.current.error).toBeNull();
+});
+it('retains an uncached forecast offline but never leaks it to another location', async () => {
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('Storage unavailable'); });
+  const fresh = normalizeWeather(forecastFixture(Date.now()), asheville);
+  mockedFetch.mockResolvedValueOnce(fresh);
+  const { result, rerender } = renderHook(({ place }) => useWeather(place), { initialProps: { place: asheville } });
+  await waitFor(() => expect(result.current.snapshot).toEqual(fresh));
+  Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+  await act(async () => result.current.refresh());
+  expect(result.current.snapshot).toEqual(fresh);
+  rerender({ place: tokyo });
+  expect(result.current.snapshot).toBeNull();
+});

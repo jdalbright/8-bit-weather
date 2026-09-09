@@ -47,7 +47,9 @@ Current conditions, hourly data, and daily forecasts are model-derived weather d
 
 Preferences, saved places, the selected location, and up to 12 recent forecast snapshots are stored only in this browser. Coordinates (rounded to three decimal places for GPS selections) are sent to Open-Meteo to request weather; search terms are sent to its geocoding service. Open-Meteo's own [privacy policy](https://open-meteo.com/en/terms#privacy) applies to those requests. The app has no accounts, analytics, ads, or runtime AI calls. Settings → Clear saved data removes the app's stored choices and forecasts.
 
-Forecasts refresh every 15 minutes while the app is visible, when returning to stale data, or through Refresh. Searches are debounced, superseded requests are canceled, and provider rate-limit cooldowns are respected. A GPS cache is never reused at changed coordinates.
+Forecasts refresh every 15 minutes while the app is visible, when returning to stale data, or through Refresh. Searches are debounced, superseded requests are canceled, and provider rate-limit cooldowns are respected. A GPS cache is never reused at changed coordinates. If browser storage fails, the latest forecast for the current place stays available in memory through refresh failures and offline resume during that visit.
+
+Hourly precipitation probabilities describe the hour ending at the provider timestamp, so the current tile and hourly rail pair each displayed hour with the following timestamp’s probability. Daily dates use the provider’s fixed `utc_offset_seconds`; weekday labels come from those calendar dates. UV curve completeness is checked against actual local-day boundaries independently of the daily timestamps.
 
 ### Pull to refresh
 
@@ -96,6 +98,8 @@ npm run test:e2e
 ```
 
 The browser tests start a production preview server on port 4177. They use explicitly mocked weather and coordinates for reproducibility; the normal app has no sample weather. Test artifacts are written under `/tmp/8bit-weather-*`, outside the project. The app has also been exercised against the live Open-Meteo APIs through the in-app browser.
+
+Unit regressions cover provider-shaped spring/autumn DST data, precipitation interval alignment, storage write failures, delayed audio start/mute and visibility races, navigation focus, and accessible hourly conditions.
 
 Tests cover units, WMO codes, missing measurements, time zones/DST, stale caches, request races, API failures, permission denial/timeouts, search and saved places, audio activation/background suspension, all scene families, small screens, and production offline caching. Chromium and iPhone-sized WebKit tests are browser verification, not proof of physical-device installation, hardware silent-switch behavior, or lock-screen playback.
 

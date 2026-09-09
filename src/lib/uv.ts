@@ -20,8 +20,7 @@ export function uvInfo(value: number | null | undefined) {
 }
 export function uvForecast(snapshot: WeatherSnapshot, now: number, online: boolean) {
   const today = localDate(now, snapshot.timezone);
-  const dayIndex = snapshot.daily.findIndex(day => day.date === today);
-  const day = snapshot.daily[dayIndex], nextDay = snapshot.daily[dayIndex + 1];
+  const day = snapshot.daily.find(day => day.date === today);
   const seconds = now / 1000;
   const stale = !online || now < snapshot.fetchedAt || now - snapshot.fetchedAt >= STALE_AFTER
     || seconds - snapshot.current.time > 3600 || seconds < snapshot.current.time;
@@ -29,7 +28,9 @@ export function uvForecast(snapshot: WeatherSnapshot, now: number, online: boole
   const currentHour = hours.find(hour => hour.time <= seconds && hour.time + 3600 > seconds);
   const currentValue = seconds - snapshot.current.time < FRESH_FOR / 1000 && validUv(snapshot.current.uv) ? snapshot.current.uv : currentHour?.uv;
   const current = stale ? null : uvInfo(currentValue);
-  const complete = !!day && !!nextDay && hours.length > 0 && hours[0].time === day.time && hours.at(-1)!.time + 3600 === nextDay.time
+  // Check actual local-day boundaries, not the provider's fixed-offset daily timestamps.
+  const complete = !!day && hours.length > 0 && localDate(hours[0].time * 1000 - 1, snapshot.timezone) !== today
+    && localDate((hours.at(-1)!.time + 3600) * 1000, snapshot.timezone) !== today
     && hours.every((hour, index) => validUv(hour.uv) && (index === 0 || hour.time - hours[index - 1].time === 3600));
   const peakHour = complete ? hours.reduce((peak, hour) => hour.uv! > peak.uv! ? hour : peak) : null;
   const peakValue = validUv(day?.uvMax) ? day.uvMax : peakHour?.uv;

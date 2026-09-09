@@ -69,9 +69,14 @@ export class WeatherAudio {
     }
   }
   async start() {
-    this.activity++;
+    const activity = ++this.activity;
     this.enabled = true;
     await this.context.resume();
+    if (activity !== this.activity || !this.enabled) {
+      // A delayed resume may finish after pause has already suspended the context.
+      if (!this.enabled && this.context.state === 'running') await this.context.suspend();
+      return;
+    }
     if (this.context.state !== 'running') throw new Error('Tap Sound again to enable audio in this browser.');
     this.ramp(this.master.gain, 0.7, 0.3);
     for (const track of this.tracks) track.next = this.context.currentTime + 0.06;
@@ -148,6 +153,7 @@ export class WeatherAudio {
   }
   async dispose() {
     this.activity++;
+    this.enabled = false;
     if (this.timer !== null) clearInterval(this.timer);
     for (const voice of this.voices) { try { voice.stop(); } catch { /* Already finished. */ } }
     this.voices.clear(); this.context.onstatechange = null;

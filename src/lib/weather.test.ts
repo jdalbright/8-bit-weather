@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cacheMatches, futureDays, isFresh, localDate, localTime, normalizeWeather, percent, temperature, updatedLabel, weatherInfo, windSpeed } from './weather';
+import { cacheMatches, dayLabel, futureDays, isFresh, localDate, localTime, normalizeWeather, percent, precipitationForHour, temperature, updatedLabel, weatherInfo, windSpeed } from './weather';
 import { asheville, fixtureTime, forecastFixture } from '../test/fixtures';
 
 describe('forecast interpretation', () => {
@@ -33,5 +33,23 @@ describe('forecast interpretation', () => {
     expect(isFresh(snapshot, fixtureTime + 14 * 60000)).toBe(true); expect(isFresh(snapshot, fixtureTime + 15 * 60000)).toBe(false); expect(isFresh(snapshot, fixtureTime - 60000)).toBe(false);
     expect(cacheMatches(snapshot, asheville)).toBe(true); expect(cacheMatches(snapshot, { ...asheville, latitude: 40 })).toBe(false);
     expect(updatedLabel(fixtureTime, fixtureTime + 2 * 86400000)).toBe('Updated 2 days ago');
+  });
+});
+
+describe('provider interval and calendar conventions', () => {
+  it('preserves real provider dates across the autumn clock change', () => {
+    const raw = forecastFixture();
+    raw.daily.time = [1761969600, 1762056000, 1762142400, 1762228800];
+    const result = normalizeWeather(raw, asheville);
+    expect(result.daily.map(day => day.date)).toEqual(['2025-11-01', '2025-11-02', '2025-11-03', '2025-11-04']);
+    expect(result.daily.map(day => dayLabel(day.date))).toEqual(['Sat', 'Sun', 'Mon', 'Tue']);
+  });
+  it('does not substitute an earlier probability when the next interval is missing', () => {
+    const data = normalizeWeather(forecastFixture(), asheville);
+    data.hourly[0].precipitation = 10; data.hourly[1].precipitation = 80;
+    expect(precipitationForHour(data.hourly, data.hourly[0].time)).toBe(80);
+    data.hourly.splice(1, 1);
+    expect(precipitationForHour(data.hourly, data.hourly[0].time)).toBeNull();
+    expect(precipitationForHour(data.hourly, undefined)).toBeNull();
   });
 });

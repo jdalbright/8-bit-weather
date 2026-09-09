@@ -12,11 +12,15 @@ export function useWeather(place: Place | null) {
   const request = useRef<AbortController | null>(null);
   const generation = useRef(0);
   const cooldown = useRef(0);
+  const latest = useRef<WeatherSnapshot | null>(null);
   const refresh = useCallback(async (force = false) => {
     request.current?.abort();
     const attempt = ++generation.current;
-    if (!place) { setState({ snapshot: null, loading: false, error: null, placeId: null }); return; }
-    const cache = cachedWeather(place);
+    if (!place) { latest.current = null; setState({ snapshot: null, loading: false, error: null, placeId: null }); return; }
+    const stored = cachedWeather(place);
+    const memory = latest.current && cacheMatches(latest.current, place) ? latest.current : null;
+    const cache = memory && (!stored || memory.fetchedAt >= stored.fetchedAt) ? memory : stored;
+    latest.current = cache;
     if (!navigator.onLine) { setState({ snapshot: cache, loading: false, error: cache ? null : 'You’re offline. Connect to load weather for this place.', placeId: place.id }); return; }
     if ((!force && cache && isFresh(cache)) || Date.now() < cooldown.current) {
       setState(previous => ({ snapshot: cache, loading: false, error: Date.now() < cooldown.current ? previous.error : null, placeId: place.id }));
@@ -29,6 +33,7 @@ export function useWeather(place: Place | null) {
       const snapshot = await fetchWeather(place, controller.signal);
       if (controller.signal.aborted || attempt !== generation.current) return;
       cacheWeather(snapshot);
+      latest.current = snapshot;
       setState({ snapshot, loading: false, error: null, placeId: place.id });
       setNow(Date.now());
     } catch (error) {

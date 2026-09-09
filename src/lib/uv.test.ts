@@ -63,11 +63,29 @@ describe('UV forecast interpretation', () => {
     const data = snapshot();
     const midnight = Date.parse('2026-11-01T04:00:00Z') / 1000;
     data.daily[0] = {...data.daily[0],date:'2026-11-01',time:midnight,uvMax:6};
-    data.daily[1] = {...data.daily[1],date:'2026-11-02',time:midnight+25*3600};
+    data.daily[1] = {...data.daily[1],date:'2026-11-02',time:midnight+24*3600};
     data.hourly = Array.from({length:25},(_,i)=>({...data.hourly[0],time:midnight+i*3600,uv:i===14?6:0}));
     data.fetchedAt = midnight*1000; data.current.time = midnight;
     const forecast = uvForecast(data,midnight*1000,true);
     expect(forecast.today).toBe('2026-11-01'); expect(forecast.hours).toHaveLength(25); expect(forecast.peakTime).toBe(midnight+14*3600);
     expect(uvForecast(data,(midnight-1)*1000,true).hours).toHaveLength(0);
   });
+});
+
+it.each([
+  ['2026-03-08', '2026-03-08T05:00:00Z', -18000, 23],
+  ['2026-11-01', '2026-11-01T04:00:00Z', -14400, 25],
+] as const)('uses actual local boundaries on %s with fixed-offset provider daily rows', (date, iso, offset, count) => {
+  const raw = uvFixture(), start = Date.parse(iso) / 1000;
+  raw.utc_offset_seconds = offset;
+  raw.daily.time = [start, start + 86400]; raw.daily.uv_index_max = [6, 4];
+  raw.current.time = start; raw.current.uv_index = 0;
+  raw.hourly.time = Array.from({ length: count }, (_, i) => start + i * 3600);
+  raw.hourly.uv_index = raw.hourly.time.map((_, i) => i === 12 ? 6 : 0);
+  const data = normalizeWeather(raw, asheville, start * 1000);
+  const forecast = uvForecast(data, start * 1000, true);
+  expect(forecast.today).toBe(date); expect(forecast.hours).toHaveLength(count);
+  expect(forecast.peakTime).toBe(start + 12 * 3600);
+  data.hourly.pop();
+  expect(uvForecast(data, start * 1000, true).peakTime).toBeNull();
 });

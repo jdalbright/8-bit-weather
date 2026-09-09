@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { Discovery, Place, SceneState, Units, WeatherSnapshot } from '../types';
-import { futureDays, localDate, localTime, percent, STALE_AFTER, temperature, updatedLabel, weatherInfo, windSpeed } from '../lib/weather';
+import { dayLabel, futureDays, localDate, localTime, percent, precipitationForHour, STALE_AFTER, temperature, updatedLabel, weatherInfo, windSpeed } from '../lib/weather';
 import { Icon, WeatherIcon } from './Icons';
 import { Scenery } from './Scenery';
 import { landscapeForPlace } from '../lib/landscapes';
@@ -31,7 +31,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
   const degree = snapshot ? temperature(snapshot.current.temperature, units) : '—';
   const rainOutlook = snapshot ? upcomingRain(snapshot, now, online) : null;
   const uv = snapshot ? uvForecast(snapshot, now, online) : null;
-  return <main id="main-content" className="today-view">
+  return <main id="main-content" tabIndex={-1} className="today-view">
     <Scenery key={snapshot ? place?.id : 'loading'} scene={scene} landscape={landscapeForPlace(place)} animate={animate} onDiscover={onDiscover} className={!place ? 'welcome-scene' : ''}>
       {!place ? <div className="welcome-content">
         <h1>Find your weather</h1>
@@ -51,7 +51,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
     {snapshot ? <>
       {stale ? <div className="offline-notice" role="status">{!online ? 'You’re offline. Showing your saved forecast.' : 'This forecast is getting old. Refresh for the latest.'}</div> : null}
       <dl className="current-stats">
-        <div><Icon name="drop" className="rain-stat" size={25}/><span><dt>{info.kind === 'snow' ? 'Snow' : 'Rain'}</dt><dd>{percent(currentHour?.precipitation)}</dd></span></div>
+        <div><Icon name="drop" className="rain-stat" size={25}/><span><dt>{info.kind === 'snow' ? 'Snow' : 'Rain'}</dt><dd>{percent(precipitationForHour(snapshot.hourly, currentHour?.time))}</dd></span></div>
         <div><Icon name="wind" className="wind-stat" size={25}/><span><dt>Wind</dt><dd>{windSpeed(snapshot.current.wind, units)}</dd></span></div>
         <div><Icon name="drop" className="humidity-stat" size={25}/><span><dt>Humidity</dt><dd>{percent(snapshot.current.humidity)}</dd></span></div>
         <div className="uv-stat"><dt className="sr-only">UV index</dt><dd><button className="uv-stat-button" aria-label={`UV index ${uv?.current ? `${uv.current.index}, ${uv.current.level.label}` : 'unavailable'}, ${uvExpanded ? 'hide' : 'show'} details`}
@@ -68,9 +68,9 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
             const useCurrent = isCurrentHour && !stale;
             return <div className="hour" key={hour.time}>
             <span className="hour-label">{isCurrentHour ? 'Now' : localTime(hour.time, snapshot.timezone, { hour: 'numeric' })}</span>
-            <WeatherIcon kind={weatherInfo(useCurrent ? snapshot.current.code : hour.code).kind} isDay={useCurrent ? scene.isDay : hour.isDay} size={30}/>
+            <WeatherIcon kind={weatherInfo(useCurrent ? snapshot.current.code : hour.code).kind} isDay={useCurrent ? scene.isDay : hour.isDay} size={30}/><span className="sr-only">{weatherInfo(useCurrent ? snapshot.current.code : hour.code, useCurrent ? scene.isDay : hour.isDay).label}</span>
             <span className="hour-temperature">{temperature(useCurrent ? snapshot.current.temperature : hour.temperature, units)}</span>
-            <span className="hour-precipitation"><Icon name="drop" size={10}/>{percent(hour.precipitation)}</span>
+            <span className="hour-precipitation"><Icon name="drop" size={10}/><span className="sr-only">Chance of precipitation: </span>{percent(precipitationForHour(snapshot.hourly, hour.time))}</span>
           </div>; })}</div> : <p className="empty-forecast">This hourly forecast has expired. Connect and refresh for the next 24 hours.</p>}
       </section>
       <section className="daily-section" aria-labelledby="daily-title">
@@ -80,9 +80,9 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
           const width = day.low !== null && day.high !== null ? Math.max(3, (day.high - day.low) / span * 100) : 0;
           const isToday = day.date === todayDate;
           return <div className="day-row" key={day.date}>
-            <span className="day-name">{isToday ? 'Today' : localTime(day.time, snapshot.timezone, { weekday: 'short' })}</span>
+            <span className="day-name">{isToday ? 'Today' : dayLabel(day.date)}</span>
             <span className="day-icon" title={weatherInfo(day.code).label}><WeatherIcon kind={weatherInfo(day.code).kind} size={25}/><span className="sr-only">{weatherInfo(day.code).label}</span></span>
-            <span className="day-precipitation"><Icon name="drop" size={10}/>{percent(day.precipitation)}</span>
+            <span className="day-precipitation"><Icon name="drop" size={10}/><span className="sr-only">Chance of precipitation: </span>{percent(day.precipitation)}</span>
             <span className="day-low" aria-label={`Low ${temperature(day.low, units)}`}>{temperature(day.low, units)}</span>
             <span className="temperature-range" aria-hidden="true"><span className="temperature-bar" style={{ left: `${start}%`, width: `${width}%` }}/>{isToday && snapshot.current.temperature !== null && width ? <i style={{ left: `${Math.min(100, Math.max(0, (snapshot.current.temperature - minimum) / span * 100))}%` }}/> : null}</span>
             <span className="day-high" aria-label={`High ${temperature(day.high, units)}`}>{temperature(day.high, units)}</span>
