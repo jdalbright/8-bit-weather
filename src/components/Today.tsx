@@ -8,6 +8,7 @@ import { upcomingRain } from '../lib/rain';
 import { RainOutlook } from './RainOutlook';
 import { uvForecast } from '../lib/uv';
 import { UvDetails, UvScale } from './UvDetails';
+import { WeatherBriefing } from './WeatherBriefing';
 
 interface Props {
   place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean;
@@ -61,6 +62,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
       </dl>
       {uvExpanded && uv ? <UvDetails key={`${snapshot.placeId}:${uv.today}`} forecast={uv} timezone={snapshot.timezone} now={now} isDay={scene.isDay} online={online}/> : null}
       {rainOutlook ? <RainOutlook key={snapshot.placeId} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
+      <WeatherBriefing snapshot={snapshot} units={units} online={online} now={now}/>
       <section className="hourly-section" aria-labelledby="hourly-title">
         <div className="section-heading"><h2 id="hourly-title">Next 24 hours</h2><button className="icon-button scroll-hours" aria-label="Scroll hourly forecast forward" onClick={() => hourlyRef.current?.scrollBy({ left: 220, behavior: animate ? 'smooth' : 'instant' })}><Icon name="next" size={17}/></button></div>
         {hours.length ? <div ref={hourlyRef} className="hourly-rail" data-pull-refresh-ignore tabIndex={0} aria-label="Hourly forecast, scroll for more hours">

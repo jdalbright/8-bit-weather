@@ -1,5 +1,6 @@
 import type { Place, Preferences, WeatherSnapshot } from '../types';
 import { cacheMatches } from './weather';
+import { clearBriefingCache } from './briefing-client';
 
 export const STORAGE_KEY = '8bit-weather:v1';
 type StoredState = { preferences: Preferences; places: Place[]; selected: Place | null };
@@ -47,4 +48,4 @@ export function cachedWeather(place: Place): WeatherSnapshot | null { return rea
 export function cacheWeather(snapshot: WeatherSnapshot): void {
   write(`${STORAGE_KEY}:forecasts`, [snapshot, ...readCache().filter(s => s.placeId !== snapshot.placeId)].slice(0, 12));
 }
-export function clearSavedData(): void { try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(`${STORAGE_KEY}:forecasts`); } catch { /* The app remains usable without persistent storage. */ } }
+export function clearSavedData(): void { clearBriefingCache(); try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(`${STORAGE_KEY}:forecasts`); } catch { /* The app remains usable without persistent storage. */ } }

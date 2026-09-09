@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { asheville, forecastFixture, tokyo } from '../src/test/fixtures';
+import { normalizeWeather } from '../src/lib/weather';
 
 const prefs = { units: 'imperial', music: true, ambience: true, effects: true, musicVolume: .35, ambienceVolume: .25, effectsVolume: .4, reducedMotion: true };
 const key = '8bit-weather:v1';
@@ -80,17 +81,17 @@ test('retains cached weather on refresh failure, shows offline state, and reconn
   await page.getByRole('button', {name:'Refresh',exact:true}).click(); await expect(page.getByRole('alert')).toHaveCount(0);
 });
 
-test('expired cache is visibly old and never invents future rows', async ({ page, context }) => {
-  await seed(page); await mockForecast(page); await page.goto('/'); await loaded(page);
-  await page.evaluate(key => {
-    const snapshots = JSON.parse(localStorage.getItem(`${key}:forecasts`)!);
-    for (const s of snapshots) { s.fetchedAt -= 10 * 86400000; s.current.time -= 10 * 86400; s.hourly.forEach((h: {time:number}) => h.time -= 10 * 86400); s.daily.forEach((d: {time:number;date:string}) => { d.time -= 10 * 86400; d.date = new Date(d.time * 1000).toISOString().slice(0,10); }); }
-    localStorage.setItem(`${key}:forecasts`, JSON.stringify(snapshots));
-  }, key);
-  await context.setOffline(true);
-  // Navigate away and back to remount the weather view without relying on a network reload.
-  await page.getByRole('button', {name:'Places',exact:true}).click();
-  await page.getByRole('button', {name:'Asheville North Carolina, United States',exact:true}).click();
+test('expired cache is visibly old and never invents future rows', async ({ page }) => {
+  await seed(page);
+  const oldTime = Date.now() - 10 * 86400000;
+  const snapshot = normalizeWeather(forecastFixture(oldTime), asheville, oldTime);
+  // Start with an old cache and offline navigator state, without a newer memory copy.
+  // Keep the test shell reachable; network-level offline caching is tested separately.
+  await page.addInitScript(({ key, snapshot }) => {
+    localStorage.setItem(`${key}:forecasts`, JSON.stringify([snapshot]));
+    Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => false });
+  }, { key, snapshot });
+  await page.goto('/');
   await expect(page.getByText('This hourly forecast has expired.',{exact:false})).toBeVisible();
   await expect(page.locator('.day-row')).toHaveCount(0);
   await expect(page.getByText('Updated 10 days ago',{exact:true})).toBeVisible();
@@ -108,7 +109,7 @@ test('sound requires a tap, controls persist, and hidden pages suspend audio', a
   expect(await page.evaluate(() => (window as unknown as {__weatherTestAudio: AudioContext[]}).__weatherTestAudio.length)).toBe(0);
   await page.getByRole('button', {name:'Sound off',exact:true}).click();
   await expect(page.getByRole('button', {name:'Sound on',exact:true})).toHaveAttribute('aria-pressed','true');
-  expect(await page.evaluate(() => (window as unknown as {__weatherTestAudio: AudioContext[]}).__weatherTestAudio[0].state)).toBe('running');
+  await expect.poll(() => page.evaluate(() => (window as unknown as {__weatherTestAudio: AudioContext[]}).__weatherTestAudio[0].state)).toBe('running');
   await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:true}); document.dispatchEvent(new Event('visibilitychange')); });
   await expect.poll(() => page.evaluate(() => (window as unknown as {__weatherTestAudio: AudioContext[]}).__weatherTestAudio[0].state)).toBe('suspended');
   await page.evaluate(() => { Object.defineProperty(document,'hidden',{configurable:true,value:false}); document.dispatchEvent(new Event('visibilitychange')); });

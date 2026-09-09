@@ -13,7 +13,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. It starts on `http://127.0.0.1:5173` and chooses the next available port if that port is occupied. No `.env` file, API key, account, or backend is needed.
+Open the local URL printed by Vite. It starts on `http://127.0.0.1:5173` and chooses the next available port if that port is occupied. The forecast works without an API key or backend. AI briefings additionally need the server setup below.
 
 The first screen asks you to use your location or search for a city. Selecting a city also saves it on this device. GPS weather is labeled **Current location**; use the location button again when you want a fresh position. The app does not continuously track your location.
 
@@ -24,11 +24,11 @@ npm run build
 npm run preview
 ```
 
-The complete static site is in `dist/`. Service-worker caching and update prompts run in the production build, not the development server. Serve `dist/` at the root of an HTTPS site; no server functions are required.
+The complete static site is in `dist/`. Service-worker caching and update prompts run in the production build, not the development server. Serve `dist/` at the root of an HTTPS site; the optional AI briefing uses a Vercel Function outside this static directory.
 
 ## GitHub and Vercel hosting
 
-The source repository is [jdalbright/8-bit-weather](https://github.com/jdalbright/8-bit-weather). Vercel builds the linked GitHub repository with `npm run build` and serves `dist/`. Pushes to `main` deploy to production; other branches receive preview deployments. No environment variables or paid services are required. `vercel.json` keeps the service worker fresh so installed apps can discover updates.
+The source repository is [jdalbright/8-bit-weather](https://github.com/jdalbright/8-bit-weather). Vercel builds the linked GitHub repository with `npm run build` and serves `dist/`. Pushes to `main` deploy to production; other branches receive preview deployments. Weather remains keyless; the optional briefing requires server-only OpenAI configuration. `vercel.json` keeps the service worker fresh so installed apps can discover updates.
 
 ## Install on your device
 
@@ -45,11 +45,41 @@ Forecasts and city search come directly from [Open-Meteo](https://open-meteo.com
 
 Current conditions, hourly data, and daily forecasts are model-derived weather data. WMO weather codes are translated to readable labels, timestamps are displayed in the selected location's time zone, and Celsius/km/h values are converted locally for Fahrenheit/mph. Weather data is [CC BY 4.0](https://open-meteo.com/en/licence); location names originate from [GeoNames](https://www.geonames.org/).
 
-Preferences, saved places, the selected location, and up to 12 recent forecast snapshots are stored only in this browser. Coordinates (rounded to three decimal places for GPS selections) are sent to Open-Meteo to request weather; search terms are sent to its geocoding service. Open-Meteo's own [privacy policy](https://open-meteo.com/en/terms#privacy) applies to those requests. The app has no accounts, analytics, ads, or runtime AI calls. Settings → Clear saved data removes the app's stored choices and forecasts.
+Preferences, saved places, the selected location, and up to 12 recent forecast snapshots are stored only in this browser. Coordinates (rounded to three decimal places for GPS selections) are sent to Open-Meteo to request weather; search terms are sent to its geocoding service. Open-Meteo's own [privacy policy](https://open-meteo.com/en/terms#privacy) applies to those requests. When enabled, AI briefings send a limited hourly forecast, timezone, and chosen temperature units through this app’s server to OpenAI. Coordinates and place names are excluded from those requests. Responses use `store: false`; this does not disable OpenAI’s separate abuse-monitoring retention. The app has no accounts, analytics, or ads. Settings → Clear saved data removes stored choices, forecasts, and briefings, including in-memory copies.
 
 Forecasts refresh every 15 minutes while the app is visible, when returning to stale data, or through Refresh. Searches are debounced, superseded requests are canceled, and provider rate-limit cooldowns are respected. A GPS cache is never reused at changed coordinates. If browser storage fails, the latest forecast for the current place stays available in memory through refresh failures and offline resume during that visit.
 
 Hourly precipitation probabilities describe the hour ending at the provider timestamp, so the current tile and hourly rail pair each displayed hour with the following timestamp’s probability. Daily dates use the provider’s fixed `utc_offset_seconds`; weekday labels come from those calendar dates. UV curve completeness is checked against actual local-day boundaries independently of the daily timestamps.
+
+### AI weather briefings
+
+The Weather briefing card summarizes the next 24 elapsed hours in 2–3 warm, practical sentences. The server rejects output outside that sentence range or above 75 words. It loads independently above the hourly forecast. The default model is `gpt-5.6-luna`, with reasoning disabled, a 250-token output cap, a 12-second SDK timeout, and no automatic SDK retries. Model input comes from the displayed forecast, with temperatures converted and precipitation intervals aligned in code. Unsupported weather codes count as missing data when checking coverage. No weather search or tools are enabled in OpenAI.
+
+Successful briefings are cached on this device for 15 minutes, up to 12 entries. Location, forecast identity, units, current hourly window, and prompt version determine reuse. Navigation and StrictMode share in-flight requests. Changing locations cancels an obsolete request; responses are never reused across GPS coordinates. Offline, a matching saved briefing keeps its timestamp until its original 24-hour window ends. Missing or stale weather prevents generation. API failures do not interrupt weather, and retries respect a cooldown. The first voice is an internal `warm-practical` preset; personality selection is reserved for a later release.
+
+#### Local and preview configuration
+
+The endpoint is `POST /api/weather-briefing`, implemented as a Vercel Node function. It accepts only a validated, bounded forecast and returns plain summary text with generation time, forecast window, expiry, and prompt version. Unknown request properties are discarded. It does not accept a custom prompt or client-selected model. The SDK and key are server-only and must never be imported into client modules.
+
+The handler rejects noncanonical route aliases so they cannot bypass the firewall's exact path match. Vercel redirects duplicate-slash paths to the canonical path before routing (local `vercel dev` normalizes them internally). Provider cooldowns are preserved from `Retry-After` or `retry-after-ms`; missing or invalid values use 60 seconds. Each Retry click permits one attempt; later navigation or visibility changes do not reuse that click.
+
+Use the existing environment key or the secure OpenAI Platform setup flow for credentials. `.env.example` documents the server-only variables: `OPENAI_API_KEY`, `OPENAI_WEATHER_MODEL` (defaults to `gpt-5.6-luna`), and `WEATHER_BRIEFING_ENABLED` (defaults to disabled). Never use `VITE_` for these variables, commit a key, or put one in browser storage. No credentials are needed for the normal mocked tests.
+
+`npm run dev:full` uses `vercel dev` to run Vite and the function together against the linked project’s Development configuration. Set `WEATHER_BRIEFING_ENABLED=true` in that local environment for live testing. `npm run dev` and `npm run preview` still serve the core forecast without a function; the briefing displays its unavailable state. API paths are excluded from the service-worker navigation fallback.
+
+`npm run test:briefing:live` is an explicit paid API smoke test using the environment key. It makes three calls with synthetic dry/rain/snow forecasts and prints only generated sample text and token/latency metadata. Normal `npm test` skips these calls. Review sample accuracy and tone before release. Metadata logging contains model, duration, token counts or a generic failure category; it never logs credentials, request bodies, coordinates, or raw provider errors.
+
+#### Public activation
+
+The **Weather briefing rate limit** firewall rule was published on 2026-09-09 for the linked `8-bit-weather` Vercel project (rule ID `rule_weather_briefing_rate_limit_2d1Sci`). It matches **POST `/api/weather-briefing`** and allows **10 requests per IP in a fixed 60-second window**, then returns **HTTP 429** before the function runs. It applies to matching requests on Vercel deployments; `vercel dev` on localhost is outside the platform firewall. Vercel counts per region, so this is not a global or account spending cap. No database is required.
+
+The reproducible policy is [config/firewall/weather-briefing.json](config/firewall/weather-briefing.json). This file documents the remote rule; application deployments do not automatically apply it. Inspect live settings with `vercel firewall rules inspect "Weather briefing rate limit" --json --scope jdalbrights-projects` and check for unrelated drafts with `vercel firewall diff --json --scope jdalbrights-projects` before any later firewall changes. Preserve other rules when updating this one.
+
+Live verification sent 12 invalid POST bodies, avoiding OpenAI generation: the first 10 reached the current deployment (404 because the briefing function has not been deployed), and requests 11–12 received 429. The homepage still returned 200, and GET requests to the endpoint were not rate-limited. The observed firewall response has no `Retry-After` header; the app already applies a 60-second cooldown in that case, including when the response body is HTML.
+
+The firewall is active independently of the AI feature release. Configure the server key and optional model separately for Preview and Production, verify the preview, then deploy with `WEATHER_BRIEFING_ENABLED=true` to activate briefings. Roll back AI independently by setting `WEATHER_BRIEFING_ENABLED=false` and redeploying. Without activation or a key, the function returns a generic 503 and makes no OpenAI request. Publishing the firewall rule did not deploy the app or change its production environment variables.
+
+See [OpenAI model pricing](https://developers.openai.com/api/docs/models/gpt-5.6-luna), [OpenAI data controls](https://developers.openai.com/api/docs/guides/your-data), and [Vercel rate limiting](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting).
 
 ### Pull to refresh
 

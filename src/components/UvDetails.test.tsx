@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import Today from './Today';
 import { deriveScene } from '../lib/scene';
 import { normalizeWeather, STALE_AFTER } from '../lib/weather';
@@ -22,7 +22,7 @@ describe('expandable UV forecast', () => {
     expect(screen.getByText(/Today’s peak:/)).toHaveTextContent('UV 7 · High around 1 PM');
     expect(screen.getByText('Low UV forecast from around 5 PM.')).toBeInTheDocument();
     fireEvent.change(screen.getByRole('slider',{name:'UV forecast hour'}),{target:{value:'13'}});
-    expect(screen.getByRole('status')).toHaveTextContent('1 PM EDT · UV 7 · High');
+    expect(within(screen.getByRole('region', { name: 'A little sun sense' })).getByRole('status')).toHaveTextContent('1 PM EDT · UV 7 · High');
     fireEvent.click(button);
     expect(screen.queryByRole('slider',{name:'UV forecast hour'})).not.toBeInTheDocument();
   });

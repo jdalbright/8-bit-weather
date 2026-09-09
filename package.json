@@ -5,17 +5,20 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && tsc -p tsconfig.server.json && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "typecheck": "tsc -b",
+    "typecheck": "tsc -b && tsc -p tsconfig.server.json",
     "lint": "eslint .",
-    "test": "vitest run",
+    "test": "vitest run && vitest run --config vitest.server.config.ts",
     "test:e2e": "playwright test",
-    "check:assets": "node scripts/check-assets.mjs"
+    "check:assets": "node scripts/check-assets.mjs",
+    "dev:full": "vercel dev",
+    "test:briefing:live": "RUN_LIVE_BRIEFING=true vitest run --config vitest.server.config.ts server/briefing.live.test.ts"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/pixelify-sans": "^5.3.0",
+    "openai": "^7.13.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },

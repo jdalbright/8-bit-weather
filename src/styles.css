@@ -204,7 +204,7 @@
   .scroll-hours { color: var(--violet); margin-right: -10px; height: 38px; }
   .hourly-rail { display: flex; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; scroll-snap-type: x proximity; padding: 7px 0 2px; }
   .hourly-rail::-webkit-scrollbar { display: none; }
-  .hour { display: flex; flex: 0 0 20%; align-items: center; flex-direction: column; gap: 4px; min-width: 66px; padding: 0 6px; scroll-snap-align: start; }
+  .hour { position: relative; display: flex; flex: 0 0 20%; align-items: center; flex-direction: column; gap: 4px; min-width: 66px; padding: 0 6px; scroll-snap-align: start; }
   .hour + .hour { border-left: 1px dashed var(--line); }
   .hour-label { font-family: var(--pixel); font-size: 14px; line-height: 1; white-space: nowrap; }
   .hour-temperature { font-family: var(--pixel); font-size: 20px; font-weight: 600; line-height: 1; }
@@ -399,4 +399,15 @@
     .utility-view { padding: 30px 26px; }
     .welcome-scene { height: 475px; }
   }
+}
+
+@layer components {
+  .weather-briefing { margin: 12px; padding: 16px; border: 2px solid var(--ink); background: #f5edda; box-shadow: 3px 3px 0 #ded3bb; }
+  .briefing-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .briefing-heading h2 { font-family: var(--pixel); font-size: 22px; font-weight: 400; margin: 0; }
+  .briefing-badge { font-size: 10px; color: var(--muted); }
+  .briefing-copy { font-size: 12px; line-height: 1.85; margin: 0; overflow-wrap: anywhere; }
+  .briefing-meta { color: var(--muted); font-size: 10px; line-height: 1.6; margin: 12px 0 0; }
+  .briefing-placeholder { color: var(--muted); }
+  .briefing-retry { min-height: 44px; margin-top: 6px; }
 }
