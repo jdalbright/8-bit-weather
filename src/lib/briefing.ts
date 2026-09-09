@@ -1,5 +1,5 @@
 import type { HourWeather, Units, WeatherSnapshot } from '../types';
-import { localTime, STALE_AFTER, temperature, weatherInfo } from './weather';
+import { localTime, STALE_AFTER, temperature, weatherInfo } from './weather.js';
 
 export const BRIEFING_VERSION = '1:warm-practical';
 export const BRIEFING_PATH = '/api/weather-briefing';

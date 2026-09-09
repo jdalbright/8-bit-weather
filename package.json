@@ -9,7 +9,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc -b && tsc -p tsconfig.server.json",
     "lint": "eslint .",
-    "test": "vitest run && vitest run --config vitest.server.config.ts",
+    "test": "vitest run && vitest run --config vitest.server.config.ts && node scripts/check-server.mjs",
     "test:e2e": "playwright test",
     "check:assets": "node scripts/check-assets.mjs",
     "dev:full": "vercel dev",
