@@ -31,6 +31,7 @@ export interface CurrentWeather {
   wind: number | null;
   code: number | null;
   isDay: boolean;
+  uv?: number | null;
 }
 export interface HourWeather {
   time: number;
@@ -38,6 +39,7 @@ export interface HourWeather {
   precipitation: number | null;
   code: number | null;
   isDay: boolean;
+  uv?: number | null;
 }
 export interface DayWeather {
   date: string;
@@ -48,6 +50,7 @@ export interface DayWeather {
   code: number | null;
   sunrise: number | null;
   sunset: number | null;
+  uvMax?: number | null;
 }
 export interface RainWeather {
   /** End of the preceding 15-minute interval, in Unix seconds. */

@@ -14,13 +14,14 @@ export function forecastFixture(now = fixtureTime, code = 1, isDay = 1) {
       rain: Array.from({ length: 16 }, () => 0),
       showers: Array.from({ length: 16 }, () => 0),
     },
-    current: { time: hour, temperature_2m: 22.2, apparent_temperature: 23.3, relative_humidity_2m: 64, wind_speed_10m: 8.05, weather_code: code, is_day: isDay },
+    current: { time: hour, temperature_2m: 22.2, apparent_temperature: 23.3, relative_humidity_2m: 64, wind_speed_10m: 8.05, weather_code: code, is_day: isDay, uv_index: isDay ? 4.1 : 0 },
     hourly: {
       time: Array.from({ length: 48 }, (_, i) => hour + i * 3600),
       temperature_2m: Array.from({ length: 48 }, (_, i) => 22.2 + Math.sin(i / 4) * 3),
       precipitation_probability: Array.from({ length: 48 }, (_, i) => i % 5 * 5),
       weather_code: Array.from({ length: 48 }, () => code),
       is_day: Array.from({ length: 48 }, (_, i) => (i + 10) % 24 >= 7 && (i + 10) % 24 < 20 ? 1 : 0),
+      uv_index: Array.from({ length: 48 }, (_, i) => Math.max(0, 7 - Math.abs((i + 10) % 24 - 13) * 1.4)),
     },
     daily: {
       time: Array.from({ length: 7 }, (_, i) => midnight + i * 86400),
@@ -30,6 +31,15 @@ export function forecastFixture(now = fixtureTime, code = 1, isDay = 1) {
       weather_code: [1, 2, 63, 80, 0, 0, 2],
       sunrise: Array.from({ length: 7 }, (_, i) => midnight + i * 86400 + 7 * 3600),
       sunset: Array.from({ length: 7 }, (_, i) => midnight + i * 86400 + 19 * 3600),
+      uv_index_max: [7, 6, 4, 3, 7, 8, 8],
     },
   };
+}
+
+export function uvFixture() {
+  const raw = forecastFixture();
+  const midnight = raw.daily.time[0];
+  const hours = Array.from({ length: 48 }, (_, i) => midnight + i * 3600);
+  return { ...raw, hourly: { ...raw.hourly, time: hours,
+    uv_index: hours.map((_, i) => Math.max(0, 7 - Math.abs(i % 24 - 13) * 1.4)) } };
 }

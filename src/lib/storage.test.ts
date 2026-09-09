@@ -31,4 +31,17 @@ describe('device persistence', () => {
       expect(cachedWeather(asheville)).toBeNull();
     }
   });
+  it('retains older forecasts without UV fields and rejects corrupt UV readings', () => {
+    const snapshot = normalizeWeather(forecastFixture(), asheville);
+    delete snapshot.current.uv; snapshot.hourly.forEach(h => delete h.uv); snapshot.daily.forEach(d => delete d.uvMax);
+    cacheWeather(snapshot); expect(cachedWeather(asheville)).toEqual(snapshot);
+    for (const data of [
+      {...snapshot,current:{...snapshot.current,uv:-1}},
+      {...snapshot,hourly:[{...snapshot.hourly[0],uv:'6'}]},
+      {...snapshot,daily:[{...snapshot.daily[0],uvMax:-1}]},
+    ]) {
+      localStorage.setItem(`${STORAGE_KEY}:forecasts`,JSON.stringify([data]));
+      expect(cachedWeather(asheville)).toBeNull();
+    }
+  });
 });

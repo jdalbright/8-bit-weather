@@ -10,6 +10,11 @@ describe('keyless service access and location', () => {
     expect(url.searchParams.get('forecast_minutely_15')).toBe('16');
     expect(url.searchParams.get('precipitation_unit')).toBe('mm');
     expect(result.minutely).toHaveLength(16);
+    expect(url.searchParams.get('current')).toContain('uv_index');
+    expect(url.searchParams.get('hourly')).toContain('uv_index');
+    expect(url.searchParams.get('daily')).toContain('uv_index_max');
+    expect(url.searchParams.get('past_hours')).toBe('24');
+    expect(result.current.uv).toBe(4.1);
   });
   it('rejects rate limits with the provider’s requested cooldown', async () => { vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 429, headers: { 'Retry-After': '120' } }))); await expect(fetchWeather(asheville, new AbortController().signal)).rejects.toMatchObject({ name: 'WeatherRequestError', retryAfterMs: 120000 }); });
   it('does not turn canceled searches into user-facing errors', async () => {

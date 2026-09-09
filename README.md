@@ -55,6 +55,14 @@ A compact pixel timeline appears below the current conditions only when rain or 
 
 The outlook uses Open-Meteo's 15-minute rain plus shower amounts, with a 0.1 mm per-interval threshold to suppress trace amounts. Each timestamp marks the end of the preceding 15 minutes, including partially overlapping intervals at the edges of the two-hour window. The card is hidden offline, for stale forecasts, and when any interval is missing. Older saved forecasts still work without the new data. Timing is approximate model guidance, not radar nowcasting; outside regions with native 15-minute data, the provider interpolates hourly data. See the [provider's interval definitions](https://open-meteo.com/en/docs#minutely_15-variable-definition).
 
+### UV index
+
+The current conditions use a two-by-two grid for precipitation chance, wind, humidity, and UV. The UV tile stays visible at low levels and at night. Tap it to expand the colored pixel scale, sun-protection guidance, today's hourly UV timeline, and the daily peak. The timeline supports touch and arrow keys. Categories follow the [National Weather Service UV scale](https://www.weather.gov/ilx/uv-index); the displayed index is rounded to a whole number and its category matches that number. Levels above 11 remain visible as Extreme.
+
+Open-Meteo supplies current `uv_index`, hourly `uv_index`, and daily `uv_index_max` in the existing forecast request. A 24-hour lookback retains the earlier part of today, so opening the app after midday still shows the full day's peak. Peak timing and the time UV becomes low for the rest of today require a complete local-day curve, including 23- and 25-hour daylight-saving days. If daily and hourly peak levels disagree, only the daily peak value is shown. These are forecast estimates, not a personal UV measurement or a time-to-sunburn prediction.
+
+Current UV uses a recent current sample, falling back to the current hour while the forecast is fresh. Unknown UV is shown as unavailable, never zero. Old caches without UV still load. Offline or stale UV is labeled as saved; current UV, current protection advice, and forward-looking low-UV timing are withheld until a fresh forecast is available.
+
 ## Sound and motion
 
 Sound starts off on each page load. Tap Sound to activate Web Audio. Music, weather ambience, and interface sounds have independent switches and volume sliders. Six original compositions respond to sunshine, clouds, rain, snow, storms, and nighttime. No music files or audio services are downloaded.

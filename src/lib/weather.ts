@@ -64,6 +64,10 @@ function object(value: unknown): JsonObject {
 function numeric(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
+function nonnegative(value: unknown): number | null {
+  const number = numeric(value);
+  return number !== null && number >= 0 ? number : null;
+}
 function series(data: JsonObject, key: string, index: number): number | null {
   return Array.isArray(data[key]) ? numeric(data[key][index]) : null;
 }
@@ -80,15 +84,18 @@ export function normalizeWeather(raw: unknown, place: Place, now = Date.now()): 
     current: {
       time: current.time as number, temperature: numeric(current.temperature_2m), feelsLike: numeric(current.apparent_temperature),
       humidity: numeric(current.relative_humidity_2m), wind: numeric(current.wind_speed_10m), code: numeric(current.weather_code), isDay: current.is_day !== 0,
+      uv: nonnegative(current.uv_index),
     },
     hourly: hourly.time.flatMap((time, index) => numeric(time) === null ? [] : [{
       time: time as number, temperature: series(hourly, 'temperature_2m', index), precipitation: series(hourly, 'precipitation_probability', index),
       code: series(hourly, 'weather_code', index), isDay: series(hourly, 'is_day', index) !== 0,
+      uv: nonnegative(series(hourly, 'uv_index', index)),
     }]),
     daily: daily.time.flatMap((time, index) => numeric(time) === null ? [] : [{
       time: time as number, date: localDate((time as number) * 1000, timezone), high: series(daily, 'temperature_2m_max', index),
       low: series(daily, 'temperature_2m_min', index), precipitation: series(daily, 'precipitation_probability_max', index),
       code: series(daily, 'weather_code', index), sunrise: series(daily, 'sunrise', index), sunset: series(daily, 'sunset', index),
+      uvMax: nonnegative(series(daily, 'uv_index_max', index)),
     }]),
     minutely: Array.isArray(minutely.time) ? minutely.time.flatMap((time, index) => {
       if (numeric(time) === null) return [];

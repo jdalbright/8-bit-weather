@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import type { Discovery, Place, SceneState, Units, WeatherSnapshot } from '../types';
 import { futureDays, localDate, localTime, percent, STALE_AFTER, temperature, updatedLabel, weatherInfo, windSpeed } from '../lib/weather';
 import { Icon, WeatherIcon } from './Icons';
@@ -6,6 +6,8 @@ import { Scenery } from './Scenery';
 import { landscapeForPlace } from '../lib/landscapes';
 import { upcomingRain } from '../lib/rain';
 import { RainOutlook } from './RainOutlook';
+import { uvForecast } from '../lib/uv';
+import { UvDetails, UvScale } from './UvDetails';
 
 interface Props {
   place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean;
@@ -15,6 +17,7 @@ interface Props {
 }
 export default function Today({ place, snapshot, scene, units, animate, loading, error, online, now, locating, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
   const hourlyRef = useRef<HTMLDivElement>(null);
+  const [uvExpanded, setUvExpanded] = useState(false);
   const days = snapshot ? futureDays(snapshot.daily, snapshot.timezone, now) : [];
   const todayDate = snapshot ? localDate(now, snapshot.timezone) : '';
   const today = days.find(day => day.date === todayDate);
@@ -27,6 +30,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
   const span = Math.max(1, maximum - minimum);
   const degree = snapshot ? temperature(snapshot.current.temperature, units) : '—';
   const rainOutlook = snapshot ? upcomingRain(snapshot, now, online) : null;
+  const uv = snapshot ? uvForecast(snapshot, now, online) : null;
   return <main id="main-content" className="today-view">
     <Scenery key={snapshot ? place?.id : 'loading'} scene={scene} landscape={landscapeForPlace(place)} animate={animate} onDiscover={onDiscover} className={!place ? 'welcome-scene' : ''}>
       {!place ? <div className="welcome-content">
@@ -50,7 +54,12 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
         <div><Icon name="drop" className="rain-stat" size={25}/><span><dt>{info.kind === 'snow' ? 'Snow' : 'Rain'}</dt><dd>{percent(currentHour?.precipitation)}</dd></span></div>
         <div><Icon name="wind" className="wind-stat" size={25}/><span><dt>Wind</dt><dd>{windSpeed(snapshot.current.wind, units)}</dd></span></div>
         <div><Icon name="drop" className="humidity-stat" size={25}/><span><dt>Humidity</dt><dd>{percent(snapshot.current.humidity)}</dd></span></div>
+        <div className="uv-stat"><dt className="sr-only">UV index</dt><dd><button className="uv-stat-button" aria-label={`UV index ${uv?.current ? `${uv.current.index}, ${uv.current.level.label}` : 'unavailable'}, ${uvExpanded ? 'hide' : 'show'} details`}
+          aria-expanded={uvExpanded} aria-controls="uv-details" onClick={() => setUvExpanded(expanded => !expanded)} data-uv={uv?.current?.level.id ?? 'unknown'}>
+          <WeatherIcon kind="clear" size={25}/><span className="uv-stat-copy"><span className="uv-stat-label">UV index</span><span className="uv-stat-reading">{uv?.current?.index ?? '—'} <small>{uv?.current?.level.label ?? (uv?.stale ? 'Saved' : 'Unavailable')}</small></span><UvScale value={uv?.current?.index ?? null} compact/></span><Icon name="chevron" size={12}/>
+        </button></dd></div>
       </dl>
+      {uvExpanded && uv ? <UvDetails key={`${snapshot.placeId}:${uv.today}`} forecast={uv} timezone={snapshot.timezone} now={now} isDay={scene.isDay} online={online}/> : null}
       {rainOutlook ? <RainOutlook key={snapshot.placeId} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
       <section className="hourly-section" aria-labelledby="hourly-title">
         <div className="section-heading"><h2 id="hourly-title">Next 24 hours</h2><button className="icon-button scroll-hours" aria-label="Scroll hourly forecast forward" onClick={() => hourlyRef.current?.scrollBy({ left: 220, behavior: animate ? 'smooth' : 'instant' })}><Icon name="next" size={17}/></button></div>

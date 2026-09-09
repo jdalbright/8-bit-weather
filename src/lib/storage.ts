@@ -35,6 +35,8 @@ function validSnapshot(value: unknown): value is WeatherSnapshot {
     || typeof s.timezone !== 'string' || !s.current || !Number.isFinite(s.current.time) || !Array.isArray(s.hourly) || !Array.isArray(s.daily)) return false;
   try { new Intl.DateTimeFormat('en', { timeZone: s.timezone }); } catch { return false; }
   const measurement = (n: unknown) => n === null || typeof n === 'number' && Number.isFinite(n);
+  const uv = (n: unknown) => n === undefined || n === null || typeof n === 'number' && Number.isFinite(n) && n >= 0;
+  if (!uv(s.current.uv) || !s.hourly.every(h => h && uv(h.uv)) || !s.daily.every(d => d && uv(d.uvMax))) return false;
   if (![s.current.temperature, s.current.feelsLike, s.current.humidity, s.current.wind, s.current.code].every(measurement) || typeof s.current.isDay !== 'boolean') return false;
   if (s.minutely !== undefined && (!Array.isArray(s.minutely) || !s.minutely.every(r => r && Number.isFinite(r.time) && measurement(r.amount) && (r.amount === null || r.amount >= 0)))) return false;
   return s.hourly.every(h => h && Number.isFinite(h.time) && [h.temperature, h.precipitation, h.code].every(measurement) && typeof h.isDay === 'boolean')
