@@ -63,7 +63,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
       {rainOutlook ? <RainOutlook key={snapshot.placeId} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
       <section className="hourly-section" aria-labelledby="hourly-title">
         <div className="section-heading"><h2 id="hourly-title">Next 24 hours</h2><button className="icon-button scroll-hours" aria-label="Scroll hourly forecast forward" onClick={() => hourlyRef.current?.scrollBy({ left: 220, behavior: animate ? 'smooth' : 'instant' })}><Icon name="next" size={17}/></button></div>
-        {hours.length ? <div ref={hourlyRef} className="hourly-rail" tabIndex={0} aria-label="Hourly forecast, scroll for more hours">
+        {hours.length ? <div ref={hourlyRef} className="hourly-rail" data-pull-refresh-ignore tabIndex={0} aria-label="Hourly forecast, scroll for more hours">
           {hours.map(hour => { const isCurrentHour = hour.time <= now / 1000 && hour.time + 3600 > now / 1000;
             const useCurrent = isCurrentHour && !stale;
             return <div className="hour" key={hour.time}>

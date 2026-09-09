@@ -49,6 +49,12 @@ Preferences, saved places, the selected location, and up to 12 recent forecast s
 
 Forecasts refresh every 15 minutes while the app is visible, when returning to stale data, or through Refresh. Searches are debounced, superseded requests are canceled, and provider rate-limit cooldowns are respected. A GPS cache is never reused at changed coordinates.
 
+### Pull to refresh
+
+On a touchscreen, scroll to the top of Today and pull down on the forecast. A violet pixel strip shows **Pull to refresh**, then **Release to refresh** once the pull is long enough. Releasing fetches fresh weather for the selected place and shows **Refreshing…** until the request finishes. A shorter pull or sliding back up cancels it.
+
+This uses the same refresh action and rate-limit handling as the footer button, without reloading the app or resetting sound and preferences. It is inactive while offline, while a request is running, or before choosing a place. Horizontal forecast scrolling, controls, multi-touch, and zoomed-page panning are left alone. Native browser pull-to-refresh is suppressed on the selected Today view on touch devices to avoid a duplicate page reload; other tabs retain their usual scrolling. The existing Refresh button remains available for keyboard and assistive-technology users. Reduced motion removes the spinner animation and settling transition.
+
 ### Rain outlook
 
 A compact pixel timeline appears below the current conditions only when rain or showers are forecast within the next two hours. Tap or slide the timeline (or use the arrow keys) for the time window and expected amount in inches or millimeters. Dry weather adds no extra card. Snow alone does not trigger it.

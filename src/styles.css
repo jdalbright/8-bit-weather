@@ -44,6 +44,14 @@
   .bottom-nav button[aria-current='page']::before { background: var(--violet); }
 }
 @layer components {
+  .pull-refresh-feedback { overflow: hidden; background: #ede2f3; color: var(--violet); transition: height .18s ease-out; }
+  .pull-refresh-feedback[data-phase='pulling'], .pull-refresh-feedback[data-phase='ready'] { transition: none; }
+  .pull-refresh-message { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 64px; font-family: var(--pixel); font-size: 18px; border-bottom: 1px solid var(--line); }
+  .pull-refresh-meter { display: flex; gap: 3px; }
+  .pull-refresh-meter i { width: 4px; height: 8px; background: #cabbdb; }
+  .pull-refresh-meter i[data-filled='true'] { background: var(--violet); }
+  .pull-refresh-feedback[data-phase='ready'] .pull-refresh-icon { transform: rotate(180deg); }
+  .pull-refresh-feedback[data-phase='refreshing'] .pull-refresh-icon { animation: refresh-turn .8s steps(8) infinite; }
   .scenery { position: relative; isolation: isolate; overflow: hidden; width: 100%; height: auto; min-height: 340px; aspect-ratio: 1.218 / 1; background: #ffc892; }
   .landscape { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
   .landscape-stage { position: absolute; width: 960px; height: 801px; transform-origin: 0 0; transform: translate(var(--cover-left), var(--cover-top)) scale(var(--cover-scale)); }
@@ -306,6 +314,9 @@
   .settings-footer > p:first-of-type { font-family: var(--pixel); font-size: 15px; margin: 2px 0 8px; }
 }
 @layer motion {
+  @keyframes refresh-turn { to { transform: rotate(360deg); } }
+  .motion-reduced .pull-refresh-feedback { transition: none; }
+  .motion-reduced .pull-refresh-icon { animation: none; }
   @keyframes cloud-drift { from { transform: translateX(-32px); } to { transform: translateX(76px); } }
   @keyframes sun-bob { 50% { transform: translateY(-4px); } }
   @keyframes star-twinkle { 50% { opacity: .2; } }
@@ -328,9 +339,10 @@
   [data-animate='false'] .river-discovery { transform: scale(1); opacity: .8; animation: none; }
   [data-animate='false'] .indicator-active { opacity: 1; animation: none; }
   .motion-reduced .meadow-bird { opacity: .75; }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } .landscape *, .equalizer i { animation-play-state: paused !important; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } .landscape *, .equalizer i, .pull-refresh-icon { animation-play-state: paused !important; } }
 }
 @layer responsive {
+  @media (any-pointer: coarse) { html.weather-pull-refresh { overscroll-behavior-y: none; } }
   @media (max-width: 359px) {
     .app-header { padding-inline: 7px; gap: 4px; }
     .brand { font-size: 15px; gap: 5px; }
