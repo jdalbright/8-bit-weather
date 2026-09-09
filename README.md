@@ -113,3 +113,5 @@ GitHub Actions runs type checking, lint, unit tests, production build, the asset
 - `docs/design`: approved visual reference and asset notes.
 
 Pixelify Sans and IBM Plex Mono are bundled locally under the SIL Open Font License. Their license files are included in `docs/licenses/`.
+
+The pixel font stack includes **Weather Five**, a modified Pixelify Sans subset containing only the numeral 5 at weights 400 and 600. Its flat top and straight upper-left stem improve readability while preserving the original character width and vertical metrics. All other characters retain their existing fonts. These OFL-licensed overlays live in `src/fonts/`; regenerate them after `npm ci` with `python scripts/build-weather-five.py` (requires the Python `fontTools` package). The script retains the upstream copyright and license metadata and gives the modified fonts their own family name.

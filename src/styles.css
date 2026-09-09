@@ -1,5 +1,15 @@
 @layer reset, base, components, motion, responsive;
 
+/* A readable 5 with Pixelify's original spacing; every other glyph uses Pixelify. */
+@font-face {
+  font-family: 'Weather Five'; font-style: normal; font-weight: 400; font-display: swap;
+  src: url('./fonts/weather-five-400.woff') format('woff'); unicode-range: U+0035;
+}
+@font-face {
+  font-family: 'Weather Five'; font-style: normal; font-weight: 600; font-display: swap;
+  src: url('./fonts/weather-five-600.woff') format('woff'); unicode-range: U+0035;
+}
+
 @layer reset {
   *, *::before, *::after { box-sizing: border-box; }
   body, h1, h2, p, dl, dd, ul, ol { margin: 0; }
@@ -11,7 +21,7 @@
   img, svg { display: block; }
 }
 @layer base {
-  :root { font-family: 'IBM Plex Mono', monospace; color: #25233d; background: #eae3d3; font-synthesis: none; --paper: #fff7e8; --ink: #25233d; --muted: #6e685e; --line: #c8baa0; --violet: #7442bd; --pixel: 'Pixelify Sans', monospace; --app-width: 480px; }
+  :root { font-family: 'IBM Plex Mono', monospace; color: #25233d; background: #eae3d3; font-synthesis: none; --paper: #fff7e8; --ink: #25233d; --muted: #6e685e; --line: #c8baa0; --violet: #7442bd; --pixel: 'Weather Five', 'Pixelify Sans', monospace; --app-width: 480px; }
   body { min-width: 320px; min-height: 100dvh; }
   button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--violet); outline-offset: 3px; }
   button:disabled { opacity: .55; }
