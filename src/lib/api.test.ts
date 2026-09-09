@@ -6,6 +6,10 @@ describe('keyless service access and location', () => {
     const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify(forecastFixture()))); vi.stubGlobal('fetch', fetcher);
     const result = await fetchWeather(asheville, new AbortController().signal);
     const url = new URL(fetcher.mock.calls[0][0]); expect(url.hostname).toBe('api.open-meteo.com'); expect(url.searchParams.has('apikey')).toBe(false); expect(result.hourly).toHaveLength(48); expect(result.daily).toHaveLength(7);
+    expect(url.searchParams.get('minutely_15')).toBe('rain,showers');
+    expect(url.searchParams.get('forecast_minutely_15')).toBe('16');
+    expect(url.searchParams.get('precipitation_unit')).toBe('mm');
+    expect(result.minutely).toHaveLength(16);
   });
   it('rejects rate limits with the provider’s requested cooldown', async () => { vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 429, headers: { 'Retry-After': '120' } }))); await expect(fetchWeather(asheville, new AbortController().signal)).rejects.toMatchObject({ name: 'WeatherRequestError', retryAfterMs: 120000 }); });
   it('does not turn canceled searches into user-facing errors', async () => {

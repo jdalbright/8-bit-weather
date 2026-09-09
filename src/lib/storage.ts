@@ -36,6 +36,7 @@ function validSnapshot(value: unknown): value is WeatherSnapshot {
   try { new Intl.DateTimeFormat('en', { timeZone: s.timezone }); } catch { return false; }
   const measurement = (n: unknown) => n === null || typeof n === 'number' && Number.isFinite(n);
   if (![s.current.temperature, s.current.feelsLike, s.current.humidity, s.current.wind, s.current.code].every(measurement) || typeof s.current.isDay !== 'boolean') return false;
+  if (s.minutely !== undefined && (!Array.isArray(s.minutely) || !s.minutely.every(r => r && Number.isFinite(r.time) && measurement(r.amount) && (r.amount === null || r.amount >= 0)))) return false;
   return s.hourly.every(h => h && Number.isFinite(h.time) && [h.temperature, h.precipitation, h.code].every(measurement) && typeof h.isDay === 'boolean')
     && s.daily.every(d => d && Number.isFinite(d.time) && typeof d.date === 'string' && [d.high, d.low, d.precipitation, d.code, d.sunrise, d.sunset].every(measurement));
 }

@@ -4,6 +4,8 @@ import { futureDays, localDate, localTime, percent, STALE_AFTER, temperature, up
 import { Icon, WeatherIcon } from './Icons';
 import { Scenery } from './Scenery';
 import { landscapeForPlace } from '../lib/landscapes';
+import { upcomingRain } from '../lib/rain';
+import { RainOutlook } from './RainOutlook';
 
 interface Props {
   place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean;
@@ -24,6 +26,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
   const minimum = Math.min(...rangeValues), maximum = Math.max(...rangeValues);
   const span = Math.max(1, maximum - minimum);
   const degree = snapshot ? temperature(snapshot.current.temperature, units) : '—';
+  const rainOutlook = snapshot ? upcomingRain(snapshot, now, online) : null;
   return <main id="main-content" className="today-view">
     <Scenery key={snapshot ? place?.id : 'loading'} scene={scene} landscape={landscapeForPlace(place)} animate={animate} onDiscover={onDiscover} className={!place ? 'welcome-scene' : ''}>
       {!place ? <div className="welcome-content">
@@ -48,6 +51,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
         <div><Icon name="wind" className="wind-stat" size={25}/><span><dt>Wind</dt><dd>{windSpeed(snapshot.current.wind, units)}</dd></span></div>
         <div><Icon name="drop" className="humidity-stat" size={25}/><span><dt>Humidity</dt><dd>{percent(snapshot.current.humidity)}</dd></span></div>
       </dl>
+      {rainOutlook ? <RainOutlook key={snapshot.placeId} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
       <section className="hourly-section" aria-labelledby="hourly-title">
         <div className="section-heading"><h2 id="hourly-title">Next 24 hours</h2><button className="icon-button scroll-hours" aria-label="Scroll hourly forecast forward" onClick={() => hourlyRef.current?.scrollBy({ left: 220, behavior: animate ? 'smooth' : 'instant' })}><Icon name="next" size={17}/></button></div>
         {hours.length ? <div ref={hourlyRef} className="hourly-rail" tabIndex={0} aria-label="Hourly forecast, scroll for more hours">

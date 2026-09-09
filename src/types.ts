@@ -49,6 +49,12 @@ export interface DayWeather {
   sunrise: number | null;
   sunset: number | null;
 }
+export interface RainWeather {
+  /** End of the preceding 15-minute interval, in Unix seconds. */
+  time: number;
+  /** Rain plus convective showers, in millimeters; excludes snow. */
+  amount: number | null;
+}
 export interface WeatherSnapshot {
   version: 1;
   placeId: string;
@@ -59,6 +65,8 @@ export interface WeatherSnapshot {
   current: CurrentWeather;
   hourly: HourWeather[];
   daily: DayWeather[];
+  /** Optional so forecasts saved before the rain outlook remain usable. */
+  minutely?: RainWeather[];
 }
 export interface Preferences {
   units: Units;

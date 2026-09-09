@@ -34,6 +34,7 @@ export async function fetchWeather(place: Place, signal: AbortSignal): Promise<W
   const params = new URLSearchParams({
     latitude: String(place.latitude), longitude: String(place.longitude), timezone: 'auto', timeformat: 'unixtime',
     forecast_days: '7', forecast_hours: '48',
+    minutely_15: 'rain,showers', forecast_minutely_15: '16', precipitation_unit: 'mm',
     current: 'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m',
     hourly: 'temperature_2m,precipitation_probability,weather_code,is_day',
     daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset',

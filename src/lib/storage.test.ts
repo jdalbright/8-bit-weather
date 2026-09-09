@@ -21,4 +21,14 @@ describe('device persistence', () => {
     localStorage.setItem(`${STORAGE_KEY}:forecasts`, JSON.stringify([{ version: 1 }, null])); expect(cachedWeather(asheville)).toBeNull();
   });
   it('does not crash when browser storage is unavailable', () => { vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Quota'); }); expect(saveState({ preferences: defaultPreferences(), places: [], selected: null })).toBe(false); });
+  it('reads older forecasts without rain data and rejects malformed rain caches', () => {
+    const snapshot = normalizeWeather(forecastFixture(), asheville);
+    delete snapshot.minutely;
+    localStorage.setItem(`${STORAGE_KEY}:forecasts`, JSON.stringify([snapshot]));
+    expect(cachedWeather(asheville)).toEqual(snapshot);
+    for (const minutely of [{}, [null], [{ time: 1, amount: -1 }], [{ time: 'invalid', amount: 1 }]]) {
+      localStorage.setItem(`${STORAGE_KEY}:forecasts`, JSON.stringify([{ ...snapshot, minutely }]));
+      expect(cachedWeather(asheville)).toBeNull();
+    }
+  });
 });

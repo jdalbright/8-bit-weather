@@ -49,6 +49,12 @@ Preferences, saved places, the selected location, and up to 12 recent forecast s
 
 Forecasts refresh every 15 minutes while the app is visible, when returning to stale data, or through Refresh. Searches are debounced, superseded requests are canceled, and provider rate-limit cooldowns are respected. A GPS cache is never reused at changed coordinates.
 
+### Rain outlook
+
+A compact pixel timeline appears below the current conditions only when rain or showers are forecast within the next two hours. Tap or slide the timeline (or use the arrow keys) for the time window and expected amount in inches or millimeters. Dry weather adds no extra card. Snow alone does not trigger it.
+
+The outlook uses Open-Meteo's 15-minute rain plus shower amounts, with a 0.1 mm per-interval threshold to suppress trace amounts. Each timestamp marks the end of the preceding 15 minutes, including partially overlapping intervals at the edges of the two-hour window. The card is hidden offline, for stale forecasts, and when any interval is missing. Older saved forecasts still work without the new data. Timing is approximate model guidance, not radar nowcasting; outside regions with native 15-minute data, the provider interpolates hourly data. See the [provider's interval definitions](https://open-meteo.com/en/docs#minutely_15-variable-definition).
+
 ## Sound and motion
 
 Sound starts off on each page load. Tap Sound to activate Web Audio. Music, weather ambience, and interface sounds have independent switches and volume sliders. Six original compositions respond to sunshine, clouds, rain, snow, storms, and nighttime. No music files or audio services are downloaded.

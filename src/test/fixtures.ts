@@ -9,6 +9,11 @@ export function forecastFixture(now = fixtureTime, code = 1, isDay = 1) {
   const midnight = Date.parse(`${date}T04:00:00Z`) / 1000;
   return {
     timezone: 'America/New_York', utc_offset_seconds: -14400,
+    minutely_15: {
+      time: Array.from({ length: 16 }, (_, i) => Math.floor(now / 900000) * 900 + i * 900),
+      rain: Array.from({ length: 16 }, () => 0),
+      showers: Array.from({ length: 16 }, () => 0),
+    },
     current: { time: hour, temperature_2m: 22.2, apparent_temperature: 23.3, relative_humidity_2m: 64, wind_speed_10m: 8.05, weather_code: code, is_day: isDay },
     hourly: {
       time: Array.from({ length: 48 }, (_, i) => hour + i * 3600),

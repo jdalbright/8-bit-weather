@@ -118,6 +118,26 @@
   .humidity-stat { color: #70b6aa; filter: drop-shadow(1px 1px 0 #405e63); }
   .section-heading { display: flex; align-items: center; justify-content: space-between; min-height: 38px; border-bottom: 1px solid var(--line); }
   .section-heading h2 { font-size: 19px; text-transform: uppercase; letter-spacing: .1px; }
+  .rain-outlook { margin: 12px; padding: 12px; border: 2px solid #445e78; box-shadow: 3px 3px 0 #b5c8d0; background: #edf3ef; color: #263e54; }
+  .rain-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .rain-heading h2 { display: flex; align-items: center; gap: 7px; font-size: 21px; }
+  .rain-heading > span { font-family: var(--pixel); font-size: 13px; white-space: nowrap; }
+  .rain-summary { margin-top: 8px; font-family: var(--pixel); font-size: 20px; line-height: 1.2; }
+  .rain-scale, .rain-times { display: flex; justify-content: space-between; gap: 6px; color: #4d6572; font-family: var(--pixel); font-size: 12px; }
+  .rain-scale { margin-top: 12px; margin-bottom: 5px; }
+  .rain-chart { position: relative; height: 70px; background: repeating-linear-gradient(to top, #b8cbd277 0 1px, transparent 1px 23px); border-bottom: 2px solid #839faa; }
+  .rain-bars { display: flex; height: 100%; gap: 4px; padding-inline: 2px; }
+  .rain-column { position: relative; display: flex; align-items: flex-end; justify-content: center; flex: 1; min-width: 0; border-bottom: 3px solid #7896a8; }
+  .rain-column > i { width: 100%; background: repeating-linear-gradient(to top, #5d8faf 0 5px, transparent 5px 7px); }
+  .rain-column.is-selected { border-bottom-color: #263e54; }
+  .rain-column.is-selected::after { position: absolute; content: ''; bottom: -6px; width: 6px; height: 6px; background: #263e54; }
+  .rain-column.is-selected > i { background: repeating-linear-gradient(to top, #2e5879 0 5px, transparent 5px 7px); }
+  .rain-chart > input[type='range'] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  .rain-chart:focus-within { outline: 3px solid var(--violet); outline-offset: 3px; }
+  .rain-times { margin-top: 8px; }
+  .rain-detail { min-height: 32px; margin-top: 10px; font-family: var(--pixel); font-size: 16px; line-height: 1.25; }
+  .rain-hint { font-family: var(--pixel); font-size: 13px; color: #4d6572; }
+  .rain-note { margin-top: 7px; color: #4d6572; font-size: 9px; line-height: 1.5; }
   .hourly-section { padding: 0 10px 8px; border-bottom: 1px solid var(--line); }
   .scroll-hours { color: var(--violet); margin-right: -10px; height: 38px; }
   .hourly-rail { display: flex; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; scroll-snap-type: x proximity; padding: 7px 0 2px; }

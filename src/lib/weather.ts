@@ -69,6 +69,7 @@ function series(data: JsonObject, key: string, index: number): number | null {
 }
 export function normalizeWeather(raw: unknown, place: Place, now = Date.now()): WeatherSnapshot {
   const data = object(raw), current = object(data.current), hourly = object(data.hourly), daily = object(data.daily);
+  const minutely = object(data.minutely_15);
   if (typeof data.timezone !== 'string' || numeric(current.time) === null || !Array.isArray(hourly.time) || !Array.isArray(daily.time)) {
     throw new Error('The weather service sent an incomplete forecast. Please try again.');
   }
@@ -89,5 +90,10 @@ export function normalizeWeather(raw: unknown, place: Place, now = Date.now()): 
       low: series(daily, 'temperature_2m_min', index), precipitation: series(daily, 'precipitation_probability_max', index),
       code: series(daily, 'weather_code', index), sunrise: series(daily, 'sunrise', index), sunset: series(daily, 'sunset', index),
     }]),
+    minutely: Array.isArray(minutely.time) ? minutely.time.flatMap((time, index) => {
+      if (numeric(time) === null) return [];
+      const rain = series(minutely, 'rain', index), showers = series(minutely, 'showers', index);
+      return [{ time: time as number, amount: rain !== null && rain >= 0 && showers !== null && showers >= 0 ? rain + showers : null }];
+    }) : [],
   };
 }
