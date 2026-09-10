@@ -1,6 +1,6 @@
 import type { WeatherKind } from '../types';
 
-export type IconName = 'home' | 'places' | 'settings' | 'sound' | 'muted' | 'chevron' | 'next' | 'search' | 'location' | 'star' | 'close' | 'check' | 'trash' | 'refresh' | 'download' | 'wind' | 'drop' | 'plus';
+export type IconName = 'home' | 'places' | 'settings' | 'sound' | 'muted' | 'chevron' | 'next' | 'search' | 'location' | 'star' | 'close' | 'check' | 'trash' | 'refresh' | 'download' | 'wind' | 'drop' | 'plus' | 'sunrise' | 'sunset';
 const paths: Record<IconName, string> = {
   home: 'M2 10h2V8h2V6h2V4h2V2h4v2h2v2h2v2h2v2h2v4h-4v8h-5v-7h-3v7H6v-8H2z',
   places: 'M8 1h8v2h4v4h2v8h-2v3h-2v2h-2v2h-2v2h-4v-2H8v-2H6v-2H4v-3H2V7h2V3h4zm1 6v7h6V7z',
@@ -20,6 +20,8 @@ const paths: Record<IconName, string> = {
   wind: 'M12 2h6v2h2v5h-2v2H1V8h15V5h-4zm-9 11h16v2h3v5h-3v2h-6v-3h5v-3H3zm-2 5h9v3H1z',
   drop: 'M10 1h4v4h2v3h2v3h2v8h-2v3H6v-3H4v-8h2V8h2V5h2z',
   plus: 'M10 2h4v8h8v4h-8v8h-4v-8H2v-4h8z',
+  sunrise: 'M11 0h2v2h2v2h2v2h-4v3h-2V6H7V4h2V2h2zM9 11h6v2h3v3h2v3H4v-3h2v-3h3zM0 21h24v2H0zM0 15h2v3H0zm22 0h2v3h-2zM3 8h2v3H3zm16 0h2v3h-2z',
+  sunset: 'M11 0h2v3h4v2h-2v2h-2v2h-2V7H9V5H7V3h4zM9 11h6v2h3v3h2v3H4v-3h2v-3h3zM0 21h24v2H0zM0 15h2v3H0zm22 0h2v3h-2zM3 8h2v3H3zm16 0h2v3h-2z',
 };
 export function Icon({ name, size = 20, className = '' }: { name: IconName; size?: number; className?: string }) {
   return <svg className={`pixel-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" shapeRendering="crispEdges"><path d={paths[name]} fillRule="evenodd" /></svg>;

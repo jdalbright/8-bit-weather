@@ -9,6 +9,7 @@ import { RainOutlook } from './RainOutlook';
 import { uvForecast } from '../lib/uv';
 import { UvDetails, UvScale } from './UvDetails';
 import { WeatherBriefing } from './WeatherBriefing';
+import { SunTimes } from './SunTimes';
 
 interface Props {
   place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean;
@@ -75,6 +76,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
             <span className="hour-precipitation"><Icon name="drop" size={10}/><span className="sr-only">Chance of precipitation: </span>{percent(precipitationForHour(snapshot.hourly, hour.time))}</span>
           </div>; })}</div> : <p className="empty-forecast">This hourly forecast has expired. Connect and refresh for the next 24 hours.</p>}
       </section>
+      <SunTimes day={today} timezone={snapshot.timezone}/>
       <section className="daily-section" aria-labelledby="daily-title">
         <div className="section-heading"><h2 id="daily-title">7-day forecast</h2></div>
         {days.length ? <div className="daily-list">{days.map(day => {

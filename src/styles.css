@@ -137,6 +137,13 @@
   .rain-stat { color: #628eb8; filter: drop-shadow(1px 1px 0 #354b72); }
   .wind-stat { color: #608ba7; }
   .humidity-stat { color: #70b6aa; filter: drop-shadow(1px 1px 0 #405e63); }
+  .sun-section { --sun-paper: #faf0d9; margin: 12px; padding: 12px; border: 1px solid var(--line); background: var(--sun-paper); }
+  .sun-section h2 { margin-bottom: 8px; font-size: 1rem; font-weight: 400; }
+  .sun-times { --sunrise-ink: #945016; --sunset-ink: #9a4e43; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 16px; font-family: var(--pixel); font-size: .875rem; line-height: 1.4; }
+  .sun-times > div { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .sun-times dt { display: flex; align-items: center; gap: 4px; color: var(--muted); }
+  .sun-times .pixel-icon { color: var(--sunrise-ink); }
+  .sun-times > div + div .pixel-icon { color: var(--sunset-ink); }
   [data-uv='low'] { --uv-color: #599147; --uv-ink: #3e6633; }
   [data-uv='moderate'] { --uv-color: #ddbb30; --uv-ink: #786014; }
   [data-uv='high'] { --uv-color: #db8338; --uv-ink: #945016; }
