@@ -93,6 +93,8 @@
   .stream-undercurrent { stroke: var(--stream-blue); stroke-width: 10; stroke-dasharray: 32 23 14 24; opacity: .18; }
   .stream-highlight { stroke: var(--stream-light); stroke-dasharray: 10 31 5 47; opacity: var(--stream-opacity); }
   .stream-eddy { fill: none; stroke: var(--stream-light); stroke-width: 2; opacity: 0; animation: stream-eddy 2.6s steps(12, end) infinite; }
+  .surf-wave { fill: none; stroke: var(--stream-light); stroke-dasharray: 15 5 8 4 23 7; stroke-linecap: butt; opacity: .5; animation: surf-roll var(--surf-duration) steps(24, end) infinite; }
+  .surf-shimmer { fill: none; stroke: var(--stream-light); stroke-width: 2; stroke-dasharray: 10 31 5 47; opacity: .22; animation: stream-flow 9s linear infinite; }
   .station-animation { --station-outline: #242629; --station-metal: #9d9d91; --station-highlight: #e4e2d6; }
   .nighttime .station-animation { --station-outline: #171a2c; --station-metal: #7675a5; --station-highlight: #b8b8e2; }
   .station-post-outline { fill: var(--station-outline); }
@@ -331,6 +333,7 @@
   @keyframes sun-bob { 50% { transform: translateY(-4px); } }
   @keyframes star-twinkle { 50% { opacity: .2; } }
   @keyframes stream-flow { to { stroke-dashoffset: -93; } }
+  @keyframes surf-roll { 0% { transform: translate(10px, -5px); opacity: 0; } 25% { opacity: .52; } 75% { opacity: .4; } 100% { transform: translate(-20px, 14px); opacity: 0; } }
   @keyframes stream-eddy { 0% { transform: translate(0, 0) scale(.65); opacity: 0; } 20% { opacity: .55; } 100% { transform: translate(15px, 5px) scale(1.3); opacity: 0; } }
   @keyframes vane-spin { to { transform: translateX(-864px); } }
   @keyframes rain-fall { from { transform: translateY(-30px) skewX(var(--rain-slant)); } to { transform: translate(-90px, 850px) skewX(var(--rain-slant)); } }

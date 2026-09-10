@@ -1,18 +1,18 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import sharp from 'sharp';
-import { asheville, forecastFixture } from '../src/test/fixtures';
+import { asheville, tokyo, forecastFixture } from '../src/test/fixtures';
 import type { Place } from '../src/types';
 
 const raleigh: Place = { ...asheville, id: '4487042', name: 'Raleigh', latitude: 35.7796, longitude: -78.6382 };
-const locations = [['meadow', asheville], ['raleigh', raleigh]] as const;
+const locations = [['meadow', tokyo], ['raleigh', raleigh]] as const;
 
 async function openStream(page: Page, place: Place, light: 'day' | 'overcast' | 'night' = 'day') {
   const now = Date.parse(light === 'night' ? '2026-09-08T03:00:00Z' : '2026-09-07T18:00:00Z');
   await page.clock.setFixedTime(now);
   await page.addInitScript(({ selected, places }) => {
     if (!localStorage.getItem('8bit-weather:v1')) localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected, places, preferences: { units: 'imperial' } }));
-  }, { selected: place, places: [asheville, raleigh] });
+  }, { selected: place, places: [tokyo, raleigh] });
   const data = forecastFixture(now, light === 'overcast' ? 63 : 0, light === 'night' ? 0 : 1);
   data.current.time = now / 1000;
   await page.route('https://api.open-meteo.com/**', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify(data) }));
@@ -88,13 +88,13 @@ for (const [landscape, place] of locations) {
 }
 
 test('saved places switch between the original meadow and Raleigh artwork', async ({ page }) => {
-  await openStream(page, asheville);
+  await openStream(page, tokyo);
   await page.getByRole('button', { name: 'Places', exact: true }).click();
   await page.getByRole('button', { name: /Raleigh.*North Carolina/ }).click();
   await expect(page.locator('.scenery')).toHaveAttribute('data-landscape', 'raleigh');
   await page.reload();
   await expect(page.locator('.scenery')).toHaveAttribute('data-landscape', 'raleigh');
   await page.getByRole('button', { name: 'Places', exact: true }).click();
-  await page.getByRole('button', { name: /Asheville.*North Carolina/ }).click();
+  await page.getByRole('button', { name: /Tokyo.*Japan/ }).click();
   await expect(page.locator('.scenery')).toHaveAttribute('data-landscape', 'meadow');
 });

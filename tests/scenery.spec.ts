@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { asheville, forecastFixture } from '../src/test/fixtures';
+import { tokyo, forecastFixture } from '../src/test/fixtures';
 
 for (const [name, code, isDay] of [['day', 0, 1], ['overcast', 3, 1], ['night', 0, 0]] as const) {
   test(`station stays attached through a full rotation and image cropping: ${name}`, async ({ page }) => {
     await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({
       selected: place, places: [place], preferences: { units: 'imperial', reducedMotion: false },
-    })), asheville);
+    })), tokyo);
     await page.route('https://api.open-meteo.com/**', route => route.fulfill({
       contentType: 'application/json', body: JSON.stringify({ ...forecastFixture(Date.now(), code, isDay), daily: { ...forecastFixture(Date.now()).daily, sunrise:[], sunset:[] } }),
     }));

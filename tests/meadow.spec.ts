@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { asheville, forecastFixture } from '../src/test/fixtures';
+import { tokyo, forecastFixture } from '../src/test/fixtures';
 
 async function meadow(page: Page, phase = 'day', code = 0, wind = 12) {
   const iso = { dawn:'2026-09-07T10:45:00Z', day:'2026-09-07T14:00:00Z', dusk:'2026-09-07T23:15:00Z', night:'2026-09-07T23:45:00Z' }[phase]!;
   const now = Date.parse(iso);
   await page.clock.setFixedTime(now);
-  await page.addInitScript(place => localStorage.setItem('8bit-weather:v1',JSON.stringify({ selected:place,places:[place],preferences:{units:'imperial'} })), asheville);
+  await page.addInitScript(place => localStorage.setItem('8bit-weather:v1',JSON.stringify({ selected:place,places:[place],preferences:{units:'imperial'} })), tokyo);
   const data = forecastFixture(now,code,phase === 'day' ? 1 : 0);
   data.current.time = now / 1000; data.current.wind_speed_10m=wind;
   await page.route('https://api.open-meteo.com/**', route=>route.fulfill({ contentType:'application/json', headers:{'access-control-allow-origin':'*'}, body:JSON.stringify(data) }));

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>North Carolina scenes · 8-Bit Weather</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:32px clamp(16px,4vw,64px);background:#fff7e8;color:#292940;font-family:ui-monospace,monospace}main{max-width:1440px;margin:auto}a{color:inherit}header{display:flex;align-items:end;justify-content:space-between;gap:24px;border-bottom:1px solid #c9c0ac;padding-bottom:24px}h1{font:600 clamp(28px,4vw,48px)/1.1 Georgia,serif;margin:10px 0}header p{max-width:760px;font-size:14px;line-height:1.6}small{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#666047}section{margin-top:40px}h2{font-size:23px;margin-bottom:8px}section>p{color:#60594d;font-size:13px;line-height:1.6}.plates{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}figure{margin:0;background:#eee4d1;border:1px solid #c9c0ac}img{display:block;width:100%;height:auto;aspect-ratio:960/801;image-rendering:pixelated}figcaption{padding:12px;font-size:12px}footer{margin-top:40px;padding:20px 0;border-top:1px solid #c9c0ac;font-size:12px;line-height:1.8}@media(max-width:700px){header{display:block}.plates{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+<header><div><small>8-Bit Weather · Artwork review</small><h1>North Carolina, coast to mountains.</h1><p>Four new natural landscapes, each with day, overcast, and night lighting. The app selects them automatically from your weather location.</p></div><a href="/">Open the weather app ↗</a></header>
+<div id="scenes"></div>
+<footer>Generated with built-in Imagegen using the original meadow as reference. Local review only.<br><a href="./README.md">Design notes</a> · <a href="./prompts.md">Exact prompts</a></footer>
+</main><script>
+const scenes=[['beach','Beach','Dunes, sea oats and Atlantic surf · Wilmington and the Outer Banks'],['coastal-plain','Coastal Plain','Flat pine woodland, reeds and slow water · Greenville and New Bern'],['piedmont','Piedmont','Rolling wooded hills, oaks and meadow clearings · Greensboro, Durham and Charlotte'],['blue-ridge','Blue Ridge','Layered mountain ridges and a rocky creek · Asheville and Boone']];
+for(const [id,name,description] of scenes){const section=document.createElement('section');section.innerHTML=`<h2>${name}</h2><p>${description}</p><div class="plates">${['day','overcast','night'].map(light=>`<figure><img src="/art/scene-${id}-${light}-v1.webp" alt="${name} landscape in ${light} lighting" width="960" height="801"><figcaption>${light.charAt(0).toUpperCase()+light.slice(1)}</figcaption></figure>`).join('')}</div>`;document.querySelector('#scenes').append(section)}
+</script></body></html>

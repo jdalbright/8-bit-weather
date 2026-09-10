@@ -8,5 +8,5 @@ async function bytes(directory) {
   return sizes.reduce((total, size) => total + size, 0);
 }
 const total = await bytes('dist');
-if (total >= 1_500_000) throw new Error(`Offline asset budget exceeded: ${total} bytes`);
-log(`All production assets: ${(total / 1024).toFixed(1)} KiB (budget: 1.5 MB)`);
+if (total >= 3_000_000) throw new Error(`Offline asset budget exceeded: ${total} bytes`);
+log(`All production assets: ${(total / 1024).toFixed(1)} KiB (budget: 3 MB)`);

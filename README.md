@@ -113,7 +113,7 @@ The same mountain meadow now blends daylight and night artwork through warm dawn
 
 Clouds, grass, and the station rotor respond to wind speed. Rain adds creek ripples; snow drifts; fog rolls low across the valley. Occasional birds and nighttime fireflies disappear during storms and snowfall. Tap the river for a ripple or the station for its indicator light; these accessible controls keep sound off until you enable it, then follow the interface sounds channel. Reduced motion uses brief static feedback.
 
-The stream has flowing currents, layered reflections, and small eddies around its rocks. Highlights follow the bends downstream, and tapped ripples drift with the current. The same animation runs in the original meadow and the Raleigh scene, whose skyline and oak trees appear for selected locations within 25 km of central Raleigh. Both scene sets include day, overcast, and night artwork, work offline, and respect the existing motion controls.
+The stream has flowing currents, layered reflections, and small eddies around its rocks. Highlights follow the bends downstream, and tapped ripples drift with the current. Raleigh retains its skyline and oaks within 25 km of downtown. Elsewhere in North Carolina, coordinates automatically select Beach (within 20 km of the oceanfront), Coastal Plain, Piedmont, or Blue Ridge. Beach has rolling surf, sea oats, and gulls; Coastal Plain has reeds and slower water; the wooded scenes have fitted creek effects. The original meadow remains the first-use and outside-NC scene. All six scenes include day, overcast, and night artwork, work offline, and respect the existing motion controls. Geographic matching uses bundled state data with no extra API calls or keys. See [regional artwork and prompts](docs/design/nc-regions-v1/README.md) and [map sources and approximations](src/data/README.md).
 
 ## Verification
 
@@ -135,7 +135,7 @@ Tests cover units, WMO codes, missing measurements, time zones/DST, stale caches
 
 The Living Meadow tests also cover all 32 weather/lighting combinations, shared layer alignment, 44-pixel scenery controls, keyboard interaction, and offscreen/reduced-motion behavior. The audio suite renders two complete A/B cycles of all six production soundtracks with an offline audio clock, checks sample peaks and loop boundaries, and exercises real-time crossfades, phrase continuity, and independent channel muting in both browsers. Sample analysis does not replace listening on phone speakers or headphones; physical-device listening and installation remain separate checks.
 
-GitHub Actions runs type checking, lint, unit tests, production build, the asset budget, and Chromium/WebKit tests on pull requests and pushes to `main` or `codex/**`. The asset check limits the entire build output (a stricter check than just the precache) to 1.5 MB. Validate the branch's Vercel preview before moving a release to `main`.
+GitHub Actions runs type checking, lint, unit tests, production build, the asset budget, and Chromium/WebKit tests on pull requests and pushes to `main` or `codex/**`. The asset check limits the entire build output (a stricter check than just the precache) to 3 MB. Validate the branch's Vercel preview before moving a release to `main`.
 
 ## Project structure
 
