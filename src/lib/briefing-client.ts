@@ -1,6 +1,7 @@
+import type { BriefingProvider } from '../types';
 import { BRIEFING_PATH, BRIEFING_STORAGE, forecastUsable, isWeatherBriefing, parseBriefingForecast, type BriefingForecast, type WeatherBriefing } from './briefing';
 import { isAppActive, isNativeApp } from './native';
-import { generateAppleBriefing, MIN_APPLE_MODEL_OS } from './apple-briefing';
+import { generateAppleBriefing, MIN_APPLE_MODEL_OS, appleUnavailableMessage } from './apple-briefing';
 import { readStoredValue, writeStoredValue, removeStoredValue } from './persistence';
 
 interface Cached { key: string; scope: string; briefing: WeatherBriefing }
@@ -12,7 +13,7 @@ const failures = new Map<string, BriefingError>();
 let limitedUntil = 0;
 export class BriefingError extends Error {
   constructor(public code = 'unavailable', public retryAt = Date.now() + 60000) {
-    super(code === 'rate_limited' ? 'Briefings are busy. Try again in a moment.' : 'The briefing is unavailable right now. Your forecast is still here.');
+    super(code.startsWith('apple:') ? appleUnavailableMessage(code.slice(6)) : code === 'offline' ? 'Connect to generate a new OpenAI briefing, or switch to Apple Intelligence.' : code === 'rate_limited' ? 'Briefings are busy. Try again in a moment.' : 'The briefing is unavailable right now. Your forecast is still here.');
   }
 }
 
@@ -36,13 +37,14 @@ function entries(): Cached[] {
       const valid = stored.filter((e): e is Cached => !!e && typeof e.key === 'string' && typeof e.scope === 'string' && isWeatherBriefing(e.briefing)
         // Drop earlier Apple evaluations while retaining legacy OpenAI entries.
         && (e.briefing.provider !== 'apple' || (e.briefing.appleModelOSMajor ?? 0) >= MIN_APPLE_MODEL_OS));
-      memory = [...memory, ...valid.filter(e => !memory.some(m => m.key === e.key))].slice(0, 12);
+      memory = [...memory, ...valid.filter(e => !memory.some(m => m.key === e.key && (m.briefing.provider ?? 'openai') === (e.briefing.provider ?? 'openai')))].slice(0, 12);
     }
   } catch { /* In-memory caching still works when storage is unavailable. */ }
   return memory;
 }
-export function cachedBriefing(key: string, scope: string, now: number, offline: boolean): WeatherBriefing | null {
-  return entries().find(e => (offline ? e.scope === scope : e.key === key)
+export function cachedBriefing(key: string, scope: string, now: number, offline: boolean, selectedProvider: BriefingProvider = 'openai'): WeatherBriefing | null {
+  const provider = isNativeApp() ? selectedProvider : 'openai';
+  return entries().find(e => (e.briefing.provider ?? 'openai') === provider && (offline ? e.scope === scope : e.key === key)
     && e.briefing.generatedAt <= now && now >= e.briefing.windowStart && now < e.briefing.windowEnd
     && (offline || now < e.briefing.expiresAt))?.briefing ?? null;
 }
@@ -90,10 +92,11 @@ async function openAIBriefing(forecast: BriefingForecast, signal: AbortSignal): 
   }
 }
 
-export function acquireBriefing(key: string, scope: string, forecast: BriefingForecast, retry = false, online = navigator.onLine) {
+export function acquireBriefing(key: string, scope: string, forecast: BriefingForecast, retry = false, online = navigator.onLine, selectedProvider: BriefingProvider = 'openai') {
+  const provider = isNativeApp() ? selectedProvider : 'openai';
   // Network availability changes may retry a previously offline failure, while
   // stored briefings remain independent of connectivity and provider.
-  const requestKey = JSON.stringify([key, online]);
+  const requestKey = JSON.stringify([key, online, provider]);
   let job = pending.get(requestKey);
   if (!job) {
     const controller = new AbortController();
@@ -104,30 +107,28 @@ export function acquireBriefing(key: string, scope: string, forecast: BriefingFo
     };
     const promise = (async () => {
       try {
-        const saved = cachedBriefing(key, scope, Date.now(), !online);
+        const saved = cachedBriefing(key, scope, Date.now(), !online, provider);
         if (saved) return saved;
         const failure = failures.get(requestKey);
         if (failure && (!retry || failure.retryAt > Date.now())) throw failure;
         const parsed = parseBriefingForecast(forecast);
         if (!parsed || !forecastUsable(parsed, Date.now())) throw new BriefingError('forecast_unavailable');
-        let value: WeatherBriefing | undefined;
-        if (isNativeApp()) {
+        checkActive();
+        let value: WeatherBriefing;
+        if (provider === 'apple') {
           try { value = await generateAppleBriefing(parsed, controller.signal); }
           catch (error) {
             if (error instanceof DOMException && error.name === 'AbortError') controller.abort();
-            checkActive(); /* Unavailable or failed locally: try the configured cloud provider. */
+            checkActive();
+            throw new BriefingError(`apple:${error instanceof Error ? error.message : 'unavailable'}`);
           }
-        }
-        checkActive();
-        if (!value) {
-          if (!online || !navigator.onLine) throw new BriefingError('offline');
-          // Recheck after local generation; never send an expired forecast to fallback.
-          if (!forecastUsable(parsed, Date.now())) throw new BriefingError('forecast_unavailable');
+        } else {
+          if (!online || !navigator.onLine) throw new BriefingError('offline', Date.now());
           value = await openAIBriefing(parsed, controller.signal);
         }
         checkActive();
         if (!forecastUsable(parsed, Date.now())) throw new BriefingError('forecast_unavailable');
-        memory = [{ key, scope, briefing: value }, ...entries().filter(e => e.key !== key)].slice(0, 12);
+        memory = [{ key, scope, briefing: value }, ...entries().filter(e => e.key !== key || (e.briefing.provider ?? 'openai') !== provider)].slice(0, 12);
         writeStoredValue(BRIEFING_STORAGE, JSON.stringify(memory));
         failures.delete(requestKey);
         return value;

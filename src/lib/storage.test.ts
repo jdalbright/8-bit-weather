@@ -45,3 +45,13 @@ describe('device persistence', () => {
     }
   });
 });
+
+
+it.each([undefined, 'invalid', 'apple', 'openai'])('migrates briefing preference %s without changing other saved data', briefingProvider => {
+  const preferences = { ...defaultPreferences(), briefingProvider, musicVolume: 0.7 };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ preferences, places: [asheville], selected: asheville }));
+  const loaded = loadState();
+  expect(loaded.preferences.briefingProvider).toBe(briefingProvider === 'apple' ? 'apple' : 'openai');
+  expect(loaded.preferences.musicVolume).toBe(0.7);
+  expect(loaded.places).toEqual([asheville]); expect(loaded.selected).toEqual(asheville);
+});

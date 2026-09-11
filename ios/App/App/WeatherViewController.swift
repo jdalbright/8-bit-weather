@@ -10,6 +10,62 @@ final class WeatherViewController: CAPBridgeViewController {
     /// These hooks are compiled out of Release and are never enabled by web content.
     override func webView(with frame: CGRect, configuration: WKWebViewConfiguration) -> WKWebView {
         let environment = ProcessInfo.processInfo.environment
+        if let provider = environment["EIGHTBIT_UI_TEST_PROVIDER"], ["apple", "openai"].contains(provider) {
+            // Exercise actual Settings, refresh, and persistence on a signed phone.
+            let script = """
+            window.addEventListener('load', async () => {
+              const wait = async (read) => {
+                for (let i = 0; i < 400; i++) { const result = read(); if (result) return result; await new Promise(resolve => setTimeout(resolve, 100)); }
+                throw new Error('Provider UI check timed out');
+              };
+              const nav = label => [...document.querySelectorAll('.bottom-nav button')].find(b => b.textContent.trim() === label);
+              try {
+                (await wait(() => nav('Settings'))).click();
+                const choices = await wait(() => document.querySelector('.briefing-provider-options'));
+                const selectedBefore = choices.querySelector('[aria-pressed="true"]').textContent.trim();
+                const button = choices.querySelectorAll('button')["\(provider)" === 'apple' ? 1 : 0];
+                await wait(() => !button.disabled);
+                button.click();
+                await wait(() => button.getAttribute('aria-pressed') === 'true');
+                nav('Today').click();
+                const refresh = await wait(() => document.querySelector('.forecast-footer button:not(:disabled)'));
+                refresh.click();
+                await new Promise(resolve => setTimeout(resolve, 500));
+                await wait(() => document.querySelector('.current-weather')?.getAttribute('aria-busy') === 'false');
+                await wait(() => document.querySelector('.weather-briefing')?.getAttribute('aria-busy') === 'false');
+                const actual = document.querySelector('.briefing-badge')?.textContent;
+                const summary = document.querySelector('.briefing-copy')?.textContent;
+                console.log('PROVIDER_UI_RESULT ' + JSON.stringify({ selectedBefore, requested: "\(provider)", actual, summary }));
+              } catch (error) { console.log('PROVIDER_UI_ERROR ' + error.message); }
+            });
+            """
+            configuration.userContentController.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        }
+        if let sample = environment["EIGHTBIT_UI_TEST_APPLE_SAMPLE"],
+           let data = sample.data(using: .utf8), data.count <= 20_000,
+           let payload = try? JSONDecoder().decode([String: String].self, from: data),
+           let encoded = try? JSONSerialization.data(withJSONObject: payload),
+           let json = String(data: encoded, encoding: .utf8) {
+            // Opt-in physical-device evaluation without changing saved places,
+            // weather, or briefings. Suppress the normal UI's automatic request.
+            let script = """
+            Object.defineProperty(document, 'hidden', {get: () => true});
+            window.addEventListener('load', async () => {
+              try {
+                const sample = \(json);
+                for (let attempt = 0; attempt < 50; attempt++) {
+                  if ((await window.Capacitor.Plugins.App.getState()).isActive) break;
+                  await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                const result = await window.Capacitor.Plugins.AppleBriefing.generate({
+                  requestId: crypto.randomUUID(), facts: sample.facts, instructions: sample.instructions
+                });
+                console.log('APPLE_SAMPLE_RESULT ' + JSON.stringify(result));
+              } catch (error) { console.log('APPLE_SAMPLE_ERROR ' + JSON.stringify(error)); }
+            });
+            """
+            configuration.userContentController.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        }
         if let json = environment["EIGHTBIT_UI_TEST_SEED"], let data = json.data(using: .utf8),
            data.count < 100_000, let values = try? JSONDecoder().decode([String: String].self, from: data) {
             for (key, value) in values where key.hasPrefix("CapacitorStorage.8bit-weather:") {

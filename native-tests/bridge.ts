@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { asheville, tokyo } from '../src/test/fixtures';
 
 export const storageKey = '8bit-weather:v1';
-export const preferences = { units: 'imperial', music: true, ambience: true, effects: true, musicVolume: .35, ambienceVolume: .25, effectsVolume: .4, reducedMotion: true };
+export const preferences = { briefingProvider: 'openai', units: 'imperial', music: true, ambience: true, effects: true, musicVolume: .35, ambienceVolume: .25, effectsVolume: .4, reducedMotion: true };
 export const savedState = { preferences, places: [asheville, tokyo], selected: asheville };
 
 type Call = { plugin: string; method: string; options?: Record<string, unknown> };

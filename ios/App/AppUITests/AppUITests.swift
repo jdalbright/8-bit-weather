@@ -103,6 +103,12 @@ final class AppUITests: XCTestCase {
         let base = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: fixture)) as? [String: String])
         for scenario in ["temperature-trend", "rain-timing", "missing-values"] {
             var seed = base
+            let settingsKey = "CapacitorStorage.8bit-weather:v1"
+            var settings = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(try XCTUnwrap(seed[settingsKey]).utf8)) as? [String: Any])
+            var preferences = try XCTUnwrap(settings["preferences"] as? [String: Any])
+            preferences["briefingProvider"] = "apple"
+            settings["preferences"] = preferences
+            seed[settingsKey] = String(data: try JSONSerialization.data(withJSONObject: settings), encoding: .utf8)
             let forecastKey = "CapacitorStorage.8bit-weather:v1:forecasts"
             var forecasts = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(try XCTUnwrap(seed[forecastKey]).utf8)) as? [[String: Any]])
             let now = Date().timeIntervalSince1970
@@ -133,7 +139,7 @@ final class AppUITests: XCTestCase {
             if scenario == "missing-values" && !accepted {
                 // Rejecting unreliable incomplete-data prose is a valid outcome.
                 // This offline test must show its recoverable state, never cloud output.
-                XCTAssertTrue(app.staticTexts["On-device briefing unavailable. Connect to use OpenAI, or retry."].exists)
+                XCTAssertTrue(app.staticTexts["Apple Intelligence is unavailable right now. Try again or switch to OpenAI."].exists)
             } else {
                 XCTAssertTrue(accepted, "No accepted Apple briefing for synthetic \(scenario); see attached UI evidence.")
             }

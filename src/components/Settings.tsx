@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { Preferences } from '../types';
 import type { useAudio } from '../hooks/useAudio';
 import type { useInstall } from '../hooks/useInstall';
+import { useAppleAvailability } from '../hooks/useAppleAvailability';
+import { appleUnavailableMessage } from '../lib/apple-briefing';
 import { Icon } from './Icons';
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
@@ -9,11 +11,21 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
 }
 interface Props { preferences: Preferences; onChange: (preferences: Preferences) => void; audio: ReturnType<typeof useAudio>; install: ReturnType<typeof useInstall>; systemReduced: boolean; onClear: () => void }
 export default function Settings({ preferences, onChange, audio, install, systemReduced, onClear }: Props) {
+  const apple = useAppleAvailability(install.native);
   const [confirmClear, setConfirmClear] = useState(false);
   const change = <K extends keyof Preferences>(key: K, value: Preferences[K]) => { onChange({ ...preferences, [key]: value }); };
   return <main id="main-content" tabIndex={-1} className="utility-view settings-view">
     <div className="view-title"><Icon name="settings" size={26}/><h1>Settings</h1></div><p className="view-intro">Make yourself at home.</p>
     <section className="settings-section" aria-labelledby="units-title"><h2 id="units-title">Weather units</h2><div className="segmented-control" role="group" aria-label="Weather units"><button aria-pressed={preferences.units === 'imperial'} onClick={() => change('units', 'imperial')}>°F / mph</button><button aria-pressed={preferences.units === 'metric'} onClick={() => change('units', 'metric')}>°C / km/h</button></div></section>
+    {install.native ? <section className="settings-section" aria-labelledby="briefing-provider-title">
+      <h2 id="briefing-provider-title">Weather briefing</h2>
+      <div className="briefing-provider-options" role="group" aria-label="Briefing provider">
+        <button className="pixel-button" aria-pressed={preferences.briefingProvider === 'openai'} onClick={() => change('briefingProvider', 'openai')}>{preferences.briefingProvider === 'openai' ? <Icon name="check" size={16}/> : null}OpenAI<span>Requires internet</span></button>
+        <button className="pixel-button" aria-pressed={preferences.briefingProvider === 'apple'} disabled={!apple?.available} aria-describedby="apple-briefing-availability" onClick={() => change('briefingProvider', 'apple')}>{preferences.briefingProvider === 'apple' ? <Icon name="check" size={16}/> : null}Apple Intelligence<span>Generated on this device</span></button>
+      </div>
+      <p id="apple-briefing-availability" className="settings-description" role="status">{!apple ? 'Checking Apple Intelligence availability…' : apple.available ? 'Apple Intelligence is ready. On-device briefings require iOS 27 or later.' : appleUnavailableMessage(apple.reason)}</p>
+      <p className="settings-description">Your choice is saved. If a briefing cannot be generated, you can retry or choose the other provider. Providers never switch automatically.</p>
+    </section> : null}
     <section className="settings-section" aria-labelledby="sound-title"><div className="settings-title-row"><h2 id="sound-title">A little atmosphere</h2><button className="pixel-button small" aria-pressed={audio.enabled} onClick={() => void audio.toggle()}><Icon name={audio.enabled ? 'sound' : 'muted'} size={16}/>{audio.enabled ? 'Sound on' : 'Sound off'}</button></div>
       <p className="settings-description">Original chiptunes for whatever the sky brings. Sound pauses when you leave the app.</p>
       {(['music', 'ambience', 'effects'] as const).map(channel => {
@@ -29,7 +41,7 @@ export default function Settings({ preferences, onChange, audio, install, system
       {install.showHelp ? <div className="install-help" role="status"><strong>{install.ios ? 'On your iPhone or iPad' : 'From your browser'}</strong>{install.ios ? <ol><li>Open this page in Safari.</li><li>Tap Share, then Add to Home Screen.</li><li>Tap Add to keep your little pixel world.</li></ol> : <p>Open your browser’s menu and choose Install app or Add to Home Screen. In Safari on Mac, use File → Add to Dock.</p>}<p className="fine-print">Phone installation needs an HTTPS address. A local network HTTP address won’t enable installation or location access.</p></div> : null}
       {install.error ? <p role="alert" className="error-text">{install.error}</p> : null}
     </section> : null}
-    <section className="settings-section" aria-labelledby="data-title"><h2 id="data-title">Your device, your data</h2><p className="settings-description">Places, preferences, forecasts, and saved briefings stay {install.native ? 'on this device' : 'in this browser'}. Coordinates are sent to Open-Meteo to get your forecast. {install.native ? 'On iOS 27 or later, briefings use Apple Intelligence on this device when available. On older iOS versions, or if Apple Intelligence is unavailable or fails, forecast data is automatically sent to OpenAI when online, without your coordinates or saved place names.' : 'Forecast data is sent to OpenAI to write your briefing, without your coordinates or saved place names.'} No account or analytics.</p>
+    <section className="settings-section" aria-labelledby="data-title"><h2 id="data-title">Your device, your data</h2><p className="settings-description">Places, preferences, forecasts, and saved briefings stay {install.native ? 'on this device' : 'in this browser'}. Coordinates are sent to Open-Meteo to get your forecast. {install.native ? 'Only your selected provider generates new briefings. Apple Intelligence runs on this device. Choosing OpenAI sends forecast facts to OpenAI when online, without your coordinates or saved place names. Providers never switch automatically.' : 'Forecast data is sent to OpenAI to write your briefing, without your coordinates or saved place names.'} No account or analytics.</p>
       {!confirmClear ? <button className="text-button danger-button" onClick={() => setConfirmClear(true)}><Icon name="trash" size={16}/>Clear saved data</button> : <div className="clear-confirmation"><p>Clear saved places, forecasts, briefings, and settings from this device?</p><div><button className="pixel-button small" onClick={() => setConfirmClear(false)}>Keep my data</button><button className="pixel-button small danger" onClick={onClear}>Clear everything</button></div></div>}
     </section>
     <footer className="settings-footer"><strong>8-BIT WEATHER</strong><p>A little pixel world. Your real weather.</p><span>Version 1.1.0 · Free & noncommercial</span><p><a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Weather by Open-Meteo</a> · <a href="https://open-meteo.com/en/terms" target="_blank" rel="noreferrer">Data & privacy</a></p></footer>

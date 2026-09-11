@@ -71,7 +71,9 @@ export interface WeatherSnapshot {
   /** Optional so forecasts saved before the rain outlook remain usable. */
   minutely?: RainWeather[];
 }
+export type BriefingProvider = 'openai' | 'apple';
 export interface Preferences {
+  briefingProvider: BriefingProvider;
   units: Units;
   music: boolean;
   ambience: boolean;

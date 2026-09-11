@@ -1,7 +1,7 @@
 import { registerPlugin } from '@capacitor/core';
 import { BRIEFING_TTL, BRIEFING_VERSION, HOUR, briefingFacts, forecastUsable, type BriefingForecast, type WeatherBriefing } from './briefing';
 import { appleBriefingInstructions, validSummary } from './briefing-prompt';
-import { localTime, STALE_AFTER, temperature } from './weather';
+import { localDate, localTime, STALE_AFTER, temperature } from './weather';
 
 export const MIN_APPLE_MODEL_OS = 27;
 
@@ -12,34 +12,76 @@ interface AppleBriefingPlugin {
 }
 const AppleBriefing = registerPlugin<AppleBriefingPlugin>('AppleBriefing');
 
+export interface AppleAvailability { available: boolean; reason?: string; modelOSMajor?: number }
+export async function appleAvailability(): Promise<AppleAvailability> {
+  const status = await AppleBriefing.availability();
+  if (status.available && (!Number.isInteger(status.modelOSMajor) || status.modelOSMajor! < MIN_APPLE_MODEL_OS)) {
+    return { available: false, reason: 'requires_ios27' };
+  }
+  return status;
+}
+export function appleUnavailableMessage(reason?: string): string {
+  const messages: Record<string, string> = {
+    requires_ios27: 'Apple Intelligence briefings require iOS 27 or later.',
+    device_unsupported: 'This device does not support Apple Intelligence.',
+    intelligence_disabled: 'Turn on Apple Intelligence in iPhone Settings to use on-device briefings.',
+    model_not_ready: 'Apple Intelligence is still getting ready. Its model may need to finish downloading.',
+    language_unsupported: 'Apple Intelligence cannot generate English briefings with the current language configuration.',
+  };
+  return messages[reason ?? ''] ?? 'Apple Intelligence is unavailable right now. Try again or switch to OpenAI.';
+}
+
 /** Compact calculated facts leave room for instructions and output in the on-device context.
  * All numbers, interval boundaries, and conversions come from forecast code. */
 export function appleBriefingFacts(forecast: BriefingForecast, now: number): string {
   const facts = briefingFacts(forecast, now);
   const hours = forecast.hourly.filter(h => h.time < now / 1000 + 24 * HOUR && h.time + HOUR > now / 1000);
   const known = hours.flatMap(h => h.temperature === null ? [] : [h.temperature]);
-  const label = (seconds: number) => localTime(seconds, forecast.timezone,
-    { weekday: 'short', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
-  const intervals = <T,>(values: T[]) => {
-    const groups: { from: string; until: string; value: T }[] = [];
-    for (let i = 0; i < hours.length; i++) {
-      const from = label(Math.max(now / 1000, hours[i].time));
-      const until = label(Math.min(now / 1000 + 24 * HOUR, hours[i].time + HOUR));
-      if (groups.length && groups.at(-1)!.value === values[i]) groups.at(-1)!.until = until;
-      else groups.push({ from, until, value: values[i] });
-    }
-    return groups;
+  const today = localDate(now, forecast.timezone);
+  const tomorrow = new Date(Date.parse(`${today}T12:00:00Z`) + 86400000).toISOString().slice(0, 10);
+  const daypart = (seconds: number) => {
+    const hour = Number(localTime(seconds, forecast.timezone, { hour: 'numeric', hourCycle: 'h23' }));
+    const period = hour < 6 ? 'overnight' : hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
+    const date = localDate(seconds * 1000, forecast.timezone);
+    if (date === today) return period === 'overnight' ? 'early this morning' : `this ${period}`;
+    if (date === tomorrow) return period === 'overnight' ? 'overnight' : `tomorrow ${period}`;
+    return `${localTime(seconds, forecast.timezone, { weekday: 'long' })} ${period}`;
   };
+  const periods: { period: string; rainChances: number[] }[] = [];
+  hours.forEach((hour, index) => {
+    const period = daypart(hour.time);
+    if (periods.at(-1)?.period !== period) periods.push({ period, rainChances: [] });
+    const group = periods.at(-1)!;
+    const chance = facts.hours[index].precipitationChancePercent;
+    if (chance !== null) group.rainChances.push(chance);
+  });
+  const extreme = (value: number) => ({ value: temperature(value, forecast.units), period: daypart(hours.find(h => h.temperature === value)!.time) });
+  const missingTemperatureHours = hours.length - known.length;
+  const chances = facts.hours.flatMap(h => h.precipitationChancePercent === null ? [] : [h.precipitationChancePercent]);
+  const peakChance = chances.length ? Math.max(...chances) : null;
+  const high = known.length ? Math.max(...known) : null;
+  const low = known.length ? Math.min(...known) : null;
+  const missingPrecipitationHours = facts.hours.filter(h => h.precipitationChancePercent === null).length;
   return JSON.stringify({
     from: facts.from, until: facts.until, temperatureUnit: facts.temperatureUnit,
-    temperature: {
-      knownRange: known.length ? [temperature(Math.min(...known), forecast.units), temperature(Math.max(...known), forecast.units)] : null,
-      atStart: facts.hours[0].temperature, atEnd: facts.hours.at(-1)!.temperature,
-      missingHours: hours.length - known.length,
+    coverage: {
+      temperature: missingTemperatureHours ? 'incomplete; qualify temperatures as available readings' : 'complete',
+      precipitation: missingPrecipitationHours ? 'incomplete; say rain chances are missing for part of the forecast' : 'complete; do not claim missing rain data',
     },
-    missingPrecipitationHours: facts.hours.filter(h => h.precipitationChancePercent === null).length,
-    precipitationChancePercent: intervals(facts.hours.map(h => h.precipitationChancePercent)),
-    conditions: intervals(facts.hours.map(h => h.conditions)),
+    temperature: {
+      pattern: high === null || low === null ? 'unknown' : high - low < 2 ? 'steady' : hours.findIndex(h => h.temperature === high) < hours.findIndex(h => h.temperature === low) ? 'cooling after the high' : 'warming after the low',
+      highDescription: high === null ? 'unknown' : high >= 30 ? 'hot' : high >= 25 ? 'warm' : high >= 15 ? 'mild' : high >= 5 ? 'cool' : 'cold',
+      ...(high !== null && low !== null && high - low < 2
+        ? { steadyAt: temperature(high, forecast.units) }
+        : { high: high === null ? null : extreme(high), low: low === null ? null : extreme(low) }),
+      missingHours: missingTemperatureHours,
+    },
+    missingPrecipitationHours,
+    precipitation: {
+      peakChancePercent: peakChance,
+      peakPeriods: periods.filter(group => peakChance !== null && group.rainChances.includes(peakChance)).map(group => group.period),
+      pattern: peakChance === null ? 'unknown' : peakChance === 0 ? 'no precipitation forecast' : peakChance <= 20 ? 'low rain chances' : 'highlight the peak periods',
+    },
   });
 }
 
@@ -50,6 +92,11 @@ export function validAppleSummary(text: string, forecast: BriefingForecast, now:
   const facts = briefingFacts(forecast, now);
   const missingTemperature = facts.hours.some(h => h.temperature === null);
   const missingPrecipitation = facts.hours.some(h => h.precipitationChancePercent === null);
+  const knownTemperatures = forecast.hourly.filter(h => h.time < now / 1000 + 24 * HOUR && h.time + HOUR > now / 1000)
+    .flatMap(h => h.temperature === null ? [] : [h.temperature]);
+  if (knownTemperatures.length && Math.max(...knownTemperatures) - Math.min(...knownTemperatures) < 2
+    && /\b(?:cooling|warming|warm up|cool down)\b/i.test(text)) return false;
+  if (!missingPrecipitation && /(?:precipitation|rain)(?: data| chances?| coverage)? (?:is |are )?(?:incomplete|missing|unavailable)/i.test(text)) return false;
   if ((missingTemperature || missingPrecipitation) && !/\b(available|known|missing|unknown|incomplete|unavailable|limited)\b/i.test(text)) return false;
   // Partial data must not become a claim that all readings are absent. Treat
   // ambiguous local wording conservatively and let the cloud fallback handle it.

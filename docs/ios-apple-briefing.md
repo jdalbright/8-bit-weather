@@ -1,6 +1,49 @@
-# Apple Intelligence briefings with OpenAI fallback
+# iOS briefing provider selection
 
-Implemented locally on September 11, 2026. Native briefings prefer Apple's on-device Foundation Models **only on iOS 27 or later**, then try the existing server-selected OpenAI model once when online if local availability or generation fails. iOS 26 and older use OpenAI directly. The website keeps its existing OpenAI route. The backend compatibility deployment was subsequently approved and completed; [live API and native simulator checks passed](ios-briefing.md). No Git push or store submission was performed.
+## Current behavior
+
+Settings → Weather briefing lets iOS users select OpenAI or Apple Intelligence. OpenAI is the default for new installations and older saved settings without a valid provider choice. The website always uses OpenAI. Provider choices persist through the existing native Preferences store; changing providers does not change saved places, weather, units, or audio.
+
+Only the selected provider generates new summaries. Apple selection never contacts OpenAI, and OpenAI selection never starts Apple generation. Failures offer a bounded retry and an explicit switch action when the alternative is usable or has an eligible saved briefing. Switching updates the saved preference. A selected but unavailable Apple option stays selected; Settings explains the reason and rechecks availability when opened or foregrounded.
+
+OpenAI needs connectivity for new summaries. Apple uses the iOS 27 on-device model and can generate offline from fresh usable cached weather. Offline reads only use the selected provider's saved summaries within the existing validity window. Caches, pending jobs, and failures are partitioned by provider; legacy summaries without provider metadata count as OpenAI. Switching cancels old work and rejects late responses. Cloud rate limits do not prevent Apple generation.
+
+The existing server endpoint, model configuration, request shape, and privacy protections are unchanged. No coordinates or saved place names are sent to either language model. No Apple PCC service is configured.
+
+## Verification
+
+Provider tests cover migration, strict routing, per-provider caches, offline switching, cancellation in both directions, late responses, settings persistence, changing availability, and explicit recovery actions. Native browser transport is mocked and is not evidence of model quality or physical behavior. The signed-app debug launch flag `EIGHTBIT_UI_TEST_PROVIDER=apple|openai` drives the real Settings controls and a forecast refresh without replacing user data, and emits `PROVIDER_UI_RESULT`. Relaunch normally after testing.
+
+### Provider selection verification — September 11, 2026
+
+- 247 unit tests and 37 server tests passed; three optional server live tests skipped. Native Node ESM smoke, typechecking, lint, and native bundle checks passed.
+- 24 native browser briefing/interaction tests and eight website briefing/interaction tests passed in Chromium and WebKit. These mock the native transport and provider responses.
+- Signed Debug app built successfully, passed strict code-signature verification, and installed over the existing app on the connected iPhone 17 Pro running iOS 27.
+- Physical Settings check started with the migrated OpenAI default, selected Apple, refreshed weather, and received a validated Apple Intelligence summary. The next launch read the saved Apple selection.
+- Physical Settings then selected OpenAI and refreshed weather; a real OpenAI summary appeared. That run contained no Apple generation calls. The app was reopened normally with OpenAI saved.
+- Failure isolation, explicit fallback actions, and cancellation races are covered by deterministic tests; physical success-path verification does not simulate every provider outage.
+
+## September 11: on-device wording refinement
+
+The connected iPhone 17 Pro on iOS 27 reports the model available and has generated and cached a real Apple briefing. Earlier OpenAI attribution persisted until a forecast refresh replaced the cached summary.
+
+Apple input now calculates the temperature high/low and their local dayparts, distinguishes steady temperatures, and supplies only the peak precipitation chance and its dayparts. This removes the misleading start/end comparison and long lists of small probabilities. Local calendar labels respect the forecast timezone, including daylight-saving transitions. Native generation now requests a plain-text response rather than a guided two-field structure; the shared validator still enforces sentence count, length, forecast numbers, and missing-data uncertainty. New validation checks reject invented missing-rain claims when precipitation coverage is complete and invented warming/cooling when calculated temperatures are steady; existing measurement checks remain in place.
+
+The debug-only `EIGHTBIT_UI_TEST_APPLE_SAMPLE` launch variable accepts a JSON object containing `facts` and `instructions`. It calls the real native bridge while suppressing the normal UI request, without modifying saved places, preferences, or cached weather. Use `EIGHTBIT_UI_TEST_OFFLINE=true` alongside it to prevent cloud requests. Console output is prefixed `APPLE_SAMPLE_RESULT`; relaunch normally after evaluation. These hooks are absent from Release builds.
+
+Final physical comparison used the same three fact sets on the iPhone's actual iOS 27 model, with WebView networking disabled:
+
+- Hot-day forecast: “Temperatures will drop from 95°F this afternoon to 74°F tomorrow morning, making it feel cooler as the day ends. Rain chances peak at 14% tomorrow morning.” Accepted; temperatures and peak probability match the supplied forecast.
+- Synthetic steady-temperature/rain forecast: “Temperatures will stay at 72°F this afternoon, feeling comfortable as the day ends. Rain chances peak at 70% this evening and overnight.” Accepted; correct steady temperature and precipitation timing.
+- Synthetic missing measurements: the model omitted required uncertainty. Rejected by the shared validator; an explicit provider switch or retry remains necessary.
+
+Evaluation including app launch took about 2–3 seconds per sample. This small comparison demonstrates an improvement, not a guarantee of semantic accuracy across all weather. Full unit/server checks passed before the final prompt-only refinement; the final 40 Apple routing/fact/validation tests, typechecking, lint, native assets check and signed physical build passed. Native browser briefing regression checks passed in Chromium and WebKit.
+
+This is prompt and input engineering, not training or replacing Apple's system model. Physical evaluation is necessary: earlier iterations copied example wording, listed dayparts, or used past tense. Passing mocked tests alone does not establish prose quality.
+
+## Historical integration notes
+
+The following records the earlier automatic-fallback implementation and its evaluation. Current provider selection above supersedes its routing and fallback descriptions.
 
 ## iOS 27 model policy
 

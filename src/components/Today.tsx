@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import type { Discovery, Place, SceneState, Units, WeatherSnapshot } from '../types';
+import type { BriefingProvider, Discovery, Place, SceneState, Units, WeatherSnapshot } from '../types';
 import { dayLabel, futureDays, localDate, localTime, percent, precipitationForHour, STALE_AFTER, temperature, updatedLabel, weatherInfo, windSpeed } from '../lib/weather';
 import { Icon, WeatherIcon } from './Icons';
 import { Scenery } from './Scenery';
@@ -12,12 +12,13 @@ import { WeatherBriefing } from './WeatherBriefing';
 import { SunTimes } from './SunTimes';
 
 interface Props {
+  briefingProvider?: BriefingProvider; onBriefingProviderChange?: (provider: BriefingProvider) => void;
   place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean;
   loading: boolean; error: string | null; online: boolean; now: number; locating: boolean;
   onLocate: () => void; onPlaces: () => void; onRefresh: () => void;
   onDiscover: (discovery: Discovery) => void;
 }
-export default function Today({ place, snapshot, scene, units, animate, loading, error, online, now, locating, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
+export default function Today({ briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, loading, error, online, now, locating, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
   const hourlyRef = useRef<HTMLDivElement>(null);
   const [uvExpanded, setUvExpanded] = useState(false);
   const days = snapshot ? futureDays(snapshot.daily, snapshot.timezone, now) : [];
@@ -65,7 +66,7 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
         <div className="uv-disclosure-content"><UvDetails key={`${snapshot.placeId}:${uv.today}`} forecast={uv} timezone={snapshot.timezone} now={now} isDay={scene.isDay} online={online}/></div>
       </div> : null}
       {rainOutlook ? <RainOutlook key={snapshot.placeId} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
-      <WeatherBriefing snapshot={snapshot} units={units} online={online} now={now}/>
+      <WeatherBriefing provider={briefingProvider} onProviderChange={onBriefingProviderChange} snapshot={snapshot} units={units} online={online} now={now}/>
       <section className="hourly-section" aria-labelledby="hourly-title">
         <div className="section-heading"><h2 id="hourly-title">Next 24 hours</h2><button className="icon-button scroll-hours" aria-label="Scroll hourly forecast forward" onClick={() => hourlyRef.current?.scrollBy({ left: 220, behavior: animate ? 'smooth' : 'instant' })}><Icon name="next" size={17}/></button></div>
         {hours.length ? <div ref={hourlyRef} className="hourly-rail" data-pull-refresh-ignore tabIndex={0} aria-label="Hourly forecast, scroll for more hours">

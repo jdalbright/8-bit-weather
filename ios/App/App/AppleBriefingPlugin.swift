@@ -3,15 +3,6 @@ import Foundation
 import FoundationModels
 import UIKit
 
-@available(iOS 27.0, *)
-@Generable
-private struct GeneratedWeatherBriefing {
-    @Guide(description: "One short sentence about the supplied temperature range and trend, in the supplied unit. When temperature.missingHours is positive, explicitly qualify this as available readings. No greeting.")
-    var temperature: String
-    @Guide(description: "One short sentence about the supplied precipitation chances and timing, with a practical takeaway if justified. If missingPrecipitationHours is positive, state that precipitation data is incomplete and never promise dry weather. No invented numbers.")
-    var precipitation: String
-}
-
 /// A narrow on-device text bridge. Cloud fallback stays in the shared client.
 @objc(AppleBriefingPlugin)
 public final class AppleBriefingPlugin: CAPPlugin, CAPBridgedPlugin {
@@ -76,10 +67,10 @@ public final class AppleBriefingPlugin: CAPPlugin, CAPBridgedPlugin {
             let task = Task { @MainActor [self] in
                 do {
                     let session = LanguageModelSession(model: .default, instructions: instructions)
-                    let response = try await session.respond(to: facts, generating: GeneratedWeatherBriefing.self,
+                    let response = try await session.respond(to: facts,
                         options: GenerationOptions(sampling: .greedy, maximumResponseTokens: 250))
                     try Task.checkCancellation()
-                    let text = response.content.temperature + " " + response.content.precipitation
+                    let text = response.content
                     self.recordTestResult(text)
                     guard let job = self.jobs.removeValue(forKey: id) else { return }
                     job.call.resolve(["text": text])
