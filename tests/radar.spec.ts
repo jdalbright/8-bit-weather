@@ -46,7 +46,8 @@ test('radar loads on demand, renders frames, plays, switches layers, and respect
   await page.getByRole('button', { name: 'Precipitation type', exact: true }).click();
   await expect(page.getByText('Slide through recent observations, or play the loop.')).toBeVisible();
   expect(radar.requests.some(url => url.includes('pcpn_typ') && url.includes('GetMap'))).toBe(true);
-  await page.getByText('Read the color key').click(); await expect(page.getByText('Warm stratiform rain', { exact: true })).toBeVisible();
+  await expect(page.getByText('Warm stratiform rain', { exact: true })).toBeVisible();
+  await expect(page.locator('.radar-type-key > div')).toHaveCount(7);
   await page.getByRole('button', { name: 'Play', exact: true }).click();
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.getByRole('button', { name: 'Play', exact: true })).toBeDisabled();

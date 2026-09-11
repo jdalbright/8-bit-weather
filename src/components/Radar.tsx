@@ -5,6 +5,7 @@ import { RADAR_DELAYED, regionForPlace, type RadarLayer } from '../lib/radar';
 import { localTime } from '../lib/weather';
 import { triggerHaptic } from '../lib/native-experience';
 import { Icon } from './Icons';
+import { RadarLegend } from './RadarLegend';
 import type { RadarMapStatus } from './RadarMap';
 
 const RadarMap = lazy(() => import('./RadarMap'));
@@ -88,11 +89,7 @@ export default function Radar({ place, timezone, now, online, active, allowPlayb
       <p className="radar-load-status" role="status">{!online ? 'Offline. Reconnect to load imagery.' : status.outside ? 'This view is outside the selected regional radar coverage. Recenter or choose another place.' : status.error ?? radar.error ?? (status.loading ? `Loading ${clock(frame.time)} imagery…` : delayed ? `Newest observation: ${fullClock(newest!)}. Waiting for updated data.` : !allowPlayback ? 'Playback paused to respect motion or power settings. Slide to explore.' : 'Slide through recent observations, or play the loop.')}</p>
       {status.error && online && !rendererFailed ? <button className="text-button" onClick={retryMap}>Retry imagery</button> : null}
     </section> : null}
-    <section className="radar-legend" aria-labelledby="radar-legend-title"><h2 id="radar-legend-title">{layer === 'intensity' ? 'Radar intensity' : 'Precipitation type'}</h2>
-      {layer === 'intensity' ? <><img src="/radar/BREFQCD_CT.png" width="500" height="36" alt="NOAA echo-strength legend marked from −20 to 70 dBZ. Stronger echoes progress through green, yellow, red, and purple."/><p>Echo strength in dBZ. Stronger echoes can indicate heavier precipitation.</p></>
-        : <><img src="/radar/PCPNTYP_CT.png" width="500" height="34" alt="NOAA precipitation categories from left to right: warm stratiform rain, snow, convective rain, hail, cool stratiform rain, tropical stratiform rain, tropical convective rain"/><details><summary>Read the color key</summary><dl className="radar-type-key"><div><dt>WS</dt><dd>Warm stratiform rain</dd></div><div><dt>S</dt><dd>Snow</dd></div><div><dt>C</dt><dd>Convective rain</dd></div><div><dt>H</dt><dd>Hail</dd></div><div><dt>CS</dt><dd>Cool stratiform rain</dd></div><div><dt>ST</dt><dd>Tropical stratiform rain</dd></div><div><dt>CT</dt><dd>Tropical convective rain</dd></div></dl></details><p>Radar-estimated type. Sleet and freezing rain are not identified separately.</p></>}
-      <p>Coverage varies. Blank areas may have no radar data.</p>
-    </section>
+    <RadarLegend layer={layer}/>
     <footer className="radar-footer">Recent observations · not a future forecast{region ? <span>{region.label} · NOAA MRMS</span> : null}<a href="/radar/credits.html">Map credits &amp; licenses</a></footer>
   </main>;
 }
