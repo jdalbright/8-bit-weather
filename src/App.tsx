@@ -1,5 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useRegisterSW } from 'virtual:pwa-register/react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Today from './components/Today';
 import Places from './components/Places';
 import Settings from './components/Settings';
@@ -12,8 +11,12 @@ import { useInstall } from './hooks/useInstall';
 import { clearSavedData, defaultPreferences, loadState, saveState } from './lib/storage';
 import { locate } from './lib/api';
 import { deriveScene } from './lib/scene';
+import { isNativeApp, NATIVE_PLACE_EVENT, takeLaunchPlaceId } from './lib/native';
+import { hasLoadedNativeStorage, PERSISTENCE_ERROR_EVENT } from './lib/persistence';
+import { syncWidget } from './lib/widget';
 import type { Place, View } from './types';
 
+const WebUpdates = lazy(() => import('./components/WebUpdates'));
 const navigation: { view: View; label: string; icon: 'home' | 'places' | 'settings' }[] = [{ view: 'today', label: 'Today', icon: 'home' }, { view: 'places', label: 'Places', icon: 'places' }, { view: 'settings', label: 'Settings', icon: 'settings' }];
 export default function App() {
   const [initial] = useState(loadState);
@@ -23,7 +26,7 @@ export default function App() {
   const [view, setView] = useState<View>('today');
   const [locating, setLocating] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
-  const [storageUnavailable, setStorageUnavailable] = useState(false);
+  const [storageUnavailable, setStorageUnavailable] = useState(document.documentElement.dataset.storageUnavailable === 'true');
   const locationRequest = useRef(0);
   const focusMain = useRef(false);
   const shell = useRef<HTMLDivElement>(null);
@@ -35,7 +38,27 @@ export default function App() {
   const scene = deriveScene(weather.snapshot, weather.now, weather.online);
   const audio = useAudio(preferences, scene);
   const install = useInstall();
-  const { needRefresh: [needRefresh, setNeedRefresh], updateServiceWorker } = useRegisterSW();
+  useEffect(() => {
+    const unavailable = () => setStorageUnavailable(true);
+    window.addEventListener(PERSISTENCE_ERROR_EVENT, unavailable);
+    return () => window.removeEventListener(PERSISTENCE_ERROR_EVENT, unavailable);
+  }, []);
+  useEffect(() => {
+    if (!hasLoadedNativeStorage()) return;
+    void syncWidget(place, preferences.units, weather.snapshot).catch(() => setNotice('Your home screen widget could not update. Open the app again to retry.'));
+  }, [place, preferences.units, weather.snapshot]);
+  useEffect(() => {
+    const openPlace = (id: string | null) => {
+      const match = id && (places.find(saved => saved.id === id) ?? (place?.id === id ? place : null));
+      if (!match) return;
+      focusMain.current = true; locationRequest.current++; setLocating(false); setPlace(match); setView('today'); setNotice(null);
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+    openPlace(takeLaunchPlaceId());
+    const received = () => openPlace(takeLaunchPlaceId());
+    window.addEventListener(NATIVE_PLACE_EVENT, received);
+    return () => window.removeEventListener(NATIVE_PLACE_EVENT, received);
+  }, [places, place]);
   useEffect(() => { setStorageUnavailable(!saveState({ preferences, places, selected: place })); }, [preferences, places, place]);
   useEffect(() => { document.title = place ? `${place.name} · 8-Bit Weather` : '8-Bit Weather'; }, [place]);
   useEffect(() => () => { locationRequest.current++; }, []);
@@ -63,9 +86,9 @@ export default function App() {
   return <div ref={shell} className={`app-shell ${motion.animate ? '' : 'motion-reduced'}`}>
     <a className="skip-link" href="#main-content">Skip to weather</a>
     <header className="app-header"><button className="brand" onClick={() => navigate('today')} aria-label="8-Bit Weather home"><WeatherIcon kind="clear" size={30}/><span>8-BIT WEATHER</span></button><button className="pixel-button sound-button" aria-pressed={audio.enabled} onClick={() => void audio.toggle()}><Icon name={audio.enabled ? 'sound' : 'muted'} size={17}/>{audio.enabled ? 'Sound on' : 'Sound off'}</button></header>
-    {needRefresh ? <div className="update-notice" role="status"><span>A fresh version is ready.</span><button className="text-button" onClick={() => void updateServiceWorker(true)}>Update app</button><button className="icon-button" aria-label="Dismiss update" onClick={() => setNeedRefresh(false)}><Icon name="close" size={14}/></button></div> : null}
+    {!isNativeApp() ? <Suspense fallback={null}><WebUpdates /></Suspense> : null}
     {notice || audio.error ? <div className="app-notice" role="alert"><span>{notice ?? audio.error}</span>{notice ? <button className="icon-button" aria-label="Dismiss message" onClick={() => setNotice(null)}><Icon name="close" size={14}/></button> : null}</div> : null}
-    {storageUnavailable ? <p className="offline-notice" role="status">Browser storage is unavailable. Your choices will last for this visit.</p> : null}
+    {storageUnavailable ? <p className="offline-notice" role="status">Saved data is unavailable. Your choices will last for this session.</p> : null}
     {view === 'today' ? <PullToRefresh key={place?.id ?? 'welcome'} enabled={!!place} disabled={weather.loading || !weather.online} onRefresh={async () => { audio.effect(); await weather.refresh(true); }}>
       <Today place={place} {...weather} scene={scene} units={preferences.units} animate={motion.animate} locating={locating} onDiscover={audio.effect} onLocate={() => void handleLocate()} onPlaces={() => navigate('places')} onRefresh={() => { audio.effect(); void weather.refresh(true); }}/>
     </PullToRefresh>

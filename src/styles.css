@@ -78,7 +78,7 @@
   .current-temperature sup { font-size: .6em; margin-top: 6px; line-height: 1; letter-spacing: 0; }
   .condition { font-family: var(--pixel); font-size: 22px; line-height: 1.12; }
   .feels-like { margin-top: 8px; font-family: var(--pixel); font-size: 15px; line-height: 1.2; white-space: nowrap; }
-  .saved-observation { display: inline-block; max-width: 94%; margin-top: 7px; padding: 3px 6px; background: var(--paper); color: var(--ink); font-size: 10px; }
+  .saved-observation { text-shadow: none; display: inline-block; max-width: 94%; margin-top: 7px; padding: 3px 6px; background: var(--paper); color: var(--ink); font-size: 10px; }
   .nighttime { color: #fff7e8; background: #28275a; }
   .celestial { position: absolute; top: 6%; left: 7%; width: 13%; height: auto; animation: sun-bob 8s steps(6, end) infinite; }
   .scene-cloud { position: absolute; width: 22%; height: auto; animation: cloud-drift var(--cloud-duration) linear infinite alternate; opacity: .95; }
@@ -413,4 +413,12 @@
   .briefing-meta { color: var(--muted); font-size: 10px; line-height: 1.6; margin: 12px 0 0; }
   .briefing-placeholder { color: var(--muted); }
   .briefing-retry { min-height: 44px; margin-top: 6px; }
+}
+
+/* Capacitor uses the same safe-area layout; keep wide iPhone landscape content clear of the sensor housing. */
+.native-app .app-shell { margin-top: 0; min-height: 100dvh; box-shadow: none; }
+.native-app .app-header { padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
+.native-app .bottom-nav { padding-left: max(13px, env(safe-area-inset-left)); padding-right: max(13px, env(safe-area-inset-right)); }
+@media (orientation: landscape) {
+  .native-app .app-shell { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
 }

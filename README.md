@@ -1,6 +1,6 @@
 # 8-Bit Weather
 
-A little pixel world, with your real weather. A mobile-first React app with animated landscapes, original weather-reactive chiptunes, saved places, and offline PWA support.
+A little pixel world, with your real weather. A shared React app with animated landscapes, original weather-reactive chiptunes, saved places, offline PWA support, and a Capacitor iOS app with small and medium WidgetKit widgets.
 
 **[Open 8-Bit Weather](https://8-bit-weather.vercel.app/)**
 
@@ -26,6 +26,21 @@ npm run preview
 
 The complete static site is in `dist/`. Service-worker caching and update prompts run in the production build, not the development server. Serve `dist/` at the root of an HTTPS site; the optional AI briefing uses a Vercel Function outside this static directory.
 
+### Native iOS app and widgets
+
+The iOS app bundles the same screens and artwork in `dist-native/`; web and iOS have separate releases. Native location uses iOS permissions, preferences and cached weather use local Capacitor Preferences, and the widget shares the selected place and cached forecast through an App Group. The native package does not register the web service worker or show browser installation prompts.
+
+```sh
+npm ci
+npm run ios:sync
+npm run check:native
+npm run ios:open
+```
+
+Select the **App** scheme and an iPhone simulator in Xcode, then Run. See [native build/install instructions](docs/ios-native.md), the [dependency graph and verification checklist](docs/ios/IMPLEMENTATION.md), and [widget behavior](docs/ios-widget.md). Native iOS targets require iOS 17 or newer. Device installation requires your signing team and App Group provisioning.
+
+Native briefings use Apple Intelligence on eligible iOS 27+ devices, with automatic OpenAI fallback on older iOS versions or when Apple is unavailable or generation fails. The iOS 26 model is intentionally disabled; the app still supports iOS 17. Apple generation can work offline with fresh cached weather. OpenAI fallback connects to the compatible production backend through `VITE_NATIVE_BRIEFING_URL` in `.env.native`; see [native briefing configuration and verification](docs/ios-briefing.md). No provider secret belongs in the app bundle.
+
 ## GitHub and Vercel hosting
 
 The source repository is [jdalbright/8-bit-weather](https://github.com/jdalbright/8-bit-weather). Vercel builds the linked GitHub repository with `npm run build` and serves `dist/`. Pushes to `main` deploy to production; other branches receive preview deployments. Weather remains keyless; the optional briefing requires server-only OpenAI configuration. `vercel.json` keeps the service worker fresh so installed apps can discover updates.
@@ -45,7 +60,7 @@ Forecasts and city search come directly from [Open-Meteo](https://open-meteo.com
 
 Current conditions, hourly data, and daily forecasts are model-derived weather data. WMO weather codes are translated to readable labels, timestamps are displayed in the selected location's time zone, and Celsius/km/h values are converted locally for Fahrenheit/mph. Weather data is [CC BY 4.0](https://open-meteo.com/en/licence); location names originate from [GeoNames](https://www.geonames.org/).
 
-Preferences, saved places, the selected location, and up to 12 recent forecast snapshots are stored only in this browser. Coordinates (rounded to three decimal places for GPS selections) are sent to Open-Meteo to request weather; search terms are sent to its geocoding service. Open-Meteo's own [privacy policy](https://open-meteo.com/en/terms#privacy) applies to those requests. When enabled, AI briefings send a limited hourly forecast, timezone, and chosen temperature units through this app’s server to OpenAI. Coordinates and place names are excluded from those requests. Responses use `store: false`; this does not disable OpenAI’s separate abuse-monitoring retention. The app has no accounts, analytics, or ads. Settings → Clear saved data removes stored choices, forecasts, and briefings, including in-memory copies.
+Preferences, saved places, the selected location, and up to 12 recent forecast snapshots are stored locally in this browser on web, or in native Preferences on iOS. The iOS widget stores the selected place and a forecast projection in the app’s local App Group, and can refresh that place directly from Open-Meteo while the app is closed. Coordinates (rounded to three decimal places for GPS selections) are sent to Open-Meteo to request weather; search terms are sent to its geocoding service. Open-Meteo's own [privacy policy](https://open-meteo.com/en/terms#privacy) applies to those requests. Native briefings use Apple Intelligence on-device when available. When cloud briefings are enabled, the website and native fallback send a limited hourly forecast, timezone, and chosen temperature units through this app’s server to OpenAI. Native fallback runs automatically when Apple Intelligence is unavailable or fails and the app is online. Coordinates and place names are excluded from those requests. Responses use `store: false`; this does not disable OpenAI’s separate abuse-monitoring retention. The app has no accounts, analytics, or ads. Settings → Clear saved data removes stored choices, forecasts, and briefings, including in-memory copies.
 
 Forecasts refresh every 15 minutes while the app is visible, when returning to stale data, or through Refresh. Searches are debounced, superseded requests are canceled, and provider rate-limit cooldowns are respected. A GPS cache is never reused at changed coordinates. If browser storage fails, the latest forecast for the current place stays available in memory through refresh failures and offline resume during that visit.
 
@@ -55,7 +70,7 @@ Hourly precipitation probabilities describe the hour ending at the provider time
 
 The Weather briefing card summarizes the next 24 elapsed hours in 2–3 warm, practical sentences. The server rejects output outside that sentence range or above 75 words. It loads independently above the hourly forecast. The default model is `gpt-5.6-luna`, with reasoning disabled, a 250-token output cap, a 12-second SDK timeout, and no automatic SDK retries. Model input comes from the displayed forecast, with temperatures converted and precipitation intervals aligned in code. Unsupported weather codes count as missing data when checking coverage. No weather search or tools are enabled in OpenAI.
 
-Successful briefings are cached on this device for 15 minutes, up to 12 entries. Location, forecast identity, units, current hourly window, and prompt version determine reuse. Navigation and StrictMode share in-flight requests. Changing locations cancels an obsolete request; responses are never reused across GPS coordinates. Offline, a matching saved briefing keeps its timestamp until its original 24-hour window ends. Missing or stale weather prevents generation. API failures do not interrupt weather, and retries respect a cooldown. The first voice is an internal `warm-practical` preset; personality selection is reserved for a later release.
+Successful briefings are cached on this device for 15 minutes, up to 12 entries. Location, forecast identity, units, current hourly window, and prompt version determine reuse. Navigation and StrictMode share in-flight requests. Changing locations cancels an obsolete request; responses are never reused across GPS coordinates. Offline, a matching saved briefing keeps its timestamp until its original 24-hour window ends; native Apple Intelligence can also generate from fresh, complete cached weather. Missing or stale weather prevents generation. API failures do not interrupt weather, and retries respect a cooldown. The first voice is an internal `warm-practical` preset; personality selection is reserved for a later release.
 
 #### Local and preview configuration
 

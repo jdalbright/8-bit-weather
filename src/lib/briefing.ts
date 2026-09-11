@@ -16,6 +16,9 @@ export interface BriefingForecast {
 }
 export interface WeatherBriefing {
   text: string;
+  provider?: 'apple' | 'openai';
+  /** OS model generation, not an Apple model identifier. Absent in older caches. */
+  appleModelOSMajor?: number;
   generatedAt: number;
   windowStart: number;
   windowEnd: number;
@@ -87,7 +90,8 @@ export function briefingFacts(forecast: BriefingForecast, now: number) {
 export function isWeatherBriefing(value: unknown): value is WeatherBriefing {
   if (!value || typeof value !== 'object') return false;
   const b = value as WeatherBriefing;
-  return b.version === BRIEFING_VERSION && typeof b.text === 'string' && b.text.trim().length > 0 && b.text.length <= 1600
+  return (b.provider === undefined || b.provider === 'apple' || b.provider === 'openai') && b.version === BRIEFING_VERSION && typeof b.text === 'string' && b.text.trim().length > 0 && b.text.length <= 1600
+    && (b.appleModelOSMajor === undefined || Number.isInteger(b.appleModelOSMajor) && b.appleModelOSMajor >= 1)
     && [b.generatedAt, b.windowStart, b.windowEnd, b.expiresAt].every(n => typeof n === 'number' && Number.isFinite(n))
     && b.windowEnd - b.windowStart === 24 * HOUR * 1000 && b.generatedAt >= b.windowStart
     && b.expiresAt > b.generatedAt && b.expiresAt <= b.generatedAt + BRIEFING_TTL;

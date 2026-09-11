@@ -1,3 +1,4 @@
+import { isAppActive, NATIVE_ACTIVITY_EVENT } from '../lib/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchWeather, WeatherRequestError } from '../lib/api';
 import { cachedWeather, cacheWeather } from '../lib/storage';
@@ -48,11 +49,11 @@ export function useWeather(place: Place | null) {
   }, [refresh]);
   useEffect(() => {
     const onlineChanged = () => { setOnline(navigator.onLine); if (navigator.onLine) void refresh(); };
-    const visible = () => { if (!document.hidden) { setNow(Date.now()); void refresh(); } };
-    const interval = window.setInterval(() => { if (!document.hidden) void refresh(); }, FRESH_FOR);
-    const clock = window.setInterval(() => { if (!document.hidden) setNow(Date.now()); }, 30000);
-    window.addEventListener('online', onlineChanged); window.addEventListener('offline', onlineChanged); document.addEventListener('visibilitychange', visible);
-    return () => { clearInterval(interval); clearInterval(clock); window.removeEventListener('online', onlineChanged); window.removeEventListener('offline', onlineChanged); document.removeEventListener('visibilitychange', visible); };
+    const visible = () => { if (isAppActive()) { setNow(Date.now()); void refresh(); } };
+    const interval = window.setInterval(() => { if (isAppActive()) void refresh(); }, FRESH_FOR);
+    const clock = window.setInterval(() => { if (isAppActive()) setNow(Date.now()); }, 30000);
+    window.addEventListener(NATIVE_ACTIVITY_EVENT, visible); window.addEventListener('online', onlineChanged); window.addEventListener('offline', onlineChanged); document.addEventListener('visibilitychange', visible);
+    return () => { window.removeEventListener(NATIVE_ACTIVITY_EVENT, visible); clearInterval(interval); clearInterval(clock); window.removeEventListener('online', onlineChanged); window.removeEventListener('offline', onlineChanged); document.removeEventListener('visibilitychange', visible); };
   }, [refresh]);
   const snapshot = place && state.snapshot && cacheMatches(state.snapshot, place) ? state.snapshot : null;
   return { snapshot, loading: state.loading || (!!place && state.placeId !== place.id), error: state.placeId === place?.id ? state.error : null, online, now, refresh };

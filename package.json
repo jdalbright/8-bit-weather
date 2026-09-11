@@ -13,9 +13,22 @@
     "test:e2e": "playwright test",
     "check:assets": "node scripts/check-assets.mjs",
     "dev:full": "vercel dev",
-    "test:briefing:live": "RUN_LIVE_BRIEFING=true vitest run --config vitest.server.config.ts server/briefing.live.test.ts"
+    "test:briefing:live": "RUN_LIVE_BRIEFING=true vitest run --config vitest.server.config.ts server/briefing.live.test.ts",
+    "build:native": "tsc -b && vite build --mode native",
+    "ios:sync": "npm run build:native && cap sync ios",
+    "ios:open": "cap open ios",
+    "ios:run": "npm run ios:sync && cap run ios",
+    "check:native": "node scripts/check-native.mjs",
+    "test:native-web": "playwright test --config playwright.native.config.ts",
+    "test:widget": "sh scripts/test-widget.sh",
+    "assets:widget": "node scripts/build-widget-assets.mjs"
   },
   "dependencies": {
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/geolocation": "^8.2.2",
+    "@capacitor/ios": "^8.5.1",
+    "@capacitor/preferences": "^8.0.1",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/pixelify-sans": "^5.3.0",
     "openai": "^7.13.0",
@@ -23,6 +36,7 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.1",
     "@eslint/js": "^9.39.5",
     "@playwright/test": "^1.63.0",
     "@testing-library/jest-dom": "^7.0.1",

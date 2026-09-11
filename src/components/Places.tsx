@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Place } from '../types';
 import { searchPlaces } from '../lib/api';
+import { isNativeApp } from '../lib/native';
 import { Icon, WeatherIcon } from './Icons';
 
 interface Props { places: Place[]; selected: Place | null; locating: boolean; onLocate: () => void; onSelect: (place: Place) => void; onRemove: (id: string) => void }
@@ -28,7 +29,7 @@ export default function Places({ places, selected, locating, onLocate, onSelect,
     <div className="view-title"><Icon name="places" size={26}/><h1>Places</h1></div>
     <p className="view-intro">A different place. A whole new sky.</p>
     <button className="pixel-button primary full-width" onClick={onLocate} disabled={locating}><Icon name="location"/>{locating ? 'Finding your location…' : 'Use my location'}</button>
-    <p className="location-note">Your browser will ask for permission. City search works without it.</p>
+    <p className="location-note">{isNativeApp() ? 'Your device will ask for permission.' : 'Your browser will ask for permission.'} City search works without it.</p>
     <label className="field-label" htmlFor="city-search">Find a city</label>
     <div className="search-field"><Icon name="search" size={18}/><input ref={input} id="city-search" type="search" autoComplete="off" enterKeyHint="search" placeholder="City or postal code" value={query} onChange={event => setQuery(event.target.value)} />{query ? <button className="icon-button" onClick={() => { setQuery(''); input.current?.focus(); }} aria-label="Clear city search"><Icon name="close" size={15}/></button> : null}</div>
     <div className="search-status" role="status">{loading ? 'Looking for places…' : query.length > 0 && query.trim().length < 3 ? 'Enter at least 3 characters.' : searched && !results.length ? 'No places found. Try a city and country.' : results.length ? `${results.length} ${results.length === 1 ? 'place' : 'places'} found` : ''}</div>

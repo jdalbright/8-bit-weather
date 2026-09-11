@@ -1,4 +1,5 @@
 import type { Place, WeatherSnapshot } from '../types';
+import { isNativeApp, locateNative } from './native';
 import { normalizeWeather } from './weather';
 
 export class WeatherRequestError extends Error {
@@ -54,6 +55,7 @@ export async function searchPlaces(query: string, signal: AbortSignal): Promise<
   });
 }
 export function locate(): Promise<Place> {
+  if (isNativeApp()) return locateNative();
   return new Promise((resolve, reject) => {
     if (!window.isSecureContext) { reject(new Error('Location needs a secure connection. You can search for a city instead.')); return; }
     if (!navigator.geolocation) { reject(new Error('This browser doesn’t support location. Search for a city instead.')); return; }

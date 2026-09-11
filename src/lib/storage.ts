@@ -1,4 +1,5 @@
 import type { Place, Preferences, WeatherSnapshot } from '../types';
+import { readStoredValue, writeStoredValue, removeStoredValue } from './persistence';
 import { cacheMatches } from './weather';
 import { clearBriefingCache } from './briefing-client';
 
@@ -8,8 +9,8 @@ export function defaultPreferences(locale = navigator.language): Preferences {
   return { units: /(?:^|-)US\b/i.test(locale) ? 'imperial' : 'metric', music: true, ambience: true, effects: true,
     musicVolume: 0.35, ambienceVolume: 0.25, effectsVolume: 0.4, reducedMotion: false };
 }
-function read(key: string): unknown { try { return JSON.parse(localStorage.getItem(key) ?? 'null'); } catch { return null; } }
-function write(key: string, value: unknown): boolean { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } }
+function read(key: string): unknown { try { return JSON.parse(readStoredValue(key) ?? 'null'); } catch { return null; } }
+function write(key: string, value: unknown): boolean { return writeStoredValue(key, JSON.stringify(value)); }
 export function isPlace(value: unknown): value is Place {
   if (!value || typeof value !== 'object') return false;
   const p = value as Place;
@@ -48,4 +49,4 @@ export function cachedWeather(place: Place): WeatherSnapshot | null { return rea
 export function cacheWeather(snapshot: WeatherSnapshot): void {
   write(`${STORAGE_KEY}:forecasts`, [snapshot, ...readCache().filter(s => s.placeId !== snapshot.placeId)].slice(0, 12));
 }
-export function clearSavedData(): void { clearBriefingCache(); try { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(`${STORAGE_KEY}:forecasts`); } catch { /* The app remains usable without persistent storage. */ } }
+export function clearSavedData(): void { clearBriefingCache(); try { removeStoredValue(STORAGE_KEY); removeStoredValue(`${STORAGE_KEY}:forecasts`); } catch { /* The app remains usable without persistent storage. */ } }
