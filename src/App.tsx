@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import Today from './components/Today';
 import Radar from './components/Radar';
 import Places from './components/Places';
@@ -52,6 +52,20 @@ export default function App() {
   const weather = useWeather(place);
   const power = usePowerState();
   const motion = useMotion(preferences.reducedMotion, power.savingPower);
+  const previousView = useRef(view);
+  useLayoutEffect(() => {
+    const previous = previousView.current;
+    previousView.current = view;
+    const main = shell.current?.querySelector('main');
+    if (previous === view || !motion.animate || !main?.animate) return;
+    const direction = navigation.findIndex(item => item.view === view) > navigation.findIndex(item => item.view === previous) ? 1 : -1;
+    // Only the incoming screen is live; changing tabs cancels unfinished motion.
+    const animation = main.animate([
+      { opacity: .4, transform: `translateX(${direction * 12}px)` },
+      { opacity: 1, transform: 'translateX(0)' },
+    ], { duration: 240, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+    return () => animation.cancel();
+  }, [view, motion.animate]);
   useEffect(() => {
     setHapticsEnabled(preferences.haptics);
     if (preferences.haptics && !previousHaptics.current) triggerHaptic('selection');
@@ -142,12 +156,14 @@ export default function App() {
     {!isNativeApp() ? <Suspense fallback={null}><WebUpdates /></Suspense> : null}
     {notice || audio.error ? <div className="app-notice" role="alert"><span>{notice ?? audio.error}</span>{notice ? <button className="icon-button" aria-label="Dismiss message" onClick={() => setNotice(null)}><Icon name="close" size={14}/></button> : null}</div> : null}
     {storageUnavailable ? <p className="offline-notice" role="status">Saved data is unavailable. Your choices will last for this session.</p> : null}
+    <div className="view-transition">
     {view === 'today' ? <PullToRefresh key={place?.id ?? 'welcome'} enabled={!!place} disabled={weather.loading || !weather.online} onRefresh={() => manualRefresh('pull')}>
       <Today previewHour={previewHour} previewScene={previewScene} onSelectForecast={selectForecast} briefingProvider={preferences.briefingProvider} onBriefingProviderChange={briefingProvider => { if (briefingProvider !== preferences.briefingProvider) { triggerHaptic('selection'); setPreferences(previous => ({ ...previous, briefingProvider })); } }} place={place} {...weather} scene={scene} units={preferences.units} animate={motion.animate} decorativeAnimate={motion.decorativeAnimate} locating={locating} onRadar={() => navigate('radar')} onDiscover={audio.effect} onLocate={() => void handleLocate()} onPlaces={() => navigate('places')} onRefresh={() => void manualRefresh()}/>
     </PullToRefresh>
       : view === 'radar' ? <Radar key={`${place?.id}:${place?.latitude}:${place?.longitude}`} place={place} timezone={weather.snapshot?.timezone} now={weather.now} online={weather.online} active={motion.visible} allowPlayback={motion.decorativeAnimate} onPlaces={() => navigate('places')}/>
       : view === 'places' ? <Places places={places} selected={place} locating={locating} onLocate={() => void handleLocate()} onSelect={next => choosePlace(next)} onRemove={id => { if (places.some(saved => saved.id === id)) triggerHaptic('impact'); setPlaces(current => current.filter(saved => saved.id !== id)); audio.effect('remove'); }}/>
       : <Settings preferences={preferences} onChange={setPreferences} audio={audio} install={install} systemReduced={motion.systemReduced} power={power} onClear={clearData}/>}
-    <nav className="bottom-nav" aria-label="Main navigation">{navigation.map(item => <button key={item.view} aria-current={view === item.view ? 'page' : undefined} onClick={() => navigate(item.view)}><Icon name={item.icon} size={22}/><span>{item.label}</span></button>)}</nav>
+    </div>
+    <nav className="bottom-nav" aria-label="Main navigation" style={{ '--active-tab': navigation.findIndex(item => item.view === view) } as CSSProperties}>{navigation.map(item => <button key={item.view} aria-current={view === item.view ? 'page' : undefined} onClick={() => navigate(item.view)}><span className="nav-icon"><Icon name={item.icon} size={22}/></span><span>{item.label}</span></button>)}</nav>
   </div>;
 }

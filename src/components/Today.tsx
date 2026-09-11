@@ -55,7 +55,9 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
         <button className="text-button city-search-link" onClick={onPlaces}><Icon name="search" size={14}/>Search for a city</button>
       </div> : <div className="current-weather" aria-busy={loading}>
         <button className="pixel-button location-selector" onClick={onPlaces} aria-label={`Change location, ${place.name}`}><span>{place.name}{place.region === 'North Carolina' ? ', NC' : ''}</span><Icon name="chevron" size={16}/></button>
-        {previewHour ? <p className="forecast-preview-badge">{stale ? 'Saved forecast preview' : 'Forecast preview'}</p> : null}
+        <div className="forecast-preview-status" aria-hidden={!previewHour}>
+          <div><p className="forecast-preview-badge">{stale ? 'Saved forecast preview' : 'Forecast preview'}</p></div>
+        </div>
         <div className="weather-date">{previewHour && snapshot ? forecastTimeLabel(previewHour.time, snapshot.timezone) : snapshot ? localTime((stale ? snapshot.current.time : now / 1000), snapshot.timezone, { weekday: 'short', month: 'short', day: 'numeric' }) : 'YOUR FORECAST IS ON ITS WAY'}</div>
         <h1 className="current-temperature" aria-label={displayTemperature == null ? 'Temperature unavailable' : `${degree} ${units === 'imperial' ? 'Fahrenheit' : 'Celsius'}`}><span>{degree.replace('°', '')}</span>{degree.includes('°') ? <sup>°</sup> : null}</h1>
         <p className="condition">{snapshot ? displayInfo.label : loading ? 'Gathering the forecast…' : 'Forecast unavailable'}</p>

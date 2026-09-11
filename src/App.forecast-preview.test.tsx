@@ -50,7 +50,7 @@ it('synchronizes slider, tiles, preview readout and current sections without alt
   fireEvent.click(screen.getByRole('button', { name: 'Back to now' }));
   expect(slider()).toHaveValue('0'); expect(slider()).toHaveFocus();
   expect(screen.getByRole('heading', { name: '72° Fahrenheit' })).toBeInTheDocument();
-  expect(container.querySelector('.forecast-preview-badge')).not.toBeInTheDocument();
+  expect(container.querySelector('.forecast-preview-status')).toHaveAttribute('aria-hidden', 'true');
 });
 
 it('keeps timestamps across refresh, resets removed hours, and does not resurrect selection when data returns', () => {
