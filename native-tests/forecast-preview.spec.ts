@@ -1,0 +1,60 @@
+import { expect, test } from '@playwright/test';
+import { fixtureTime, forecastFixture } from '../src/test/fixtures';
+import { installBridge } from './bridge';
+
+test('native preview preserves widget observations and works through refresh and navigation', async ({ page }) => {
+  const bridge = await installBridge(page);
+  await page.clock.setFixedTime(fixtureTime + 1800000);
+  await page.route('https://api.open-meteo.com/**', route => {
+    const data = forecastFixture(); data.hourly.weather_code[1] = 71;
+    return route.fulfill({ json: data, headers: { 'access-control-allow-origin': '*' } });
+  });
+  await page.goto('/');
+  const slider = page.getByRole('slider', { name: 'Forecast preview time' });
+  await expect(slider).toHaveValue('0');
+  const widgetWrites = () => bridge.calls.filter(call => call.plugin === 'WeatherWidget' && call.method === 'update');
+  await expect.poll(() => widgetWrites().length).toBeGreaterThan(0);
+  const initialWrites = widgetWrites().length;
+  await slider.press('ArrowRight');
+  await expect(page.locator('.forecast-preview-badge')).toHaveText('Forecast preview');
+  await expect(page.locator('.scenery')).toHaveAttribute('data-scene', 'snow-day');
+  expect(widgetWrites()).toHaveLength(initialWrites);
+  await expect(page.getByRole('button', { name: 'Sound off' })).toHaveAttribute('aria-pressed', 'false');
+  await page.evaluate(() => window.__emitNative('refresh', { requestId: 99 }));
+  await expect(slider).toHaveValue('1');
+  await page.getByRole('button', { name: 'Back to now' }).click();
+  await expect(slider).toHaveValue('0');
+  await slider.press('End');
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await page.getByRole('button', { name: 'Today', exact: true }).click();
+  await expect(slider).toHaveValue('0');
+});
+
+test('hourly haptics follow selection and scrolling and respect the haptics setting', async ({ page }) => {
+  const bridge = await installBridge(page);
+  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture(Date.now()), headers: { 'access-control-allow-origin': '*' } }));
+  await page.goto('/');
+  const tiles = page.locator('.hour');
+  await expect(tiles).toHaveCount(24);
+  const pulses = () => bridge.calls.filter(call => call.method === 'triggerHaptic');
+  expect(pulses()).toHaveLength(0);
+  await tiles.nth(1).click();
+  await expect.poll(() => pulses().length).toBe(1);
+  expect(pulses()[0].options?.kind).toBe('selection');
+  await tiles.nth(1).click();
+  expect(pulses()).toHaveLength(1);
+  await page.getByRole('button', { name: 'Scroll hourly forecast forward' }).click();
+  await expect.poll(() => pulses().length).toBe(2);
+  await expect(page.getByRole('slider', { name: 'Forecast preview time' })).toHaveValue('1');
+  await page.evaluate(() => window.__emitNative('appStateChange', { isActive: false }));
+  await page.getByRole('button', { name: 'Scroll hourly forecast forward' }).click();
+  expect(pulses()).toHaveLength(2);
+  await page.evaluate(() => window.__emitNative('appStateChange', { isActive: true }));
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await page.getByRole('switch', { name: 'Haptic feedback' }).click();
+  const disabledCount = pulses().length;
+  await page.getByRole('button', { name: 'Today', exact: true }).click();
+  await tiles.nth(2).click();
+  await page.getByRole('button', { name: 'Scroll hourly forecast forward' }).click();
+  expect(pulses()).toHaveLength(disabledCount);
+});

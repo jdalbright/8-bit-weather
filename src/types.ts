@@ -40,6 +40,7 @@ export interface HourWeather {
   code: number | null;
   isDay: boolean;
   uv?: number | null;
+  wind?: number | null;
 }
 export interface DayWeather {
   date: string;

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import Today from './components/Today';
 import Places from './components/Places';
 import Settings from './components/Settings';
@@ -13,7 +13,9 @@ import { useMotion } from './hooks/useMotion';
 import { useInstall } from './hooks/useInstall';
 import { clearSavedData, defaultPreferences, loadState, saveState } from './lib/storage';
 import { locate } from './lib/api';
-import { deriveScene } from './lib/scene';
+import { deriveHourlyScene, deriveScene } from './lib/scene';
+import { resolveForecastSelection, type ForecastSelection } from './lib/forecast-preview';
+import { usePreviewAudioScene } from './hooks/usePreviewAudioScene';
 import { isNativeApp, NATIVE_PLACE_EVENT, takeLaunchPlaceId } from './lib/native';
 import { hasLoadedNativeStorage, PERSISTENCE_ERROR_EVENT } from './lib/persistence';
 import { syncWidget } from './lib/widget';
@@ -27,6 +29,7 @@ export default function App() {
   const [places, setPlaces] = useState(initial.places);
   const [place, setPlace] = useState(initial.selected);
   const [view, setView] = useState<View>('today');
+  const [forecastSelection, setForecastSelection] = useState<ForecastSelection | null>(null);
   const [locating, setLocating] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [storageUnavailable, setStorageUnavailable] = useState(document.documentElement.dataset.storageUnavailable === 'true');
@@ -42,7 +45,14 @@ export default function App() {
   const motion = useMotion(preferences.reducedMotion, power.savingPower);
   useEffect(() => { setHapticsEnabled(preferences.haptics); return () => setHapticsEnabled(false); }, [preferences.haptics]);
   const scene = deriveScene(weather.snapshot, weather.now, weather.online);
-  const audio = useAudio(preferences, scene);
+  const previewHour = view === 'today' ? resolveForecastSelection(forecastSelection, place, weather.snapshot, weather.now) : null;
+  const previewScene = useMemo(() => weather.snapshot && previewHour ? deriveHourlyScene(weather.snapshot, previewHour) : null, [weather.snapshot, previewHour]);
+  useEffect(() => { if (forecastSelection && !previewHour) setForecastSelection(null); }, [forecastSelection, previewHour]);
+  const audioScene = usePreviewAudioScene(scene, previewScene, `${place?.id}:${place?.latitude}:${place?.longitude}`);
+  const audio = useAudio(preferences, audioScene);
+  function selectForecast(time: number | null) {
+    setForecastSelection(time !== null && place ? { placeId: place.id, latitude: place.latitude, longitude: place.longitude, time } : null);
+  }
   const install = useInstall();
   useEffect(() => {
     const unavailable = () => setStorageUnavailable(true);
@@ -105,7 +115,7 @@ export default function App() {
     {notice || audio.error ? <div className="app-notice" role="alert"><span>{notice ?? audio.error}</span>{notice ? <button className="icon-button" aria-label="Dismiss message" onClick={() => setNotice(null)}><Icon name="close" size={14}/></button> : null}</div> : null}
     {storageUnavailable ? <p className="offline-notice" role="status">Saved data is unavailable. Your choices will last for this session.</p> : null}
     {view === 'today' ? <PullToRefresh key={place?.id ?? 'welcome'} enabled={!!place} disabled={weather.loading || !weather.online} onRefresh={manualRefresh}>
-      <Today briefingProvider={preferences.briefingProvider} onBriefingProviderChange={briefingProvider => setPreferences(previous => ({ ...previous, briefingProvider }))} place={place} {...weather} scene={scene} units={preferences.units} animate={motion.animate} decorativeAnimate={motion.decorativeAnimate} locating={locating} onDiscover={audio.effect} onLocate={() => void handleLocate()} onPlaces={() => navigate('places')} onRefresh={() => void manualRefresh()}/>
+      <Today previewHour={previewHour} previewScene={previewScene} onSelectForecast={selectForecast} briefingProvider={preferences.briefingProvider} onBriefingProviderChange={briefingProvider => setPreferences(previous => ({ ...previous, briefingProvider }))} place={place} {...weather} scene={scene} units={preferences.units} animate={motion.animate} decorativeAnimate={motion.decorativeAnimate} locating={locating} onDiscover={audio.effect} onLocate={() => void handleLocate()} onPlaces={() => navigate('places')} onRefresh={() => void manualRefresh()}/>
     </PullToRefresh>
       : view === 'places' ? <Places places={places} selected={place} locating={locating} onLocate={() => void handleLocate()} onSelect={choosePlace} onRemove={id => { setPlaces(current => current.filter(saved => saved.id !== id)); audio.effect('remove'); }}/>
       : <Settings preferences={preferences} onChange={setPreferences} audio={audio} install={install} systemReduced={motion.systemReduced} power={power} onClear={clearData}/>}
