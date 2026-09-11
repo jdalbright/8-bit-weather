@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     ...(mode === 'native' ? [] : [VitePWA({
       registerType: 'prompt',
-      includeAssets: ['icon.svg', 'apple-touch-icon.png', 'art/*.webp', 'radar/*-license.txt'],
+      includeAssets: ['icon.svg', 'apple-touch-icon.png', 'art/*.webp', 'art/raleigh-wildlife/credits.txt', 'radar/*-license.txt'],
       manifest: {
         id: '/',
         name: '8-Bit Weather',

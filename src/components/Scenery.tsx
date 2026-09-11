@@ -8,6 +8,7 @@ import { landscapes, landscapeSource } from '../lib/landscapes';
 import type { Landscape } from '../lib/landscapes';
 import { Stream } from './Stream';
 import { OceanSurface } from './OceanSurface';
+import { RaleighWildlife } from './RaleighWildlife';
 
 // All station coordinates are authored in the landscape's 960-pixel-wide grid.
 // Discrete sprite frames keep the cups upright as they circle the fixed mast.
@@ -111,11 +112,12 @@ export function Scenery({ scene, animate, onDiscover, children, className = '', 
         </g></g>)}
         <StationRotor />
         <rect className={`station-indicator ${discovery?.kind === 'station' ? 'indicator-active' : ''}`} x={anchors.station.x - 4} y={anchors.station.y - 4} width="8" height="8" />
-        {wildlife && scene.isDay && ['clear', 'partly-cloudy', 'cloudy'].includes(scene.kind) ? <g className="meadow-birds" data-bird={birds.kind}>{birds.positions.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}><g className="meadow-bird" style={{ animationDelay: `${-i * 19}s` }}>
+        {landscape !== 'raleigh' && wildlife && scene.isDay && ['clear', 'partly-cloudy', 'cloudy'].includes(scene.kind) ? <g className="meadow-birds" data-bird={birds.kind}>{birds.positions.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}><g className="meadow-bird" style={{ animationDelay: `${-i * 19}s` }}>
           <path fill={birds.kind === 'gull' ? '#eee5cf' : '#29294a'} d="M-15-4h6v3h6v4h6v-4h6v-3h6v4h-6v4H6v3H-6V4h-6V0h-3z"/><path fill={birds.kind === 'gull' ? '#596676' : '#d9c8ab'} d="M-3 1h6v3h-6z"/>
         </g></g>)}</g> : null}
         {wildlife && !scene.isDay && fireflies.length > 0 ? <g className="meadow-fireflies">{fireflies.map(([x, y], i) => <g key={i} transform={`translate(${x} ${y})`}><g className="meadow-firefly" style={{ animationDelay: `${i * -1.3}s` }}><rect x="-4" y="-4" width="8" height="8" fill="#ffe898" opacity=".18"/><rect x="-1" y="-1" width="3" height="3" fill="#fbea9c"/></g></g>)}</g> : null}
       </svg>
+      {landscape === 'raleigh' ? <RaleighWildlife scene={scene} /> : null}
       {!scene.isDay ? <div className="stars">{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ left: `${8 + (i * 23) % 87}%`, top: `${3 + (i * 13) % 45}%`, animationDelay: `${i * -0.8}s` }} />)}</div> : null}
       {!wet || !scene.isDay ? <WeatherIcon className="celestial" kind="clear" isDay={scene.isDay} size={112} /> : null}
       {[0, 1, 2, ...(wet ? [3, 4] : [])].map(i => <svg key={i} className={`scene-cloud cloud-${i}`} viewBox="0 0 60 28" shapeRendering="crispEdges"><SceneCloud dark={scene.kind === 'storm' || !scene.isDay} /></svg>)}

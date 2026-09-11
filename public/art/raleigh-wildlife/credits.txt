@@ -1,0 +1,34 @@
+Raleigh wildlife artwork — 8-Bit Weather
+Source pages checked and original packs downloaded September 11, 2026.
+These sprites are incorporated into the weather app, not offered as an asset pack.
+
+GARDEN BIRDS — Pop Shop Packs
+https://pop-shop-packs.itch.io/garden-birds-pixel-character-asset-pack
+
+cardinal.png and blue-jay.png are unchanged copies of:
+Garden Birds_Download/Spritesheets/spritesheet_cardinal.png
+Garden Birds_Download/Spritesheets/spritesheet_blue jay.png
+
+Creator's published license:
+- You can use this asset in any game project, personal or commercial
+- DO NOT resell or redistribute AS A GAME ASSET, it has to be part of a project
+- Credit not necessary but appreciated, if you do you can link to my itch.io profile
+- Modify to suit your needs
+- You are NOT allowed to turn any of my assets to an NFT.
+- You are NOT allowed to upload any of my assets into a generative A.I. software
+
+The creator also clarifies in the page's comments that use in "a game or other
+software" is permitted. No generative processing was used on these sprites.
+
+WINDY LEAVES PARTICLE FX — EdgeLoopRepeat
+https://rs-pixel-store.itch.io/falling-leaf-fx
+
+leaves.png is an unchanged copy of ELR-WindyLeafs/ELR_SpringlLeaf.png.
+
+Creator's published permission:
+By using this asset, you get permission to use it in your projects, whether
+you're making games, websites, or whatever cool stuff you're into. Feel free
+to tweak it to fit your needs. Credit is not required but always welcome :)
+
+Please do not resell or redistribute this asset on its own or give it away
+separately. it's for your projects, not for resale.

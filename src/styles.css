@@ -190,6 +190,18 @@
   .river-discovery .inner-ring { opacity: .7; }
   .meadow-bird { opacity: 0; animation: bird-visit 42s steps(36, end) infinite; }
   .meadow-firefly { animation: firefly-drift 9s steps(15, end) infinite; }
+  .raleigh-wildlife { position: absolute; inset: 0; pointer-events: none; filter: brightness(var(--wildlife-brightness)) saturate(var(--wildlife-saturation)); }
+  .raleigh-bird-flight, .raleigh-resting-bird { position: absolute; width: 48px; height: 48px; }
+  .raleigh-cardinal { --bird-image: url('/art/raleigh-wildlife/cardinal.png'); }
+  .raleigh-blue-jay { --bird-image: url('/art/raleigh-wildlife/blue-jay.png'); }
+  .raleigh-bird-flight { left: 188px; top: 600px; --bird-travel: 600px; opacity: 0; animation: raleigh-bird-visit 40s linear infinite; }
+  .raleigh-bird-flight.raleigh-blue-jay { left: 748px; top: 612px; --bird-travel: -600px; animation-delay: 20s; }
+  .raleigh-cardinal .raleigh-bird-facing { transform: scaleX(-1); }
+  .raleigh-bird-sprite { width: 48px; height: 48px; image-rendering: pixelated; background-image: var(--bird-image); background-size: 192px 192px; background-repeat: no-repeat; animation: raleigh-wing-frames .48s steps(4, end) infinite; }
+  .raleigh-resting-bird { display: none; left: 332px; top: 708px; }
+  .raleigh-resting-bird .raleigh-bird-sprite { background-position: 0 -48px; animation: none; }
+  .raleigh-leaf-path { position: absolute; width: 32px; height: 32px; opacity: 0; animation: raleigh-leaf-drift var(--leaf-duration) linear var(--leaf-delay) infinite; }
+  .raleigh-leaf-sprite { width: 32px; height: 32px; image-rendering: pixelated; background: url('/art/raleigh-wildlife/leaves.png') 0 0 / 160px 32px no-repeat; animation: raleigh-leaf-frames .8s steps(5, end) infinite; }
   .scene-hotspots { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
   .scene-hotspot { position: absolute; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; transform: translate(-50%, -50%); pointer-events: auto; touch-action: pan-y; }
   .scene-hotspot:focus-visible { outline: 2px dashed var(--paper); outline-offset: -3px; box-shadow: inset 0 0 0 1px var(--ink); }
@@ -442,11 +454,27 @@
   @keyframes station-blink { 0%, 40%, 80% { opacity: 1; } 20%, 60% { opacity: .25; } }
   @keyframes bird-visit { 0%, 72% { opacity: 0; transform: translate(-24px, 3px); } 76% { opacity: .85; } 88% { transform: translate(60px, -18px); } 96%, 100% { opacity: 0; transform: translate(160px, -25px); } }
   @keyframes firefly-drift { 0%, 100% { transform: translate(0, 0); opacity: .25; } 35% { opacity: .9; } 60% { transform: translate(12px, -16px); opacity: .65; } }
+  /* Original sheets: birds have four 16px flying cells in row zero; leaves have five. */
+  @keyframes raleigh-wing-frames { to { background-position-x: -192px; } }
+  @keyframes raleigh-leaf-frames { to { background-position-x: -160px; } }
+  @keyframes raleigh-bird-visit {
+    0%, 5% { transform: translate(0, 18px); opacity: 0; }
+    6%, 18% { opacity: 1; }
+    20%, 100% { transform: translate(var(--bird-travel), -24px); opacity: 0; }
+  }
+  @keyframes raleigh-leaf-drift {
+    0% { transform: translate(0, 0); opacity: 0; }
+    12%, 75% { opacity: .8; }
+    45% { transform: translate(calc(var(--leaf-dx) * .3), calc(var(--leaf-dy) * .48)); }
+    100% { transform: translate(var(--leaf-dx), var(--leaf-dy)); opacity: 0; }
+  }
   @keyframes fog-drift { to { transform: translateX(15%); } }
   @keyframes lightning-glimmer { 0%, 86%, 100% { opacity: 0; } 90%, 94% { opacity: .5; } }
   @keyframes music-bars { to { height: 14px; } }
   [data-animate='false'] .landscape *, .decoration-paused .equalizer i { animation-play-state: paused !important; }
   [data-animate='false'] .art-layer, [data-animate='false'] .twilight-light { transition: none; }
+  [data-animate='false'] .raleigh-bird-flight, [data-animate='false'] .raleigh-leaves { display: none; }
+  [data-animate='false'] .raleigh-resting-bird { display: block; }
   [data-animate='false'] .river-discovery { transform: scale(1); opacity: .8; animation: none; }
   [data-animate='false'] .indicator-active { opacity: 1; animation: none; }
   .motion-reduced .meadow-bird { opacity: .75; }
