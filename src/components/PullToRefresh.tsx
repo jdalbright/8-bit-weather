@@ -1,5 +1,7 @@
 import { useEffect, useEffectEvent, useRef, useState, type ReactNode } from 'react';
 import { Icon } from './Icons';
+import { isNativeApp } from '../lib/native';
+import { NativePullToRefresh } from './NativePullToRefresh';
 
 type Phase = 'idle' | 'pulling' | 'ready' | 'refreshing';
 type Gesture = { id: number; x: number; y: number; active: boolean; distance: number };
@@ -15,6 +17,11 @@ interface Props {
 }
 
 export function PullToRefresh({ enabled, disabled, onRefresh, children }: Props) {
+  return isNativeApp() ? <NativePullToRefresh enabled={enabled && !disabled} onRefresh={onRefresh}>{children}</NativePullToRefresh>
+    : <WebPullToRefresh enabled={enabled} disabled={disabled} onRefresh={onRefresh}>{children}</WebPullToRefresh>;
+}
+
+function WebPullToRefresh({ enabled, disabled, onRefresh, children }: Props) {
   const surface = useRef<HTMLDivElement>(null);
   const pending = useRef(false);
   const [feedback, setFeedback] = useState<{ phase: Phase; distance: number }>({ phase: 'idle', distance: 0 });

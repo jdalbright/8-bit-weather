@@ -73,6 +73,7 @@ export async function installBridge(page: Page, initial: Record<string, string> 
       App: ['getLaunchUrl', 'removeListener'],
       Geolocation: ['checkPermissions', 'requestPermissions', 'getCurrentPosition'],
       WeatherWidget: ['update', 'clear'],
+      NativeScroll: ['configure', 'finish', 'removeListener'],
       AppleBriefing: ['availability', 'generate', 'cancel'],
     };
     Object.assign(window, {
@@ -80,7 +81,7 @@ export async function installBridge(page: Page, initial: Record<string, string> 
       Capacitor: {
         PluginHeaders: Object.entries(methods).map(([name, names]) => ({ name, methods: [
           ...names.map(name => ({ name, rtype: 'promise' })),
-          ...(name === 'App' ? [{ name: 'addListener', rtype: 'callback' }] : []),
+          ...(['App', 'NativeScroll'].includes(name) ? [{ name: 'addListener', rtype: 'callback' }] : []),
         ] })),
         nativePromise: async (plugin: string, method: string, options?: Record<string, unknown>) => {
           const reply = await window.__nativeInvoke({ plugin, method, options });

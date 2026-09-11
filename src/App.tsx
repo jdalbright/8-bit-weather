@@ -3,6 +3,7 @@ import Today from './components/Today';
 import Places from './components/Places';
 import Settings from './components/Settings';
 import { PullToRefresh } from './components/PullToRefresh';
+import { ScrollEdgeFeedback } from './components/ScrollEdgeFeedback';
 import { Icon, WeatherIcon } from './components/Icons';
 import { useWeather } from './hooks/useWeather';
 import { useAudio } from './hooks/useAudio';
@@ -84,6 +85,7 @@ export default function App() {
     locationRequest.current++; audio.stop(); clearSavedData(); setPlaces([]); setPlace(null); setPreferences(defaultPreferences()); setView('today'); setLocating(false); setNotice('Saved places, forecasts, and settings cleared.'); window.scrollTo({ top: 0, behavior: 'instant' });
   }
   return <div ref={shell} className={`app-shell ${motion.animate ? '' : 'motion-reduced'}`}>
+    {!isNativeApp() ? <ScrollEdgeFeedback key={`${view}:${place?.id ?? 'welcome'}`} animate={motion.animate}/> : null}
     <a className="skip-link" href="#main-content">Skip to weather</a>
     <header className="app-header"><button className="brand" onClick={() => navigate('today')} aria-label="8-Bit Weather home"><WeatherIcon kind="clear" size={30}/><span>8-BIT WEATHER</span></button><button className="pixel-button sound-button" aria-pressed={audio.enabled} onClick={() => void audio.toggle()}><Icon name={audio.enabled ? 'sound' : 'muted'} size={17}/>{audio.enabled ? 'Sound on' : 'Sound off'}</button></header>
     {!isNativeApp() ? <Suspense fallback={null}><WebUpdates /></Suspense> : null}

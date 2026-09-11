@@ -61,7 +61,9 @@ export default function Today({ place, snapshot, scene, units, animate, loading,
           <WeatherIcon kind="clear" size={25}/><span className="uv-stat-copy"><span className="uv-stat-label">UV index</span><span className="uv-stat-reading">{uv?.current?.index ?? '—'} <small>{uv?.current?.level.label ?? (uv?.stale ? 'Saved' : 'Unavailable')}</small></span><UvScale value={uv?.current?.index ?? null} compact/></span><Icon name="chevron" size={12}/>
         </button></dd></div>
       </dl>
-      {uvExpanded && uv ? <UvDetails key={`${snapshot.placeId}:${uv.today}`} forecast={uv} timezone={snapshot.timezone} now={now} isDay={scene.isDay} online={online}/> : null}
+      {uv ? <div className="uv-disclosure" data-expanded={uvExpanded} data-animate={animate} aria-hidden={!uvExpanded} inert={!uvExpanded}>
+        <div className="uv-disclosure-content"><UvDetails key={`${snapshot.placeId}:${uv.today}`} forecast={uv} timezone={snapshot.timezone} now={now} isDay={scene.isDay} online={online}/></div>
+      </div> : null}
       {rainOutlook ? <RainOutlook key={snapshot.placeId} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
       <WeatherBriefing snapshot={snapshot} units={units} online={online} now={now}/>
       <section className="hourly-section" aria-labelledby="hourly-title">
