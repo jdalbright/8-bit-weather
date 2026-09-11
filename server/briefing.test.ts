@@ -3,6 +3,8 @@ import { handleBriefing } from './briefing';
 import { briefingForecast, BRIEFING_TTL } from '../src/lib/briefing';
 import { normalizeWeather } from '../src/lib/weather';
 import { asheville, fixtureTime, forecastFixture } from '../src/test/fixtures';
+import { OPENAI_BRIEFING_REVISION, openAIBriefingFacts } from './openai-briefing';
+import { comparisonForecast, comparisonTime } from './briefing-scenarios.fixture';
 
 const { create, construct } = vi.hoisted(() => ({ create: vi.fn(), construct: vi.fn() }));
 vi.mock('openai', async importOriginal => {
@@ -27,7 +29,37 @@ it('calls only the server-selected model with bounded instructions and no person
   expect(construct).toHaveBeenCalledWith({ apiKey: 'test-server-only-key', timeout: 12000, maxRetries: 0 });
   expect(create.mock.calls[0][0]).toMatchObject({ model: 'gpt-5.6-luna', reasoning: { effort: 'none' }, store: false, max_output_tokens: 250 });
   expect(create.mock.calls[0][0].input).not.toMatch(/Private place|latitude|ignore all weather/);
+  expect(JSON.parse(create.mock.calls[0][0].input)).toEqual(openAIBriefingFacts(payload(), fixtureTime));
+  expect(console.info).toHaveBeenCalledWith('weather_briefing', expect.objectContaining({ promptRevision: OPENAI_BRIEFING_REVISION }));
   expect(response.headers.get('cache-control')).toBe('no-store');
+});
+it.each([
+  'Temperatures stay near 99°F. Rain chances are low.',
+  'Available temperatures stay near 72°F. Rain data is incomplete, but expect dry weather.',
+])('rejects unsupported provider prose once, without logging its content: %s', async output_text => {
+  vi.setSystemTime(comparisonTime);
+  create.mockResolvedValue({ status: 'completed', output_text });
+  const response = await handleBriefing(request(comparisonForecast('incomplete')));
+  expect(response.status).toBe(502);
+  expect(await response.json()).toEqual({ code: 'briefing_unavailable' });
+  expect(create).toHaveBeenCalledTimes(1);
+  expect(console.info).toHaveBeenCalledWith('weather_briefing', expect.objectContaining({ promptRevision: OPENAI_BRIEFING_REVISION, outcome: 'invalid_summary' }));
+  expect(JSON.stringify(vi.mocked(console.info).mock.calls)).not.toContain(output_text);
+});
+it('withholds the observed storm advice failure and allows a safe explicit retry without changing the response format', async () => {
+  vi.setSystemTime(comparisonTime);
+  const forecast = comparisonForecast('thunderstorms');
+  create.mockResolvedValueOnce({ status: 'completed', output_text: 'Thunderstorms are most likely this evening, with precipitation chances reaching 80%. Carry an umbrella or seek shelter if storms develop this evening.' });
+  const failed = await handleBriefing(request(forecast));
+  expect(failed.status).toBe(502);
+  expect(await failed.json()).toEqual({ code: 'briefing_unavailable' });
+  expect(create).toHaveBeenCalledTimes(1);
+  const safe = 'Thunderstorms are most likely this evening, with precipitation chances reaching 80%. Temperatures fall from 77°F to 66°F by tomorrow afternoon.';
+  create.mockResolvedValueOnce({ status: 'completed', output_text: safe });
+  const retried = await handleBriefing(request(forecast));
+  expect(retried.status).toBe(200);
+  expect(await retried.json()).toMatchObject({ text: safe, version: '1:warm-practical' });
+  expect(create).toHaveBeenCalledTimes(2);
 });
 it('does not call OpenAI when disabled, missing a key, stale, or incomplete', async () => {
   vi.stubEnv('WEATHER_BRIEFING_ENABLED', 'false'); expect((await handleBriefing(request())).status).toBe(503);

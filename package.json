@@ -14,6 +14,7 @@
     "check:assets": "node scripts/check-assets.mjs",
     "dev:full": "vercel dev",
     "test:briefing:live": "RUN_LIVE_BRIEFING=true vitest run --config vitest.server.config.ts server/briefing.live.test.ts",
+    "test:briefing:compare": "RUN_LIVE_BRIEFING_COMPARISON=true vitest run --config vitest.server.config.ts server/briefing.comparison.live.test.ts",
     "build:native": "tsc -b && vite build --mode native",
     "ios:sync": "npm run build:native && cap sync ios",
     "ios:open": "cap open ios",

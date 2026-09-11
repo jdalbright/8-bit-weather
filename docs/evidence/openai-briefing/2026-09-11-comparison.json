@@ -1,0 +1,2476 @@
+{
+  "model": "gpt-5.6-luna",
+  "promptRevision": "2:daypart-story",
+  "comparisonTime": 1789151400000,
+  "requests": 16,
+  "reviewStatus": "reviewed-gate-failed",
+  "acceptance": "All eight candidate outputs accepted and factually correct; candidate preferred in at least six of eight pairs.",
+  "samples": [
+    {
+      "scenario": "steady",
+      "forecast": {
+        "timezone": "America/New_York",
+        "fetchedAt": 1789151400000,
+        "observationTime": 1789149600,
+        "units": "imperial",
+        "hourly": [
+          {
+            "time": 1789149600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789153200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789156800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789160400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789164000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789167600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789171200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789174800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789178400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789182000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789185600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789189200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789192800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789196400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789200000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789203600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789207200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789210800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789214400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789218000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789221600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789225200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789228800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789232400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789236000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789239600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          }
+        ]
+      },
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "steady",
+          "steadyAt": "72°F",
+          "timeline": []
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [
+            "this afternoon",
+            "this evening",
+            "overnight",
+            "tomorrow morning",
+            "tomorrow afternoon"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "tomorrow afternoon"
+          }
+        ]
+      },
+      "outputs": {
+        "baseline": {
+          "status": "completed",
+          "text": "Clear skies hold from this afternoon through tomorrow afternoon, with temperatures staying steady at 72°F. Precipitation is not expected during this period, with a 0% chance shown throughout. It should be comfortable for outdoor plans, though you may still want light layers for overnight comfort.",
+          "durationMs": 2570,
+          "inputTokens": 1512,
+          "outputTokens": 61,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        },
+        "candidate": {
+          "status": "completed",
+          "text": "Temperatures stay near 72°F through tomorrow afternoon, with clear or mostly clear skies throughout. Precipitation chances remain low, reaching no higher than 0% across this afternoon through tomorrow afternoon, so significant weather changes are not expected.",
+          "durationMs": 1883,
+          "inputTokens": 992,
+          "outputTokens": 52,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        }
+      },
+      "review": {
+        "candidateFactuallyCorrect": true,
+        "preferred": "candidate",
+        "emphasis": "Leads with steady temperature and drops unnecessary clothing advice.",
+        "naturalness": "Mostly clear, but reaching no higher than 0% is awkward.",
+        "repetition": "Repeats the afternoon-to-afternoon window.",
+        "notes": "All weather claims are supported. Candidate wins narrowly; quiet-weather wording could be shorter."
+      }
+    },
+    {
+      "scenario": "overnight-cooling",
+      "forecast": {
+        "timezone": "America/New_York",
+        "fetchedAt": 1789151400000,
+        "observationTime": 1789149600,
+        "units": "imperial",
+        "hourly": [
+          {
+            "time": 1789149600,
+            "temperature": 26,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789153200,
+            "temperature": 25,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789156800,
+            "temperature": 24,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789160400,
+            "temperature": 23,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789164000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789167600,
+            "temperature": 21,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789171200,
+            "temperature": 20,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789174800,
+            "temperature": 19,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789178400,
+            "temperature": 18,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789182000,
+            "temperature": 17,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789185600,
+            "temperature": 16,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789189200,
+            "temperature": 15,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789192800,
+            "temperature": 14,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789196400,
+            "temperature": 13,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789200000,
+            "temperature": 12,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789203600,
+            "temperature": 11,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789207200,
+            "temperature": 11,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789210800,
+            "temperature": 12,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789214400,
+            "temperature": 13,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789218000,
+            "temperature": 14,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789221600,
+            "temperature": 15,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789225200,
+            "temperature": 16,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789228800,
+            "temperature": 17,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789232400,
+            "temperature": 18,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789236000,
+            "temperature": 19,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789239600,
+            "temperature": 20,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          }
+        ]
+      },
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "79°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "52°F",
+              "period": "overnight"
+            },
+            {
+              "temperature": "66°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [
+            "this afternoon",
+            "this evening",
+            "overnight",
+            "tomorrow morning",
+            "tomorrow afternoon"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "tomorrow afternoon"
+          }
+        ]
+      },
+      "outputs": {
+        "candidate": {
+          "status": "completed",
+          "text": "Temperatures fall from 79°F this afternoon to 52°F overnight, then recover to 66°F tomorrow afternoon. Clear or mostly clear skies continue through tomorrow afternoon, with precipitation chances staying at 0% throughout the period.",
+          "durationMs": 1251,
+          "inputTokens": 1023,
+          "outputTokens": 50,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        },
+        "baseline": {
+          "status": "completed",
+          "text": "Clear skies continue from this afternoon through tomorrow afternoon, with temperatures easing from 79°F this afternoon to 52°F early tomorrow morning before climbing to 66°F by tomorrow afternoon. No precipitation is expected during this period. It will turn chilly overnight, so a light jacket may be useful for early-morning plans.",
+          "durationMs": 1856,
+          "inputTokens": 1512,
+          "outputTokens": 67,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": false
+        }
+      },
+      "review": {
+        "candidateFactuallyCorrect": true,
+        "preferred": "candidate",
+        "emphasis": "Temperature decline and rebound are first and chronological.",
+        "naturalness": "Clearer and shorter than the baseline.",
+        "repetition": "Repeats tomorrow afternoon, but avoids the generic jacket sentence.",
+        "notes": "79°F to 52°F overnight and back to 66°F tomorrow afternoon matches the supplied readings."
+      }
+    },
+    {
+      "scenario": "warming",
+      "forecast": {
+        "timezone": "America/New_York",
+        "fetchedAt": 1789151400000,
+        "observationTime": 1789149600,
+        "units": "imperial",
+        "hourly": [
+          {
+            "time": 1789149600,
+            "temperature": 5,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789153200,
+            "temperature": 6,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789156800,
+            "temperature": 7,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789160400,
+            "temperature": 8,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789164000,
+            "temperature": 9,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789167600,
+            "temperature": 10,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789171200,
+            "temperature": 11,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789174800,
+            "temperature": 12,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789178400,
+            "temperature": 13,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789182000,
+            "temperature": 14,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789185600,
+            "temperature": 15,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789189200,
+            "temperature": 16,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789192800,
+            "temperature": 17,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789196400,
+            "temperature": 18,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789200000,
+            "temperature": 19,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789203600,
+            "temperature": 20,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789207200,
+            "temperature": 21,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789210800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789214400,
+            "temperature": 23,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789218000,
+            "temperature": 24,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789221600,
+            "temperature": 25,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789225200,
+            "temperature": 26,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789228800,
+            "temperature": 27,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789232400,
+            "temperature": 28,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789236000,
+            "temperature": 29,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789239600,
+            "temperature": 30,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          }
+        ]
+      },
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "41°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "84°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [
+            "this afternoon",
+            "this evening",
+            "overnight",
+            "tomorrow morning",
+            "tomorrow afternoon"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "tomorrow afternoon"
+          }
+        ]
+      },
+      "outputs": {
+        "baseline": {
+          "status": "completed",
+          "text": "Clear skies continue from this afternoon through tomorrow afternoon, with temperatures rising steadily from 41°F to 84°F. No precipitation is expected during this period. It will be chilly this afternoon, so a light layer may help, while tomorrow afternoon will feel warm.",
+          "durationMs": 1897,
+          "inputTokens": 1512,
+          "outputTokens": 56,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": false
+        },
+        "candidate": {
+          "status": "completed",
+          "text": "Temperatures rise sharply from 41°F this afternoon to 84°F tomorrow afternoon, under clear or mostly clear skies throughout. Precipitation chances remain near zero across the period, with no meaningful rain expected in the forecast.",
+          "durationMs": 1573,
+          "inputTokens": 1013,
+          "outputTokens": 49,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        }
+      },
+      "review": {
+        "candidateFactuallyCorrect": true,
+        "preferred": "candidate",
+        "emphasis": "Highlights the large supported warming trend.",
+        "naturalness": "More concise; across the period remains stiff.",
+        "repetition": "Avoids the baseline repeating chilly and warm descriptions.",
+        "notes": "41°F to 84°F is supported. Near zero and no rain expected are forecast statements, not a guarantee."
+      }
+    },
+    {
+      "scenario": "low-chances",
+      "forecast": {
+        "timezone": "America/New_York",
+        "fetchedAt": 1789151400000,
+        "observationTime": 1789149600,
+        "units": "imperial",
+        "hourly": [
+          {
+            "time": 1789149600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789153200,
+            "temperature": 22,
+            "precipitation": 5,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789156800,
+            "temperature": 22,
+            "precipitation": 10,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789160400,
+            "temperature": 22,
+            "precipitation": 15,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789164000,
+            "temperature": 22,
+            "precipitation": 20,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789167600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789171200,
+            "temperature": 22,
+            "precipitation": 5,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789174800,
+            "temperature": 22,
+            "precipitation": 10,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789178400,
+            "temperature": 22,
+            "precipitation": 15,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789182000,
+            "temperature": 22,
+            "precipitation": 20,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789185600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789189200,
+            "temperature": 22,
+            "precipitation": 5,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789192800,
+            "temperature": 22,
+            "precipitation": 10,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789196400,
+            "temperature": 22,
+            "precipitation": 15,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789200000,
+            "temperature": 22,
+            "precipitation": 20,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789203600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789207200,
+            "temperature": 22,
+            "precipitation": 5,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789210800,
+            "temperature": 22,
+            "precipitation": 10,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789214400,
+            "temperature": 22,
+            "precipitation": 15,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789218000,
+            "temperature": 22,
+            "precipitation": 20,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789221600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789225200,
+            "temperature": 22,
+            "precipitation": 5,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789228800,
+            "temperature": 22,
+            "precipitation": 10,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789232400,
+            "temperature": 22,
+            "precipitation": 15,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789236000,
+            "temperature": 22,
+            "precipitation": 20,
+            "code": 2,
+            "isDay": true
+          },
+          {
+            "time": 1789239600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 2,
+            "isDay": true
+          }
+        ]
+      },
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "steady",
+          "steadyAt": "72°F",
+          "timeline": []
+        },
+        "precipitation": {
+          "peakChancePercent": 20,
+          "pattern": "low-chances",
+          "peakPeriods": [
+            "this afternoon",
+            "this evening",
+            "overnight",
+            "tomorrow morning",
+            "tomorrow afternoon"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 20,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 20,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 20,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 20,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 20,
+              "missingIntervals": 0
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Partly cloudy",
+            "kind": "partly-cloudy",
+            "from": "this afternoon",
+            "through": "tomorrow afternoon"
+          }
+        ]
+      },
+      "outputs": {
+        "candidate": {
+          "status": "completed",
+          "text": "Temperatures stay steady near 72°F through tomorrow afternoon, with partly cloudy skies throughout. Precipitation chances remain low across this afternoon, this evening, overnight, tomorrow morning, and tomorrow afternoon, peaking at 20%.",
+          "durationMs": 1631,
+          "inputTokens": 993,
+          "outputTokens": 50,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        },
+        "baseline": {
+          "status": "completed",
+          "text": "Partly cloudy conditions continue from this afternoon through tomorrow afternoon, with temperatures holding steady at 72°F. Precipitation chances remain mostly low, generally 0–20%, with the higher end appearing late each day and overnight; rain is possible but not expected. Comfortable conditions should make outdoor plans reasonable, though a light layer may be useful later.",
+          "durationMs": 2371,
+          "inputTokens": 1537,
+          "outputTokens": 74,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        }
+      },
+      "review": {
+        "candidateFactuallyCorrect": true,
+        "preferred": "tie",
+        "emphasis": "Correctly treats chances as low.",
+        "naturalness": "Mechanical enumeration of five dayparts misses the intended writing improvement.",
+        "repetition": "Lists this afternoon, this evening, overnight, tomorrow morning, and tomorrow afternoon.",
+        "notes": "Candidate numbers are accurate but style fails the selective-summary goal. Baseline also adds generic advice and questionable emphasis on late-day peaks. Neither is a clean winner."
+      }
+    },
+    {
+      "scenario": "showers",
+      "forecast": {
+        "timezone": "America/New_York",
+        "fetchedAt": 1789151400000,
+        "observationTime": 1789149600,
+        "units": "imperial",
+        "hourly": [
+          {
+            "time": 1789149600,
+            "temperature": 25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789153200,
+            "temperature": 24.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789156800,
+            "temperature": 24.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789160400,
+            "temperature": 24.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789164000,
+            "temperature": 24,
+            "precipitation": 10,
+            "code": 80,
+            "isDay": true
+          },
+          {
+            "time": 1789167600,
+            "temperature": 23.75,
+            "precipitation": 80,
+            "code": 80,
+            "isDay": true
+          },
+          {
+            "time": 1789171200,
+            "temperature": 23.5,
+            "precipitation": 80,
+            "code": 80,
+            "isDay": true
+          },
+          {
+            "time": 1789174800,
+            "temperature": 23.25,
+            "precipitation": 80,
+            "code": 80,
+            "isDay": true
+          },
+          {
+            "time": 1789178400,
+            "temperature": 23,
+            "precipitation": 80,
+            "code": 80,
+            "isDay": true
+          },
+          {
+            "time": 1789182000,
+            "temperature": 22.75,
+            "precipitation": 80,
+            "code": 80,
+            "isDay": true
+          },
+          {
+            "time": 1789185600,
+            "temperature": 22.5,
+            "precipitation": 80,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789189200,
+            "temperature": 22.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789192800,
+            "temperature": 22,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789196400,
+            "temperature": 21.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789200000,
+            "temperature": 21.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789203600,
+            "temperature": 21.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789207200,
+            "temperature": 21,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789210800,
+            "temperature": 20.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789214400,
+            "temperature": 20.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789218000,
+            "temperature": 20.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789221600,
+            "temperature": 20,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789225200,
+            "temperature": 19.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789228800,
+            "temperature": 19.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789232400,
+            "temperature": 19.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789236000,
+            "temperature": 19,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789239600,
+            "temperature": 18.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          }
+        ]
+      },
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "precipitation-timing",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "77°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "66°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 80,
+          "pattern": "highlight-peak-periods",
+          "peakPeriods": [
+            "this evening"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 80,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "this afternoon",
+            "through": "this afternoon"
+          },
+          {
+            "condition": "Light showers",
+            "kind": "rain",
+            "from": "this evening",
+            "through": "this evening"
+          },
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "overnight",
+            "through": "tomorrow afternoon"
+          }
+        ]
+      },
+      "outputs": {
+        "baseline": {
+          "status": "completed",
+          "text": "Temperatures ease from 77°F this afternoon to 73°F overnight, then continue down to 66°F by tomorrow afternoon. Light showers are likely this evening through late evening, with an 80% chance during that period; overnight and tomorrow return to overcast skies with a low 10% chance of precipitation. Keep an umbrella handy for evening plans and expect a cooler, gray tomorrow.",
+          "durationMs": 1672,
+          "inputTokens": 1512,
+          "outputTokens": 83,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        },
+        "candidate": {
+          "status": "completed",
+          "text": "Light showers are most likely this evening, with precipitation chances reaching 80%, before overcast skies return overnight through tomorrow afternoon. Temperatures are around 77°F this afternoon, then fall to 66°F by tomorrow afternoon. Carry an umbrella for the evening showers.",
+          "durationMs": 1404,
+          "inputTokens": 1042,
+          "outputTokens": 57,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        }
+      },
+      "review": {
+        "candidateFactuallyCorrect": true,
+        "preferred": "candidate",
+        "emphasis": "Puts evening showers and the 80% peak first.",
+        "naturalness": "Clear and practical, with a relevant umbrella takeaway.",
+        "repetition": "Tomorrow afternoon is repeated but the result is shorter and more focused.",
+        "notes": "Evening showers, overnight overcast, 77°F now and 66°F tomorrow afternoon all match the facts."
+      }
+    },
+    {
+      "scenario": "snow",
+      "forecast": {
+        "timezone": "America/New_York",
+        "fetchedAt": 1789151400000,
+        "observationTime": 1789149600,
+        "units": "imperial",
+        "hourly": [
+          {
+            "time": 1789149600,
+            "temperature": -1,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789153200,
+            "temperature": -1.125,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789156800,
+            "temperature": -1.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789160400,
+            "temperature": -1.375,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789164000,
+            "temperature": -1.5,
+            "precipitation": 10,
+            "code": 73,
+            "isDay": true
+          },
+          {
+            "time": 1789167600,
+            "temperature": -1.625,
+            "precipitation": 80,
+            "code": 73,
+            "isDay": true
+          },
+          {
+            "time": 1789171200,
+            "temperature": -1.75,
+            "precipitation": 80,
+            "code": 73,
+            "isDay": true
+          },
+          {
+            "time": 1789174800,
+            "temperature": -1.875,
+            "precipitation": 80,
+            "code": 73,
+            "isDay": true
+          },
+          {
+            "time": 1789178400,
+            "temperature": -2,
+            "precipitation": 80,
+            "code": 73,
+            "isDay": true
+          },
+          {
+            "time": 1789182000,
+            "temperature": -2.125,
+            "precipitation": 80,
+            "code": 73,
+            "isDay": true
+          },
+          {
+            "time": 1789185600,
+            "temperature": -2.25,
+            "precipitation": 80,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789189200,
+            "temperature": -2.375,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789192800,
+            "temperature": -2.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789196400,
+            "temperature": -2.625,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789200000,
+            "temperature": -2.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789203600,
+            "temperature": -2.875,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789207200,
+            "temperature": -3,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789210800,
+            "temperature": -3.125,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789214400,
+            "temperature": -3.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789218000,
+            "temperature": -3.375,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789221600,
+            "temperature": -3.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789225200,
+            "temperature": -3.625,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789228800,
+            "temperature": -3.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789232400,
+            "temperature": -3.875,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789236000,
+            "temperature": -4,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789239600,
+            "temperature": -4.125,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          }
+        ]
+      },
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "snow-or-thunderstorms",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "30°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "25°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 80,
+          "pattern": "highlight-peak-periods",
+          "peakPeriods": [
+            "this evening"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 80,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "this afternoon",
+            "through": "this afternoon"
+          },
+          {
+            "condition": "Snowy",
+            "kind": "snow",
+            "from": "this evening",
+            "through": "this evening"
+          },
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "overnight",
+            "through": "tomorrow afternoon"
+          }
+        ]
+      },
+      "outputs": {
+        "candidate": {
+          "status": "completed",
+          "text": "Snow is most likely this evening, with precipitation chances reaching 80%, before overcast skies return overnight through tomorrow afternoon. Temperatures fall from 30°F this afternoon to 25°F tomorrow afternoon, while precipitation chances remain low otherwise, peaking at 10%.",
+          "durationMs": 1504,
+          "inputTokens": 1042,
+          "outputTokens": 57,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        },
+        "baseline": {
+          "status": "completed",
+          "text": "Temperatures hold near 30°F this afternoon, then gradually fall to 25°F by tomorrow afternoon. Snow is likely from this evening through late tonight, with an 80% chance during that period; after midnight, overcast skies continue with only a 10% chance of precipitation. Roads and walkways could become slippery this evening, so use care traveling.",
+          "durationMs": 1704,
+          "inputTokens": 1512,
+          "outputTokens": 77,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        }
+      },
+      "review": {
+        "candidateFactuallyCorrect": true,
+        "preferred": "candidate",
+        "emphasis": "Leads with snow and preserves the later return to overcast.",
+        "naturalness": "More focused than the baseline.",
+        "repetition": "Low 10% chances elsewhere are grouped briefly.",
+        "notes": "Evening snow with an 80% precipitation peak and cooling from 30°F to 25°F match the data."
+      }
+    },
+    {
+      "scenario": "thunderstorms",
+      "forecast": {
+        "timezone": "America/New_York",
+        "fetchedAt": 1789151400000,
+        "observationTime": 1789149600,
+        "units": "imperial",
+        "hourly": [
+          {
+            "time": 1789149600,
+            "temperature": 25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789153200,
+            "temperature": 24.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789156800,
+            "temperature": 24.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789160400,
+            "temperature": 24.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789164000,
+            "temperature": 24,
+            "precipitation": 10,
+            "code": 95,
+            "isDay": true
+          },
+          {
+            "time": 1789167600,
+            "temperature": 23.75,
+            "precipitation": 80,
+            "code": 95,
+            "isDay": true
+          },
+          {
+            "time": 1789171200,
+            "temperature": 23.5,
+            "precipitation": 80,
+            "code": 95,
+            "isDay": true
+          },
+          {
+            "time": 1789174800,
+            "temperature": 23.25,
+            "precipitation": 80,
+            "code": 95,
+            "isDay": true
+          },
+          {
+            "time": 1789178400,
+            "temperature": 23,
+            "precipitation": 80,
+            "code": 95,
+            "isDay": true
+          },
+          {
+            "time": 1789182000,
+            "temperature": 22.75,
+            "precipitation": 80,
+            "code": 95,
+            "isDay": true
+          },
+          {
+            "time": 1789185600,
+            "temperature": 22.5,
+            "precipitation": 80,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789189200,
+            "temperature": 22.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789192800,
+            "temperature": 22,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789196400,
+            "temperature": 21.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789200000,
+            "temperature": 21.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789203600,
+            "temperature": 21.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789207200,
+            "temperature": 21,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789210800,
+            "temperature": 20.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789214400,
+            "temperature": 20.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789218000,
+            "temperature": 20.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789221600,
+            "temperature": 20,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789225200,
+            "temperature": 19.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789228800,
+            "temperature": 19.5,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789232400,
+            "temperature": 19.25,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789236000,
+            "temperature": 19,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          },
+          {
+            "time": 1789239600,
+            "temperature": 18.75,
+            "precipitation": 10,
+            "code": 3,
+            "isDay": true
+          }
+        ]
+      },
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "snow-or-thunderstorms",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "77°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "66°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 80,
+          "pattern": "highlight-peak-periods",
+          "peakPeriods": [
+            "this evening"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 80,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "this afternoon",
+            "through": "this afternoon"
+          },
+          {
+            "condition": "Thunderstorms",
+            "kind": "storm",
+            "from": "this evening",
+            "through": "this evening"
+          },
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "overnight",
+            "through": "tomorrow afternoon"
+          }
+        ]
+      },
+      "outputs": {
+        "baseline": {
+          "status": "completed",
+          "text": "This afternoon stays overcast near 77°F, then temperatures gradually fall to 66°F by Saturday afternoon. Thunderstorms are possible from Friday evening through late evening, with an 80% chance during that period; overnight and Saturday return to overcast skies with a 10% chance of precipitation. Keep evening plans flexible and have rain gear handy.",
+          "durationMs": 1615,
+          "inputTokens": 1512,
+          "outputTokens": 74,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        },
+        "candidate": {
+          "status": "completed",
+          "text": "Thunderstorms are most likely this evening, with precipitation chances reaching 80%, before overcast skies return overnight through tomorrow afternoon. Temperatures reach 77°F this afternoon, then cool to 66°F by tomorrow afternoon. Carry an umbrella or seek shelter if storms develop this evening.",
+          "durationMs": 1574,
+          "inputTokens": 1042,
+          "outputTokens": 60,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        }
+      },
+      "review": {
+        "candidateFactuallyCorrect": false,
+        "preferred": "baseline",
+        "emphasis": "Correctly leads with thunderstorms, but the advice is unsuitable.",
+        "naturalness": "The final sentence presents umbrella use as an alternative to shelter.",
+        "repetition": "Repeats evening and supplies two alternative actions.",
+        "notes": "Weather numbers and timing are supported, but Carry an umbrella or seek shelter if storms develop this evening is not acceptable thunderstorm advice. NWS advises safe shelter; an umbrella is not a substitute. Treat this as a quality-gate failure despite passing the runtime validator."
+      }
+    },
+    {
+      "scenario": "incomplete",
+      "forecast": {
+        "timezone": "America/New_York",
+        "fetchedAt": 1789151400000,
+        "observationTime": 1789149600,
+        "units": "imperial",
+        "hourly": [
+          {
+            "time": 1789149600,
+            "temperature": null,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789153200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789156800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789160400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789164000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789167600,
+            "temperature": 22,
+            "precipitation": null,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789171200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789174800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789178400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": null,
+            "isDay": true
+          },
+          {
+            "time": 1789182000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789185600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789189200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789192800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789196400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789200000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789203600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789207200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789210800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789214400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789218000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789221600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789225200,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789228800,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789232400,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789236000,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          },
+          {
+            "time": 1789239600,
+            "temperature": 22,
+            "precipitation": 0,
+            "code": 0,
+            "isDay": true
+          }
+        ]
+      },
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "partial",
+            "missingIntervals": 1
+          },
+          "precipitation": {
+            "status": "partial",
+            "missingIntervals": 1
+          },
+          "conditions": {
+            "status": "partial",
+            "missingIntervals": 1
+          }
+        },
+        "temperature": {
+          "pattern": "steady",
+          "steadyAt": "72°F",
+          "timeline": []
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [
+            "this afternoon",
+            "this evening",
+            "overnight",
+            "tomorrow morning",
+            "tomorrow afternoon"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 0,
+              "missingIntervals": 1
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 0,
+              "missingIntervals": 0
+            }
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "this evening"
+          },
+          {
+            "condition": "Conditions unavailable",
+            "kind": "unknown",
+            "from": "this evening",
+            "through": "this evening"
+          },
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this evening",
+            "through": "tomorrow afternoon"
+          }
+        ]
+      },
+      "outputs": {
+        "candidate": {
+          "status": "completed",
+          "text": "Temperatures hold near 72°F through tomorrow afternoon, with clear or mostly clear skies for the available conditions. Precipitation chances are 0% across the covered periods, though precipitation data is incomplete for part of this evening. Temperature data and conditions are also incomplete for a portion of the forecast.",
+          "durationMs": 1696,
+          "inputTokens": 1033,
+          "outputTokens": 64,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": true
+        },
+        "baseline": {
+          "status": "completed",
+          "text": "Clear skies are expected from this evening through tomorrow afternoon, with temperatures holding near 72°F throughout the period; the first half-hour’s temperature is unknown. No precipitation is expected in the forecast, though conditions for one hour this evening are unavailable. It should be comfortable for outdoor plans without needing rain gear.",
+          "durationMs": 2430,
+          "inputTokens": 1510,
+          "outputTokens": 65,
+          "acceptedByPipeline": true,
+          "passesCandidateChecks": false
+        }
+      },
+      "review": {
+        "candidateFactuallyCorrect": true,
+        "preferred": "candidate",
+        "emphasis": "Explicitly acknowledges missing precipitation and temperature information.",
+        "naturalness": "Accurate but somewhat technical: available conditions and covered periods.",
+        "repetition": "Coverage caveats occupy two sentences.",
+        "notes": "The candidate qualifies the 0% probabilities as covered periods and acknowledges the missing evening interval. Baseline incorrectly concludes no rain gear is needed despite missing precipitation data."
+      }
+    }
+  ],
+  "reviewer": "Codex assistant; unblinded manual assessment of the recorded outputs, not an independent human or model-grader study",
+  "qualityGate": {
+    "passed": false,
+    "candidatePreferred": 6,
+    "baselinePreferred": 1,
+    "ties": 1,
+    "candidateWeatherNumbersSupported": 8,
+    "candidateFullyAcceptableIncludingAdvice": 7,
+    "blockingIssue": "Thunderstorm advice presents an umbrella as an alternative to safe shelter.",
+    "additionalIssue": "Low precipitation chances still enumerate every daypart."
+  },
+  "metrics": {
+    "baseline": {
+      "completed": 8,
+      "accepted": 8,
+      "meanLatencyMs": 2014.375,
+      "medianLatencyMs": 1876.5,
+      "inputTokens": 12119,
+      "outputTokens": 557,
+      "meanWords": 51.125
+    },
+    "candidate": {
+      "completed": 8,
+      "accepted": 8,
+      "meanLatencyMs": 1564.5,
+      "medianLatencyMs": 1573.5,
+      "inputTokens": 8180,
+      "outputTokens": 439,
+      "meanWords": 37.75
+    }
+  },
+  "references": [
+    {
+      "url": "https://www.weather.gov/safety/lightning-safety-overview",
+      "use": "Thunderstorm shelter guidance for assessing the candidate advice."
+    }
+  ],
+  "sourceCommit": "6485590927df4dbbbb4db2aba93422b307069c0d",
+  "sourceFileSha256": {
+    "server/openai-briefing.ts": "d7df3865ac71efe6e13ecc2a48a145208ab7e4211a56a97833b2b0022b78c355",
+    "src/lib/briefing-prompt.ts": "e98205861d85464780d44b8a99ed254245229c066282d021220446340627622c",
+    "server/briefing-baseline.fixture.ts": "9193424a1041be83d05d9632517c7d0a60a24c458474a74ec70b3d65aa1162d7",
+    "server/briefing-scenarios.fixture.ts": "31c6ef7e185bb0d20810406c98c0a62ee2193394eb19522543a5604a7cfb7503",
+    "server/briefing.comparison.live.test.ts": "909564927c71b08e10a5558316eda5e249909db2fd7ba27bf9ba12cf0db378c2"
+  }
+}

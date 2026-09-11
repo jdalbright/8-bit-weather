@@ -11,7 +11,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const output = await mkdtemp(join(root, 'node_modules', '.briefing-smoke-'));
 try {
   await writeFile(join(output, 'package.json'), JSON.stringify({ type: 'module' }));
-  for (const file of ['api/weather-briefing.ts', 'server/briefing.ts', 'src/lib/briefing.ts', 'src/lib/briefing-prompt.ts', 'src/lib/weather.ts']) {
+  for (const file of ['api/weather-briefing.ts', 'server/briefing.ts', 'server/openai-briefing.ts', 'src/lib/briefing.ts', 'src/lib/briefing-prompt.ts', 'src/lib/weather.ts']) {
     const source = await readFile(join(root, file), 'utf8');
     const result = ts.transpileModule(source, { compilerOptions: {
       target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext, verbatimModuleSyntax: true,

@@ -1,7 +1,8 @@
 import OpenAI from 'openai';
-import { BRIEFING_PATH, BRIEFING_TTL, BRIEFING_VERSION, briefingFacts, forecastUsable, parseBriefingForecast } from '../src/lib/briefing.js';
+import { BRIEFING_PATH, BRIEFING_TTL, BRIEFING_VERSION, forecastUsable, parseBriefingForecast } from '../src/lib/briefing.js';
 
-import { briefingInstructions, validSummary } from '../src/lib/briefing-prompt.js';
+import { briefingInstructions } from '../src/lib/briefing-prompt.js';
+import { OPENAI_BRIEFING_REVISION, openAIBriefingFacts, validOpenAISummary } from './openai-briefing.js';
 export { briefingInstructions } from '../src/lib/briefing-prompt.js';
 
 const MAX_BODY_BYTES = 12000;
@@ -102,20 +103,23 @@ async function generateBriefing(request: Request): Promise<Response> {
   try {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 12000, maxRetries: 0 });
     const result = await client.responses.create({
-      model, instructions: briefingInstructions, input: JSON.stringify(briefingFacts(forecast, now)),
+      model, instructions: briefingInstructions, input: JSON.stringify(openAIBriefingFacts(forecast, now)),
       reasoning: { effort: 'none' }, max_output_tokens: 250, store: false,
     }, { signal: request.signal });
     const text = result.output_text?.trim();
-    if (result.status !== 'completed' || !text || !validSummary(text)) return json({ code: 'briefing_unavailable' }, 502);
+    if (result.status !== 'completed' || !text || !validOpenAISummary(text, forecast, now)) {
+      console.info('weather_briefing', { model, promptRevision: OPENAI_BRIEFING_REVISION, durationMs: Date.now() - started, outcome: 'invalid_summary' });
+      return json({ code: 'briefing_unavailable' }, 502);
+    }
     const generatedAt = Date.now();
     if (generatedAt >= forecast.fetchedAt + 45 * 60000) return json({ code: 'forecast_unavailable' }, 422);
     // Log operational metadata only; never credentials, locations, prompts, or provider errors.
-    console.info('weather_briefing', { model, durationMs: generatedAt - started, inputTokens: result.usage?.input_tokens, outputTokens: result.usage?.output_tokens });
+    console.info('weather_briefing', { model, promptRevision: OPENAI_BRIEFING_REVISION, durationMs: generatedAt - started, inputTokens: result.usage?.input_tokens, outputTokens: result.usage?.output_tokens });
     return json({ text, generatedAt, windowStart: now, windowEnd: now + 86400000,
       expiresAt: Math.min(generatedAt + BRIEFING_TTL, forecast.fetchedAt + 45 * 60000), version: BRIEFING_VERSION });
   } catch (error) {
     const limited = error instanceof OpenAI.APIError && error.status === 429;
-    console.info('weather_briefing', { model, durationMs: Date.now() - started, outcome: limited ? 'rate_limited' : 'unavailable' });
+    console.info('weather_briefing', { model, promptRevision: OPENAI_BRIEFING_REVISION, durationMs: Date.now() - started, outcome: limited ? 'rate_limited' : 'unavailable' });
     return json({ code: limited ? 'rate_limited' : 'briefing_unavailable' }, limited ? 429 : 503,
       limited ? { 'Retry-After': providerCooldown(error.headers) } : {});
   }
