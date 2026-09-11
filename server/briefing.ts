@@ -1,18 +1,10 @@
 import OpenAI from 'openai';
 import { BRIEFING_PATH, BRIEFING_TTL, BRIEFING_VERSION, briefingFacts, forecastUsable, parseBriefingForecast } from '../src/lib/briefing.js';
 
-const factualInstructions = `Write an English weather briefing for the supplied 24-hour window using ONLY the supplied hourly forecast. Give 2–3 sentences, at most 75 words, in plain text. Cover the temperature trend/range, precipitation timing and chance, and notable changes only when the data supports them. The listed precipitation probability belongs to its displayed interval. Missing values are unknown, never zero. Preserve uncertainty: probability is not a promise. Do not invent amounts, wind forecasts, warnings, official alerts, or exact onset times. Do not extrapolate outside the supplied window. Use the supplied local day/time labels and temperature unit. Avoid relative phrases like "in an hour" that become misleading in a cached summary. Include one everyday practical takeaway if justified. No heading, markdown, greeting, sign-off, or mention of being an AI.`;
-const personalities = { 'warm-practical': 'Speak warmly and naturally, like a helpful neighbor. Use simple dayparts such as this evening, overnight, and tomorrow afternoon; avoid full dates, timezone abbreviations, and unnecessary minute precision. Focus on the most useful change, not an inventory of intervals. Group low precipitation chances together instead of listing every small peak. Never say "supplied window", "listed intervals", or describe your input data. Keep advice practical and restrained; no game jargon, jokes, or alarmism.' };
+import { briefingInstructions, validSummary } from '../src/lib/briefing-prompt.js';
+export { briefingInstructions } from '../src/lib/briefing-prompt.js';
 
-export const briefingInstructions = `${factualInstructions}\n${personalities['warm-practical']}`;
 const MAX_BODY_BYTES = 12000;
-const sentenceSegmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
-
-function validSummary(text: string): boolean {
-  if (!text || text.length > 1600 || text.split(/\s+/).length > 75) return false;
-  const sentences = [...sentenceSegmenter.segment(text)].filter(part => part.segment.trim());
-  return sentences.length >= 2 && sentences.length <= 3;
-}
 
 function providerCooldown(headers: Headers | undefined): string {
   const milliseconds = Number(headers?.get('retry-after-ms'));
@@ -51,16 +43,52 @@ async function readBody(request: Request): Promise<unknown> {
   return JSON.parse(new TextDecoder().decode(buffer));
 }
 
+function isNativeOrigin(origin: string): boolean {
+  // Compare complete, serialized origins. Never permit wildcard, opaque ("null"),
+  // credentials, paths, or substring matches. Capacitor's custom scheme has a
+  // WHATWG URL.origin of "null", so serialize its scheme and host explicitly.
+  try {
+    const url = new URL(origin);
+    if (!['capacitor:', 'https:'].includes(url.protocol) || !url.hostname || url.username || url.password
+      || origin !== `${url.protocol}//${url.host}`) return false;
+    return (process.env.WEATHER_BRIEFING_NATIVE_ORIGINS ?? '').split(',').map(value => value.trim()).includes(origin);
+  } catch { return false; }
+}
+
 export async function handleBriefing(request: Request): Promise<Response> {
   // Vercel can resolve aliases such as /api/weather-briefing.ts to this function.
   // Only the canonical path is covered by the published firewall rule.
   if (new URL(request.url).pathname !== BRIEFING_PATH) return json({ code: 'not_found' }, 404);
+  const origin = request.headers.get('origin');
+  const nativeOrigin = origin !== null && isNativeOrigin(origin);
+  if (origin && origin !== new URL(request.url).origin && !nativeOrigin) return json({ code: 'invalid_origin' }, 403);
+  const headers: Record<string, string> = { Vary: 'Origin' };
+  if (nativeOrigin) {
+    headers['Access-Control-Allow-Origin'] = origin!;
+    // Provider rate-limit responses remain readable in the native WebView.
+    headers['Access-Control-Expose-Headers'] = 'Retry-After';
+  }
+  if (request.method === 'OPTIONS') {
+    const requestedHeaders = (request.headers.get('access-control-request-headers') ?? '')
+      .split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
+    if (!nativeOrigin || request.headers.get('access-control-request-method') !== 'POST'
+      || requestedHeaders.some(header => header !== 'content-type')) return json({ code: 'invalid_preflight' }, 403);
+    return new Response(null, { status: 204, headers: {
+      ...headers, 'Cache-Control': 'no-store', 'Access-Control-Allow-Methods': 'POST',
+      'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600',
+      Vary: 'Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
+    } });
+  }
+  const response = await generateBriefing(request);
+  for (const [key, value] of Object.entries(headers)) response.headers.set(key, value);
+  return response;
+}
+
+async function generateBriefing(request: Request): Promise<Response> {
   if (request.method !== 'POST') return json({ code: 'method_not_allowed' }, 405, { Allow: 'POST' });
   // Disabled by default. Public activation requires the endpoint's WAF rate-limit rule.
   if (process.env.WEATHER_BRIEFING_ENABLED !== 'true' || !process.env.OPENAI_API_KEY) return json({ code: 'disabled' }, 503);
   if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return json({ code: 'invalid_request' }, 415);
-  const origin = request.headers.get('origin');
-  if (origin && origin !== new URL(request.url).origin) return json({ code: 'invalid_origin' }, 403);
   if (Number(request.headers.get('content-length')) > MAX_BODY_BYTES) return json({ code: 'body_too_large' }, 413);
   let raw: unknown;
   try { raw = await readBody(request); }

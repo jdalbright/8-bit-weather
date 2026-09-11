@@ -15,6 +15,7 @@ function request(body: unknown = payload(), init: RequestInit = {}) { return new
 beforeEach(() => {
   vi.useFakeTimers(); vi.setSystemTime(fixtureTime); create.mockReset(); construct.mockReset();
   vi.stubEnv('OPENAI_API_KEY', 'test-server-only-key'); vi.stubEnv('WEATHER_BRIEFING_ENABLED', 'true'); vi.stubEnv('OPENAI_WEATHER_MODEL', '');
+  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', '');
   vi.spyOn(console, 'info').mockImplementation(() => {});
   create.mockResolvedValue({ status: 'completed', output_text: summary, usage: { input_tokens: 1200, output_tokens: 30 } });
 });
@@ -100,4 +101,78 @@ it('returns a recoverable error on timeout, with no automatic retry', async () =
   create.mockRejectedValue(new Error('timeout including sensitive data'));
   const response = await handleBriefing(request()); expect(response.status).toBe(503);
   expect(await response.json()).toEqual({ code: 'briefing_unavailable' }); expect(create).toHaveBeenCalledTimes(1);
+});
+
+function nativeRequest(body: unknown = payload(), origin = 'capacitor://localhost') {
+  return request(body, { headers: { 'Content-Type': 'application/json', Origin: origin } });
+}
+function preflight(origin = 'capacitor://localhost', method = 'POST', headers = 'content-type') {
+  return new Request('https://weather.example/api/weather-briefing', { method: 'OPTIONS', headers: {
+    Origin: origin, 'Access-Control-Request-Method': method, 'Access-Control-Request-Headers': headers,
+  } });
+}
+it('keeps native access disabled until the exact origin is configured', async () => {
+  expect((await handleBriefing(nativeRequest())).status).toBe(403);
+  expect((await handleBriefing(preflight())).status).toBe(403);
+  expect(create).not.toHaveBeenCalled();
+  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', 'capacitor://localhost');
+  const response = await handleBriefing(nativeRequest());
+  expect(response.status).toBe(200);
+  expect(response.headers.get('Access-Control-Allow-Origin')).toBe('capacitor://localhost');
+  expect(response.headers.get('Access-Control-Allow-Credentials')).toBeNull();
+  expect(response.headers.get('Vary')).toBe('Origin');
+});
+it('permits a bounded native preflight without calling the provider or requiring its secret', async () => {
+  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', 'capacitor://localhost');
+  vi.stubEnv('OPENAI_API_KEY', '');
+  const response = await handleBriefing(preflight());
+  expect(response.status).toBe(204);
+  expect(await response.text()).toBe('');
+  expect(response.headers.get('Access-Control-Allow-Origin')).toBe('capacitor://localhost');
+  expect(response.headers.get('Access-Control-Allow-Methods')).toBe('POST');
+  expect(response.headers.get('Access-Control-Allow-Headers')).toBe('Content-Type');
+  expect(response.headers.get('Access-Control-Max-Age')).toBe('600');
+  expect((await handleBriefing(preflight('capacitor://localhost', 'DELETE'))).status).toBe(403);
+  expect((await handleBriefing(preflight('capacitor://localhost', 'POST', 'content-type, authorization'))).status).toBe(403);
+  expect(create).not.toHaveBeenCalled();
+});
+it.each(['capacitor://localhost.evil', 'capacitor://localhost/', 'capacitor://localhost:1234', 'https://evil.example', 'null', '*'])('does not broaden native access to %s', async origin => {
+  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', 'capacitor://localhost');
+  const response = await handleBriefing(nativeRequest(payload(), origin));
+  expect(response.status).toBe(403);
+  expect(response.headers.has('Access-Control-Allow-Origin')).toBe(false);
+  expect(create).not.toHaveBeenCalled();
+});
+it.each(['null', '*', 'capacitor://localhost/path', 'capacitor://user@localhost', 'http://evil.example'])('rejects unsafe configured origin %s', async origin => {
+  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', origin);
+  expect((await handleBriefing(nativeRequest(payload(), origin))).status).toBe(403);
+  expect(create).not.toHaveBeenCalled();
+});
+it('keeps native errors and provider cooldowns readable without bypassing protections', async () => {
+  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', ' capacitor://localhost, https://localhost ');
+  for (const [body, status] of [[{}, 400], ['x'.repeat(13000), 413], [{ ...payload(), fetchedAt: fixtureTime - 45 * 60000 }, 422]] as const) {
+    const response = await handleBriefing(nativeRequest(body));
+    expect(response.status).toBe(status);
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBe('capacitor://localhost');
+  }
+  expect(create).not.toHaveBeenCalled();
+  const OpenAI = (await import('openai')).default;
+  create.mockRejectedValue(new OpenAI.APIError(429, {}, 'private provider detail', new Headers({ 'retry-after': '120' })));
+  const response = await handleBriefing(nativeRequest());
+  expect(response.status).toBe(429);
+  expect(response.headers.get('Access-Control-Expose-Headers')).toBe('Retry-After');
+  expect(response.headers.get('Retry-After')).toBe('120');
+  expect(await response.json()).toEqual({ code: 'rate_limited' });
+  vi.stubEnv('WEATHER_BRIEFING_ENABLED', 'false');
+  const disabled = await handleBriefing(nativeRequest());
+  expect(disabled.status).toBe(503);
+  expect(disabled.headers.get('Access-Control-Allow-Origin')).toBe('capacitor://localhost');
+  expect(create).toHaveBeenCalledTimes(1);
+});
+it('never opens unprotected endpoint aliases to native preflights', async () => {
+  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', 'capacitor://localhost');
+  const response = await handleBriefing(new Request('https://weather.example/api/weather-briefing.ts', preflight()));
+  expect(response.status).toBe(404);
+  expect(response.headers.has('Access-Control-Allow-Origin')).toBe(false);
+  expect(create).not.toHaveBeenCalled();
 });
