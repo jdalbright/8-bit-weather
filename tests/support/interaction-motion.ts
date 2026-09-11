@@ -37,6 +37,39 @@ export async function checkInteractionMotion(page: Page, screenshotPrefix: strin
   await button.click();
   await expect.poll(() => panel.evaluate(el => el.getBoundingClientRect().height)).toBe(0);
 
+  const briefingToggle = page.getByRole('button', { name: /Weather briefing/ });
+  const briefingPanel = page.locator('.briefing-disclosure');
+  await expect(briefingToggle).toHaveAttribute('aria-expanded', 'true');
+  const briefingHeight = await briefingPanel.evaluate(el => el.getBoundingClientRect().height);
+  const sampleBriefing = () => briefingPanel.evaluate(async el => {
+    await new Promise(requestAnimationFrame);
+    const animations = el.getAnimations();
+    animations.forEach(animation => { animation.pause(); animation.currentTime = 160; });
+    const middle = el.getBoundingClientRect().height;
+    animations.forEach(animation => animation.finish());
+    return { middle, end: el.getBoundingClientRect().height, count: animations.length };
+  });
+  await briefingToggle.click();
+  await expect(briefingToggle).toHaveAttribute('aria-expanded', 'false');
+  const briefingClosing = await sampleBriefing();
+  expect(briefingClosing.count).toBeGreaterThan(0);
+  expect(briefingClosing.middle).toBeGreaterThan(0);
+  expect(briefingClosing.middle).toBeLessThan(briefingHeight);
+  expect(briefingClosing.end).toBe(0);
+  await expect(briefingPanel).toHaveAttribute('inert', '');
+  await briefingToggle.press('Enter');
+  const briefingOpening = await sampleBriefing();
+  expect(briefingOpening.middle).toBeGreaterThan(0);
+  expect(briefingOpening.middle).toBeLessThan(briefingOpening.end);
+  await expect(briefingToggle).toBeFocused();
+  await page.locator('.weather-briefing').screenshot({ path: `/tmp/${screenshotPrefix}-briefing.png` });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await briefingToggle.click();
+  expect(await briefingPanel.evaluate(el => el.getAnimations().length)).toBe(0);
+  expect(await briefingPanel.evaluate(el => el.getBoundingClientRect().height)).toBe(0);
+  await briefingToggle.click();
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+
   if (native) {
     // UIKit owns the boundary gesture. Browser mocks can verify the absence of
     // JS interception; rubber-band physics are checked in the real simulator.

@@ -60,6 +60,8 @@ final class WeatherViewController: CAPBridgeViewController {
         // Capacitor defaults to bounces = false. Let UIKit own edge resistance.
         webView?.scrollView.bounces = true
         webView?.scrollView.alwaysBounceVertical = true
+        webView?.scrollView.showsVerticalScrollIndicator = false
+        webView?.scrollView.showsHorizontalScrollIndicator = false
         bridge?.registerPluginInstance(NativeScrollPlugin())
         bridge?.registerPluginInstance(WeatherWidgetPlugin())
         bridge?.registerPluginInstance(AppleBriefingPlugin())
