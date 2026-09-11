@@ -4,7 +4,18 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath } from 'node:url';
 
 export default defineConfig(({ mode }) => ({
-  build: { outDir: mode === 'native' ? 'dist-native' : 'dist' },
+  build: {
+    outDir: mode === 'native' ? 'dist-native' : 'dist',
+    // WebKit retains failed modulepreload responses across reloads. Load optional
+    // radar scripts through import() so a temporary download failure can recover.
+    modulePreload: { resolveDependencies: (_filename, dependencies) => dependencies.filter(path => !/radar-(?:map|vendor|worker)-.*\.js$/.test(path)) },
+    rollupOptions: { output: {
+      chunkFileNames: chunk => `assets/${chunk.name === 'RadarMap' ? 'radar-map' : chunk.name}-[hash].js`,
+      assetFileNames: asset => `assets/${asset.names?.some(name => /RadarMap|radar-map/.test(name)) ? 'radar-map' : '[name]'}-[hash][extname]`,
+      manualChunks: id => id.includes('/node_modules/maplibre-gl/') || id.includes('/node_modules/@maplibre/') ? 'radar-vendor' : undefined,
+    } },
+  },
+  worker: { format: 'es', rollupOptions: { output: { entryFileNames: 'assets/radar-worker-[hash].js', chunkFileNames: 'assets/radar-worker-[name]-[hash].js' } } },
   resolve: { alias: mode === 'native' ? [{
     find: 'virtual:pwa-register/react', replacement: fileURLToPath(new URL('./src/lib/pwa-native.ts', import.meta.url)),
   }] : [] },
@@ -12,7 +23,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     ...(mode === 'native' ? [] : [VitePWA({
       registerType: 'prompt',
-      includeAssets: ['icon.svg', 'apple-touch-icon.png', 'art/*.webp'],
+      includeAssets: ['icon.svg', 'apple-touch-icon.png', 'art/*.webp', 'radar/*-license.txt'],
       manifest: {
         id: '/',
         name: '8-Bit Weather',
@@ -33,6 +44,7 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2}'],
+        globIgnores: ['**/radar-map-*', '**/radar-vendor-*', '**/radar-worker-*'],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api(?:\/|$)/],

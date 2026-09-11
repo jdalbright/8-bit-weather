@@ -1,7 +1,10 @@
 import type { WeatherKind } from '../types';
 
-export type IconName = 'home' | 'places' | 'settings' | 'sound' | 'muted' | 'chevron' | 'next' | 'search' | 'location' | 'star' | 'close' | 'check' | 'trash' | 'refresh' | 'download' | 'wind' | 'drop' | 'plus' | 'sunrise' | 'sunset';
+export type IconName = 'radar' | 'play' | 'pause' | 'home' | 'places' | 'settings' | 'sound' | 'muted' | 'chevron' | 'next' | 'search' | 'location' | 'star' | 'close' | 'check' | 'trash' | 'refresh' | 'download' | 'wind' | 'drop' | 'plus' | 'sunrise' | 'sunset';
 const paths: Record<IconName, string> = {
+  radar: 'M7 1h10v2h4v4h2v10h-2v4h-4v2H7v-2H3v-4H1V7h2V3h4zm1 3H5v4H4v8h1v3h3v1h8v-1h3v-3h1V8h-1V5h-3V4zM11 6h2v5h5v2h-7zm-4 8h2v3H7zm7 2h3v2h-3z',
+  play: 'M5 2h3v2h3v2h3v2h3v2h3v4h-3v2h-3v2h-3v2H8v2H5z',
+  pause: 'M5 3h5v18H5zm9 0h5v18h-5z',
   home: 'M2 10h2V8h2V6h2V4h2V2h4v2h2v2h2v2h2v2h2v4h-4v8h-5v-7h-3v7H6v-8H2z',
   places: 'M8 1h8v2h4v4h2v8h-2v3h-2v2h-2v2h-2v2h-4v-2H8v-2H6v-2H4v-3H2V7h2V3h4zm1 6v7h6V7z',
   settings: 'M9 1h6v4h3V3h3v3h-2v3h4v6h-4v3h2v3h-3v-2h-3v4H9v-4H6v2H3v-3h2v-3H1V9h4V6H3V3h3v2h3zm0 8v6h6V9z',

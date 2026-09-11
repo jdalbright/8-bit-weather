@@ -15,10 +15,10 @@ interface Props {
   briefingProvider?: BriefingProvider; onBriefingProviderChange?: (provider: BriefingProvider) => void;
   place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean; decorativeAnimate?: boolean;
   loading: boolean; error: string | null; online: boolean; now: number; locating: boolean;
-  onLocate: () => void; onPlaces: () => void; onRefresh: () => void;
+  onRadar?: () => void; onLocate: () => void; onPlaces: () => void; onRefresh: () => void;
   onDiscover: (discovery: Discovery) => void;
 }
-export default function Today({ briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, decorativeAnimate = animate, loading, error, online, now, locating, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
+export default function Today({ briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, decorativeAnimate = animate, loading, error, online, now, locating, onRadar, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
   const hourlyRef = useRef<HTMLDivElement>(null);
   const [uvExpanded, setUvExpanded] = useState(false);
   const days = snapshot ? futureDays(snapshot.daily, snapshot.timezone, now) : [];
@@ -65,7 +65,7 @@ export default function Today({ briefingProvider, onBriefingProviderChange, plac
       {uv ? <div className="uv-disclosure" data-expanded={uvExpanded} data-animate={animate} aria-hidden={!uvExpanded} inert={!uvExpanded}>
         <div className="uv-disclosure-content"><UvDetails key={`${snapshot.placeId}:${uv.today}`} forecast={uv} timezone={snapshot.timezone} now={now} isDay={scene.isDay} online={online}/></div>
       </div> : null}
-      {rainOutlook ? <RainOutlook key={snapshot.placeId} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
+      {rainOutlook ? <RainOutlook key={snapshot.placeId} onRadar={onRadar} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
       <WeatherBriefing provider={briefingProvider} onProviderChange={onBriefingProviderChange} snapshot={snapshot} units={units} online={online} now={now}/>
       <section className="hourly-section" aria-labelledby="hourly-title">
         <div className="section-heading"><h2 id="hourly-title">Next 24 hours</h2><button className="icon-button scroll-hours" aria-label="Scroll hourly forecast forward" onClick={() => hourlyRef.current?.scrollBy({ left: 220, behavior: animate ? 'smooth' : 'instant' })}><Icon name="next" size={17}/></button></div>

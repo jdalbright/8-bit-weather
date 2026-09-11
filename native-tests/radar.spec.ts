@@ -1,0 +1,34 @@
+import { expect, test } from '@playwright/test';
+import { installBridge, preferences, savedState, storageKey } from './bridge';
+import { fixtureTime, forecastFixture } from '../src/test/fixtures';
+import { mockRadar } from '../tests/support/radar';
+
+test('native radar pauses for app lifecycle and power changes while retaining manual exploration', async ({ page }) => {
+  await page.clock.setFixedTime(fixtureTime);
+  const bridge = await installBridge(page, { [storageKey]: JSON.stringify({ ...savedState, preferences: { ...preferences, reducedMotion: false } }) });
+  const radar = await mockRadar(page, fixtureTime);
+  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture() }));
+  await page.goto('/'); await expect(page.locator('.current-temperature')).toBeVisible();
+  expect(radar.requests).toHaveLength(0);
+  await page.getByRole('button', { name: 'Radar', exact: true }).click();
+  await expect(page.getByText('Slide through recent observations, or play the loop.')).toBeVisible();
+  expect(bridge.calls.some(call => call.plugin === 'NativeScroll' && call.method === 'configure' && call.options?.visible === false)).toBe(true);
+  await expect(page.locator('.radar-map-warning')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Play', exact: true }).click();
+  await page.evaluate(() => window.__emitNative('appStateChange', { isActive: false }));
+  await expect(page.getByRole('heading', { name: 'Radar paused' })).toBeVisible();
+  const count = radar.requests.length;
+  await page.clock.fastForward(125000); expect(radar.requests).toHaveLength(count);
+  await page.evaluate(() => window.__emitNative('appStateChange', { isActive: true }));
+  await expect(page.getByText('Slide through recent observations, or play the loop.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Play', exact: true })).toHaveAttribute('aria-pressed', 'false');
+  await page.getByRole('button', { name: 'Play', exact: true }).click();
+  await page.evaluate(() => window.__emitNative('powerStateChanged', { lowPowerMode: true, thermalState: 'nominal' }));
+  await expect(page.getByRole('button', { name: 'Play', exact: true })).toBeDisabled();
+  await expect(page.getByRole('slider', { name: 'Radar observation time' })).toBeEnabled();
+  await page.getByRole('slider', { name: 'Radar observation time' }).focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(page.getByRole('slider', { name: 'Radar observation time' })).toHaveValue('23');
+  await page.getByRole('button', { name: 'Today', exact: true }).click();
+  await expect(page.locator('.current-temperature')).toBeVisible();
+});

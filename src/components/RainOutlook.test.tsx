@@ -18,6 +18,14 @@ beforeEach(() => {
 });
 
 describe('rain outlook interactions', () => {
+  it('opens radar through its shortcut without changing the rain forecast', () => {
+    const snapshot = rainySnapshot(), outlook = upcomingRain(snapshot, fixtureTime, true)!;
+    const open = vi.fn();
+    render(<RainOutlook outlook={outlook} timezone={snapshot.timezone} now={fixtureTime} units="imperial" onRadar={open}/>);
+    fireEvent.click(screen.getByRole('button', { name: 'Open radar' }));
+    expect(open).toHaveBeenCalledOnce();
+    expect(screen.getByText('Forecast estimate · timing may shift.')).toBeInTheDocument();
+  });
   it('shows local forecast timing and changes the selected amount and units', () => {
     const snapshot = rainySnapshot(), outlook = upcomingRain(snapshot, fixtureTime, true)!;
     const props = { outlook, timezone: snapshot.timezone, now: fixtureTime };

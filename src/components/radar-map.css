@@ -1,0 +1,7 @@
+.radar-map-stage { position: relative; height: var(--radar-map-height); background: #f5eddb; }
+.radar-map { position: absolute; inset: 0; }
+.radar-map .maplibregl-canvas:focus-visible { outline: 3px solid var(--violet); outline-offset: -3px; }
+.radar-map-controls { position: absolute; right: 12px; top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.radar-map-controls button { width: 44px; height: 44px; padding: 8px; }
+.radar-place-marker { width: 17px; height: 17px; border: 3px solid #fff7e8; background: #7442bd; box-shadow: 0 0 0 2px #25233d; pointer-events: none; }
+.radar-map-warning { position: absolute; bottom: 8px; left: 8px; right: 8px; padding: 8px; font: 11px/1.5 'IBM Plex Mono', monospace; background: var(--paper); border: 1px solid var(--line); }

@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Today from './components/Today';
+import Radar from './components/Radar';
 import Places from './components/Places';
 import Settings from './components/Settings';
 import { PullToRefresh } from './components/PullToRefresh';
@@ -20,7 +21,7 @@ import { syncWidget } from './lib/widget';
 import type { Place, View } from './types';
 
 const WebUpdates = lazy(() => import('./components/WebUpdates'));
-const navigation: { view: View; label: string; icon: 'home' | 'places' | 'settings' }[] = [{ view: 'today', label: 'Today', icon: 'home' }, { view: 'places', label: 'Places', icon: 'places' }, { view: 'settings', label: 'Settings', icon: 'settings' }];
+const navigation: { view: View; label: string; icon: 'home' | 'radar' | 'places' | 'settings' }[] = [{ view: 'today', label: 'Today', icon: 'home' }, { view: 'radar', label: 'Radar', icon: 'radar' }, { view: 'places', label: 'Places', icon: 'places' }, { view: 'settings', label: 'Settings', icon: 'settings' }];
 export default function App() {
   const [initial] = useState(loadState);
   const [preferences, setPreferences] = useState(initial.preferences);
@@ -30,6 +31,7 @@ export default function App() {
   const [locating, setLocating] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [storageUnavailable, setStorageUnavailable] = useState(document.documentElement.dataset.storageUnavailable === 'true');
+  const placeReturn = useRef<'today' | 'radar'>('today');
   const locationRequest = useRef(0);
   const manualPending = useRef(false);
   const focusMain = useRef(false);
@@ -69,6 +71,8 @@ export default function App() {
   useEffect(() => { document.title = place ? `${place.name} · 8-Bit Weather` : '8-Bit Weather'; }, [place]);
   useEffect(() => () => { locationRequest.current++; }, []);
   function navigate(next: View) {
+    if (next === 'places' && view !== 'places') placeReturn.current = view === 'radar' ? 'radar' : 'today';
+    else if (next !== 'places') placeReturn.current = 'today';
     if (next !== view) triggerHaptic('selection');
     focusMain.current = next !== view;
     audio.effect(); setView(next); setNotice(null); window.scrollTo({ top: 0, behavior: 'instant' });
@@ -76,7 +80,7 @@ export default function App() {
   function choosePlace(next: Place) {
     if (!place || next.id !== place.id || next.latitude !== place.latitude || next.longitude !== place.longitude) triggerHaptic('impact');
     focusMain.current = true;
-    locationRequest.current++; setLocating(false); setPlace(next); setView('today'); setNotice(null);
+    locationRequest.current++; setLocating(false); setPlace(next); setView(placeReturn.current); setNotice(null);
     if (next.source === 'search') setPlaces(current => current.some(saved => saved.id === next.id) ? current : [...current, next]);
     audio.effect('success'); window.scrollTo({ top: 0, behavior: 'instant' });
   }
@@ -105,8 +109,9 @@ export default function App() {
     {notice || audio.error ? <div className="app-notice" role="alert"><span>{notice ?? audio.error}</span>{notice ? <button className="icon-button" aria-label="Dismiss message" onClick={() => setNotice(null)}><Icon name="close" size={14}/></button> : null}</div> : null}
     {storageUnavailable ? <p className="offline-notice" role="status">Saved data is unavailable. Your choices will last for this session.</p> : null}
     {view === 'today' ? <PullToRefresh key={place?.id ?? 'welcome'} enabled={!!place} disabled={weather.loading || !weather.online} onRefresh={manualRefresh}>
-      <Today briefingProvider={preferences.briefingProvider} onBriefingProviderChange={briefingProvider => setPreferences(previous => ({ ...previous, briefingProvider }))} place={place} {...weather} scene={scene} units={preferences.units} animate={motion.animate} decorativeAnimate={motion.decorativeAnimate} locating={locating} onDiscover={audio.effect} onLocate={() => void handleLocate()} onPlaces={() => navigate('places')} onRefresh={() => void manualRefresh()}/>
+      <Today briefingProvider={preferences.briefingProvider} onBriefingProviderChange={briefingProvider => setPreferences(previous => ({ ...previous, briefingProvider }))} place={place} {...weather} scene={scene} units={preferences.units} animate={motion.animate} decorativeAnimate={motion.decorativeAnimate} locating={locating} onRadar={() => navigate('radar')} onDiscover={audio.effect} onLocate={() => void handleLocate()} onPlaces={() => navigate('places')} onRefresh={() => void manualRefresh()}/>
     </PullToRefresh>
+      : view === 'radar' ? <Radar key={`${place?.id}:${place?.latitude}:${place?.longitude}`} place={place} timezone={weather.snapshot?.timezone} now={weather.now} online={weather.online} active={motion.visible} allowPlayback={motion.decorativeAnimate} onPlaces={() => navigate('places')}/>
       : view === 'places' ? <Places places={places} selected={place} locating={locating} onLocate={() => void handleLocate()} onSelect={choosePlace} onRemove={id => { setPlaces(current => current.filter(saved => saved.id !== id)); audio.effect('remove'); }}/>
       : <Settings preferences={preferences} onChange={setPreferences} audio={audio} install={install} systemReduced={motion.systemReduced} power={power} onClear={clearData}/>}
     <nav className="bottom-nav" aria-label="Main navigation">{navigation.map(item => <button key={item.view} aria-current={view === item.view ? 'page' : undefined} onClick={() => navigate(item.view)}><Icon name={item.icon} size={22}/><span>{item.label}</span></button>)}</nav>

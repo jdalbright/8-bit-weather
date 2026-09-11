@@ -7,7 +7,7 @@ final class AppUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
-        if name.contains("testLiveAppleBriefingSamples") || name.contains("testLiveOpenAIBriefingConnection") { return }
+        if name.contains("testLiveAppleBriefingSamples") || name.contains("testLiveOpenAIBriefingConnection") || name.contains("testRadarLiveMapAndResume") { return }
         app.launch()
         XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 20))
     }
@@ -41,6 +41,62 @@ final class AppUITests: XCTestCase {
         screenshot.name = "Native Places after resume"
         screenshot.lifetime = .keepAlways
         add(screenshot)
+    }
+
+    /// Run on an isolated simulator with the QA build's non-production briefing URL.
+    func testRadarLiveMapAndResume() throws {
+        guard ProcessInfo.processInfo.environment["RUN_LIVE_RADAR"] == "true" else {
+            throw XCTSkip("Set TEST_RUNNER_RUN_LIVE_RADAR=true for the keyless NOAA/OpenFreeMap smoke test.")
+        }
+        let place: [String: Any] = ["id": "radar-qa-raleigh", "name": "Raleigh", "region": "North Carolina", "country": "United States", "latitude": 35.78, "longitude": -78.64, "source": "search"]
+        let state: [String: Any] = ["selected": place, "places": [place], "preferences": ["reducedMotion": false, "music": false, "ambience": false, "effects": false]]
+        let value = String(data: try JSONSerialization.data(withJSONObject: state), encoding: .utf8)!
+        let seed = ["CapacitorStorage.8bit-weather:v1": value]
+        app.launchEnvironment["EIGHTBIT_UI_TEST_SEED"] = String(data: try JSONSerialization.data(withJSONObject: seed), encoding: .utf8)
+        app.launch()
+        XCTAssertTrue(app.buttons["Radar"].waitForExistence(timeout: 20))
+        app.buttons["Radar"].tap()
+        let ready = app.staticTexts["Slide through recent observations, or play the loop."]
+        XCTAssertTrue(ready.waitForExistence(timeout: 60), app.debugDescription)
+        XCTAssertTrue(app.buttons["Recenter on Raleigh"].exists)
+        let first = XCTAttachment(screenshot: app.screenshot())
+        first.name = "Live NOAA radar in WKWebView"
+        first.lifetime = .keepAlways
+        add(first)
+        // WKWebView exposes aria-pressed buttons as accessibility switches.
+        XCTAssertTrue(app.switches["Play"].isHittable)
+        app.switches["Play"].tap()
+        XCTAssertTrue(app.switches["Pause"].waitForExistence(timeout: 5))
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(ready.waitForExistence(timeout: 60), app.debugDescription)
+        XCTAssertTrue(app.switches["Play"].exists)
+        app.switches["Precipitation type"].tap()
+        XCTAssertTrue(ready.waitForExistence(timeout: 60), app.debugDescription)
+        XCTAssertTrue(app.staticTexts["Radar-estimated type. Sleet and freezing rain are not identified separately."].exists)
+        let second = XCTAttachment(screenshot: app.screenshot())
+        second.name = "Live NOAA precipitation type after native resume"
+        second.lifetime = .keepAlways
+        add(second)
+    }
+
+    func testRadarOfflineNavigation() throws {
+        let fixture = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "offline-preferences", withExtension: "json"))
+        app.terminate()
+        app.launchEnvironment["EIGHTBIT_UI_TEST_SEED"] = try String(contentsOf: fixture, encoding: .utf8)
+        app.launchEnvironment["EIGHTBIT_UI_TEST_OFFLINE"] = "true"
+        app.launch()
+        XCTAssertTrue(app.buttons["Radar"].waitForExistence(timeout: 20))
+        app.buttons["Radar"].tap()
+        XCTAssertTrue(app.staticTexts["Radar needs a connection"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["Zoom in"].exists)
+        app.links["Map credits & licenses"].tap()
+        XCTAssertTrue(app.staticTexts["Radar map credits"].waitForExistence(timeout: 10))
+        app.links["Back to 8-Bit Weather"].tap()
+        XCTAssertTrue(app.buttons["Today"].waitForExistence(timeout: 20))
+        app.buttons["Today"].tap()
+        XCTAssertTrue(app.buttons["Change location, Raleigh"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["You’re offline. Showing your saved forecast."].exists)
     }
 
     func testNativeExperienceBridgeAndSettings() {

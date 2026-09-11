@@ -108,6 +108,10 @@ A compact pixel timeline appears below the current conditions only when rain or 
 
 The outlook uses Open-Meteo's 15-minute rain plus shower amounts, with a 0.1 mm per-interval threshold to suppress trace amounts. Each timestamp marks the end of the preceding 15 minutes, including partially overlapping intervals at the edges of the two-hour window. The card is hidden offline, for stale forecasts, and when any interval is missing. Older saved forecasts still work without the new data. Timing is approximate model guidance, not radar nowcasting; outside regions with native 15-minute data, the provider interpolates hourly data. See the [provider's interval definitions](https://open-meteo.com/en/docs#minutely_15-variable-definition).
 
+### Radar
+
+The Radar tab and rain outlook's **Open radar** shortcut open a themed precipitation map in both the website/PWA and iOS app. Keyless NOAA imagery covers available U.S. regional radar networks over an OpenFreeMap basemap. Choose radar intensity or precipitation type, play or scrub approximately two hours of observations, and recenter on the selected place. Forecasts remain separate from these recent observations. Playback respects reduced motion, power settings and backgrounding; offline, unavailable, delayed and outside-coverage states are explicit. See [radar sources, architecture and validation](docs/radar.md).
+
 ### UV index
 
 The current conditions use a two-by-two grid for precipitation chance, wind, humidity, and UV. The UV tile stays visible at low levels and at night. Tap it to expand the colored pixel scale, sun-protection guidance, today's hourly UV timeline, and the daily peak. The timeline supports touch and arrow keys. Categories follow the [National Weather Service UV scale](https://www.weather.gov/ilx/uv-index); the displayed index is rounded to a whole number and its category matches that number. Levels above 11 remain visible as Extreme.
@@ -150,7 +154,7 @@ Tests cover units, WMO codes, missing measurements, time zones/DST, stale caches
 
 The Living Meadow tests also cover all 32 weather/lighting combinations, shared layer alignment, 44-pixel scenery controls, keyboard interaction, and offscreen/reduced-motion behavior. The audio suite renders two complete A/B cycles of all six production soundtracks with an offline audio clock, checks sample peaks and loop boundaries, and exercises real-time crossfades, phrase continuity, and independent channel muting in both browsers. Sample analysis does not replace listening on phone speakers or headphones; physical-device listening and installation remain separate checks.
 
-GitHub Actions runs type checking, lint, unit tests, production build, the asset budget, and Chromium/WebKit tests on pull requests and pushes to `main` or `codex/**`. The asset check limits the entire build output (a stricter check than just the precache) to 3 MB. Validate the branch's Vercel preview before moving a release to `main`.
+GitHub Actions runs type checking, lint, unit tests, production build, the asset budget, and Chromium/WebKit tests on pull requests and pushes to `main` or `codex/**`. The asset check limits core/offline output to 3 MB, with a separate 2 MB ceiling for the optional radar engine, style and worker. Optional radar assets are lazy-loaded and excluded from the PWA precache. Validate the branch's Vercel preview before moving a release to `main`.
 
 ## Project structure
 

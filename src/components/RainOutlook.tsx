@@ -5,8 +5,8 @@ import { rainAmount, RAIN_INTERVAL, type RainOutlookData } from '../lib/rain';
 import { localTime } from '../lib/weather';
 import { WeatherIcon } from './Icons';
 
-interface Props { outlook: RainOutlookData; timezone: string; units: Units; now: number }
-export function RainOutlook({ outlook, timezone, units, now }: Props) {
+interface Props { onRadar?: () => void; outlook: RainOutlookData; timezone: string; units: Units; now: number }
+export function RainOutlook({ onRadar, outlook, timezone, units, now }: Props) {
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const { periods, firstRainIndex } = outlook;
   const selectedIndex = periods.findIndex(period => period.time === selectedTime);
@@ -31,6 +31,6 @@ export function RainOutlook({ outlook, timezone, units, now }: Props) {
     <div className="rain-times" aria-hidden="true"><span>{clock(periods[0].time - RAIN_INTERVAL)}</span><span>{clock(periods[Math.floor(periods.length / 2)].time - RAIN_INTERVAL)}</span><span>{clock(periods.at(-1)!.time)}</span></div>
     <p className="rain-detail" role="status">{detail}</p>
     <p className="rain-hint">Tap or slide the bars to explore.</p>
-    <p className="rain-note">Forecast estimate · timing may shift.</p>
+    <div className="rain-radar-footer"><p className="rain-note">Forecast estimate · timing may shift.</p>{onRadar ? <button className="text-button" onClick={onRadar}>Open radar</button> : null}</div>
   </section>;
 }

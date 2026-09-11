@@ -1,5 +1,5 @@
 export type Units = 'imperial' | 'metric';
-export type View = 'today' | 'places' | 'settings';
+export type View = 'today' | 'radar' | 'places' | 'settings';
 export type WeatherKind = 'clear' | 'partly-cloudy' | 'cloudy' | 'fog' | 'rain' | 'snow' | 'storm' | 'unknown';
 export type LightingPhase = 'dawn' | 'day' | 'dusk' | 'night';
 export type Discovery = 'river' | 'station';

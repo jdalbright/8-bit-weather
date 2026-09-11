@@ -1,4 +1,10 @@
-# Offline North Carolina illustration map
+# Bundled geography and map styles
+
+## Radar basemap
+
+`radar-map-style.json` is a customized derivative of [OpenFreeMap Positron](https://tiles.openfreemap.org/styles/positron), retrieved September 11, 2026. It changes land, vegetation, water, road and label colors to the app theme, removes railway/POI/sprite layers, and retains geographic labels. Attribution and full upstream notices are bundled in `public/radar/credits.html` and the adjacent license files. Positron's code is BSD 3-Clause and its design is CC BY 4.0, derived from CartoDB Basemaps designed by Stamen and Paul Norman (CC BY 3.0). See [the radar documentation](../../docs/radar.md) for services, legends and limits.
+
+## Offline North Carolina illustration map
 
 `nc-geography.json` contains WGS84 `[longitude, latitude]` rings and oceanfront polylines downloaded September 9, 2026. It has no place-name rules and requires no browser-side GIS request.
 
