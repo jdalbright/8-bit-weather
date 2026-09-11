@@ -16,15 +16,38 @@ describe('expandable UV forecast', () => {
     render(<Today {...props()}/>);
     const button = screen.getByRole('button',{name:'UV index 4, Moderate, show details'});
     expect(button).toHaveAttribute('aria-expanded','false');
+    expect(within(button).getByText('Details', { exact: true })).toBeInTheDocument();
     expect(screen.queryByRole('region',{name:'A little sun sense'})).not.toBeInTheDocument();
     fireEvent.click(button);
     expect(button).toHaveAttribute('aria-expanded','true');
+    expect(within(button).getByText('Hide details', { exact: true })).toBeInTheDocument();
     expect(screen.getByText(/Today’s peak:/)).toHaveTextContent('UV 7 · High around 1 PM');
     expect(screen.getByText('Low UV forecast from around 5 PM.')).toBeInTheDocument();
     fireEvent.change(screen.getByRole('slider',{name:'UV forecast hour'}),{target:{value:'13'}});
     expect(within(screen.getByRole('region', { name: 'A little sun sense' })).getByRole('status')).toHaveTextContent('1 PM EDT · UV 7 · High');
     fireEvent.click(button);
+    expect(within(button).getByText('Details', { exact: true })).toBeInTheDocument();
     expect(screen.queryByRole('slider',{name:'UV forecast hour'})).not.toBeInTheDocument();
+  });
+  it('labels the current-hour precipitation chance and preserves zero and missing readings', () => {
+    const input = props();
+    input.snapshot.hourly.forEach(hour => { hour.precipitation = 0; });
+    const { container, rerender } = render(<Today {...input}/>);
+    const grid = container.querySelector('.current-stats')!;
+    expect(within(grid as HTMLElement).getByText('Chance of precipitation this hour')).toBeInTheDocument();
+    expect(grid.children[0]).toHaveTextContent('0%This hour');
+    expect([...grid.children].every(cell => [...cell.children].every(child => ['DT', 'DD'].includes(child.tagName)))).toBe(true);
+    expect(grid.children[1]).toHaveTextContent('5 mph');
+    rerender(<Today {...input} units="metric"/>);
+    expect(grid.children[1]).toHaveTextContent('8 km/h');
+    input.snapshot.current.wind = null;
+    input.snapshot.current.humidity = null;
+    input.snapshot.hourly.forEach(hour => { hour.precipitation = null; });
+    rerender(<Today {...input}/>);
+    expect(grid.children[0]).toHaveTextContent('—This hour');
+    expect(grid.children[1]).toHaveTextContent('Wind—');
+    expect(grid.children[1].querySelector('small')).toBeNull();
+    expect(grid.children[2]).toHaveTextContent('Humidity—');
   });
   it('keeps zero UV visible at night and gives nighttime wording', () => {
     const input = props(), night = input.snapshot.daily[0].time + 23*3600;

@@ -7,7 +7,7 @@ import { landscapeForPlace } from '../lib/landscapes';
 import { upcomingRain } from '../lib/rain';
 import { RainOutlook } from './RainOutlook';
 import { uvForecast } from '../lib/uv';
-import { UvDetails, UvScale } from './UvDetails';
+import { UvDetails } from './UvDetails';
 import { WeatherBriefing } from './WeatherBriefing';
 import { SunTimes } from './SunTimes';
 import { ForecastTimeTravel } from './ForecastTimeTravel';
@@ -44,6 +44,7 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
   const displayInfo = previewHour ? weatherInfo(previewHour.code, displayScene.isDay) : info;
   const rainOutlook = snapshot ? upcomingRain(snapshot, now, online) : null;
   const uv = snapshot ? uvForecast(snapshot, now, online) : null;
+  const [currentWind, currentWindUnit] = windSpeed(snapshot?.current.wind ?? null, units).split(' ');
   return <main id="main-content" tabIndex={-1} className="today-view">
     <div className="forecast-scene" data-preview={!!previewHour}>
     <Scenery key={snapshot ? `${place?.id}:${place?.latitude}:${place?.longitude}` : 'loading'} scene={displayScene} landscape={landscapeForPlace(place)} animate={decorativeAnimate} onDiscover={onDiscover} className={!place ? 'welcome-scene' : ''}>
@@ -69,12 +70,12 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
       {stale ? <div className="offline-notice" role="status">{!online ? 'You’re offline. Showing your saved forecast.' : 'This forecast is getting old. Refresh for the latest.'}</div> : null}
       <h2 className="current-conditions-title">Current conditions</h2>
       <dl className="current-stats" aria-label="Current conditions">
-        <div><Icon name="drop" className="rain-stat" size={25}/><span><dt>{info.kind === 'snow' ? 'Snow' : 'Rain'}</dt><dd>{percent(precipitationForHour(snapshot.hourly, currentHour?.time))}</dd></span></div>
-        <div><Icon name="wind" className="wind-stat" size={25}/><span><dt>Wind</dt><dd>{windSpeed(snapshot.current.wind, units)}</dd></span></div>
-        <div><Icon name="drop" className="humidity-stat" size={25}/><span><dt>Humidity</dt><dd>{percent(snapshot.current.humidity)}</dd></span></div>
+        <div><dt><Icon name="drop" className="rain-stat" size={24}/><span aria-hidden="true">Precip chance</span><span className="sr-only">Chance of precipitation this hour</span></dt><dd>{percent(precipitationForHour(snapshot.hourly, currentHour?.time))}<span className="stat-context" aria-hidden="true">This hour</span></dd></div>
+        <div className="stat-simple"><dt><Icon name="wind" className="wind-stat" size={24}/><span>Wind</span></dt><dd>{currentWind}{currentWindUnit ? <> <small className="stat-unit">{currentWindUnit}</small></> : null}</dd></div>
+        <div className="stat-simple"><dt><Icon name="drop" className="humidity-stat" size={24}/><span>Humidity</span></dt><dd>{percent(snapshot.current.humidity)}</dd></div>
         <div className="uv-stat"><dt className="sr-only">UV index</dt><dd><button className="uv-stat-button" aria-label={`UV index ${uv?.current ? `${uv.current.index}, ${uv.current.level.label}` : 'unavailable'}, ${uvExpanded ? 'hide' : 'show'} details`}
           aria-expanded={uvExpanded} aria-controls="uv-details" onClick={() => setUvExpanded(expanded => !expanded)} data-uv={uv?.current?.level.id ?? 'unknown'}>
-          <WeatherIcon kind="clear" size={25}/><span className="uv-stat-copy"><span className="uv-stat-label">UV index</span><span className="uv-stat-reading">{uv?.current?.index ?? '—'} <small>{uv?.current?.level.label ?? (uv?.stale ? 'Saved' : 'Unavailable')}</small></span><UvScale value={uv?.current?.index ?? null} compact/></span><Icon name="chevron" size={12}/>
+          <WeatherIcon kind="clear" size={24}/><span className="uv-stat-copy"><span className="uv-stat-label">UV index</span><span className="uv-stat-reading"><span>{uv?.current?.index ?? '—'}</span> <small>{uv?.current?.level.label ?? (uv?.stale ? 'Saved' : 'Unavailable')}</small></span><span className="uv-stat-action">{uvExpanded ? 'Hide details' : 'Details'}<Icon name="chevron" size={12}/></span></span>
         </button></dd></div>
       </dl>
       {uv ? <div className="uv-disclosure" data-expanded={uvExpanded} data-animate={animate} aria-hidden={!uvExpanded} inert={!uvExpanded}>
