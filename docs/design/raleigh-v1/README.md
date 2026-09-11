@@ -1,5 +1,9 @@
 # Raleigh scene — version 1
 
+The files in this design folder preserve the original flat paintings. The runtime
+plates in `public/art` now have their edge oaks removed and are paired with
+[separate animated oak sprites](../raleigh-oaks-v1/README.md).
+
 Created September 8, 2026 with the built-in Imagegen tool, using the original meadow daylight plate as the visual and composition reference. The app uses this artwork for selected locations within 25 km of central Raleigh, including nearby GPS fixes. Other locations use the original meadow. Delivery copies live in `public/art` and are available offline.
 
 The scene combines a downtown Raleigh skyline, mature oaks, low wooded Piedmont terrain, and a creek foreground. It is an illustrative Raleigh composite, not a literal view from one location. The regional direction draws from [Dix Park's oaks, meadows, and skyline views](https://dorotheadixpark.org/about) and [Raleigh's Walnut Creek greenway](https://raleighnc.gov/parks-and-recreation/places/walnut-creek-greenway-trail). No third-party photographs are incorporated.

@@ -1,6 +1,7 @@
 # Raleigh wildlife
 
-The Raleigh painting, water, and oak canopies retain their original artwork.
+The first wildlife pass retained the Raleigh painting and water. The oak canopies
+have since become [separate animated sprites](../raleigh-oaks-v1/README.md).
 The ambient bird and leaf layers use the free [Garden Birds pack by Pop Shop
 Packs](https://pop-shop-packs.itch.io/garden-birds-pixel-character-asset-pack)
 and [Windy Leaves by EdgeLoopRepeat](https://rs-pixel-store.itch.io/falling-leaf-fx).

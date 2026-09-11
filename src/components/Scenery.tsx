@@ -9,6 +9,7 @@ import type { Landscape } from '../lib/landscapes';
 import { Stream } from './Stream';
 import { OceanSurface } from './OceanSurface';
 import { RaleighWildlife } from './RaleighWildlife';
+import { RaleighOaks } from './RaleighOaks';
 
 // All station coordinates are authored in the landscape's 960-pixel-wide grid.
 // Discrete sprite frames keep the cups upright as they circle the fixed mast.
@@ -98,6 +99,7 @@ export function Scenery({ scene, animate, onDiscover, children, className = '', 
       {(['day', 'overcast', 'night'] as const).map(art => <img key={art} className={`art-layer ${art === 'day' ? 'landscape-art' : ''}`} data-art={art}
         src={landscapeSource(landscape, art)} alt="" width={ART.width} height={ART.height} fetchPriority={art === 'day' ? 'high' : 'auto'} draggable="false"
         style={{ opacity: art === 'night' ? 1 - scene.daylight : art === 'overcast' ? wet ? 1 : 0 : 1 }} />)}
+      {landscape === 'raleigh' ? <RaleighOaks scene={scene} /> : null}
       <div className="twilight-light" />
       <svg className="landscape-details" viewBox={`0 0 ${ART.width} ${ART.height}`} shapeRendering="crispEdges">
         {definition.water.kind === 'surf' ? <OceanSurface scene={scene} discoveryId={waterDiscovery}/>

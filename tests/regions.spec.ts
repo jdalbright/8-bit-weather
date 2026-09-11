@@ -66,6 +66,12 @@ for (const id of ids) {
         await page.locator('.scenery').screenshot({ path: `/tmp/8bit-weather-regions/${browserName}-${id}-${light}-${width}.png`, animations: 'allow' });
       }
       await page.setViewportSize({ width: 390, height: 844 });
+      // The weather typography now transitions on resize. Finish those finite
+      // transitions before comparing water pixels in the composited scene crop.
+      await page.locator('.scene-content').evaluate(async node => {
+        await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+        await Promise.all(node.getAnimations({ subtree: true }).filter(a => a instanceof CSSTransition).map(a => a.finished.catch(() => {})));
+      });
       await page.evaluate(() => document.querySelector('.landscape')!.getAnimations({ subtree: true }).forEach(animation => animation.pause()));
       const phase = (time: number) => page.evaluate(time => document.querySelectorAll('.stream-current,.stream-eddy,.surf-wave,.surf-shimmer').forEach(node => node.getAnimations().forEach(animation => { animation.currentTime = time; })), time);
       await phase(400);

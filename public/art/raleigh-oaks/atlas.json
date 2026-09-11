@@ -1,0 +1,13 @@
+{
+  "width": 240,
+  "height": 320,
+  "frames": 8,
+  "top": 280,
+  "left": -8,
+  "right": 728,
+  "lights": [
+    "day",
+    "overcast",
+    "night"
+  ]
+}
