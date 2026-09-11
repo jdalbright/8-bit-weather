@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <title>Pixel sun face</title>
+  <g transform="translate(8 8) scale(2)">
+    <path fill="#a56424" d="M8 11h2v3H8zm6 0h2v3h-2zm-4 5h4v1h-4z"/>
+  </g>
+</svg>

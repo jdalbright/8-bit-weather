@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <title>Pixel sun body</title>
+  <g transform="translate(8 8) scale(2)">
+    <path fill="#8b531e" d="M8 4h8v2h3v3h2v7h-2v3h-3v2H8v-2H5v-3H3V9h2V6h3z"/>
+    <path fill="#ffdb4d" d="M8 5h8v2h3v3h1v5h-2v3h-3v2H9v-2H6v-3H4v-5h2V7h2z"/>
+  </g>
+</svg>

@@ -1,0 +1,52 @@
+{
+  "fill": {
+    "automatic-gradient": "extended-srgb:1.00000,0.96863,0.90980,1.00000"
+  },
+  "groups": [
+    {
+      "layers": [
+        {
+          "glass": false,
+          "image-name": "03-face.png",
+          "name": "Pixel smile"
+        },
+        {
+          "image-name": "02-sun.png",
+          "name": "Pixel sun"
+        }
+      ],
+      "name": "Sun and smile",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.18
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.65
+      }
+    },
+    {
+      "layers": [
+        {
+          "image-name": "01-rays.png",
+          "name": "01-rays"
+        }
+      ],
+      "name": "Amber rays",
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.15
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.7
+      }
+    }
+  ],
+  "supported-platforms": {
+    "circles": [
+      "watchOS"
+    ],
+    "squares": "shared"
+  }
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <title>Pixel sun rays</title>
+  <g transform="translate(8 8) scale(2)">
+    <path fill="#ee9623" d="M10 0h4v4h3V2h3v3h-2v3h3V7h3v4h-4v3h4v3h-4v3h-3v-2h-3v6h-4v-5H7v3H4v-4H1v-4h3v-3H0V7h4V4h3v2h3z"/>
+  </g>
+</svg>
