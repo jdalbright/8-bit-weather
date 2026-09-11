@@ -1,3 +1,4 @@
+import { triggerHaptic } from '../lib/native-experience';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Discovery, SceneState } from '../types';
@@ -70,6 +71,7 @@ export function Scenery({ scene, animate, onDiscover, children, className = '', 
     lastTap.current = performance.now();
     window.clearTimeout(feedbackTimer.current);
     setDiscovery(previous => ({ kind, id: (previous?.id ?? 0) + 1 }));
+    triggerHaptic(kind === 'river' ? { kind: 'pattern', name: 'waterRipple' } : { kind: 'impact', style: 'rigid' });
     onDiscover(kind);
     feedbackTimer.current = window.setTimeout(() => setDiscovery(null), animate ? 1600 : 650);
   }

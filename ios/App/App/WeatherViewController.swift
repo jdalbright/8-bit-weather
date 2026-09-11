@@ -121,10 +121,17 @@ final class WeatherViewController: CAPBridgeViewController {
                 const listener = await plugin.addListener('powerStateChanged', () => {});
                 await listener.remove();
                 await plugin.setHapticsEnabled({enabled:false});
-                await plugin.triggerHaptic({kind:'selection'});
-                let code = '';
-                try { await plugin.triggerHaptic({kind:'invalid'}); } catch (error) { code = error.code; }
-                if (code !== 'INVALID_ARGUMENT') throw new Error('Missing argument validation');
+                const requests = [{kind:'selection'}, {kind:'impact'},
+                  ...['light','medium','heavy','soft','rigid'].map(style => ({kind:'impact',style})),
+                  ...['success','warning','error'].map(type => ({kind:'notification',type})),
+                  {kind:'pattern',name:'waterRipple'}];
+                for (const request of requests) await plugin.triggerHaptic(request);
+                for (const request of [{kind:'invalid'}, {kind:'impact',style:'invalid'},
+                  {kind:'notification',type:'invalid'}, {kind:'pattern',name:'invalid'}]) {
+                  let code = '';
+                  try { await plugin.triggerHaptic(request); } catch (error) { code = error.code; }
+                  if (code !== 'INVALID_ARGUMENT') throw new Error('Missing argument validation');
+                }
                 result.textContent = 'Native experience bridge passed: ' + JSON.stringify(state);
               } catch (error) { result.textContent = 'Native experience bridge failed: ' + error.message; }
             });

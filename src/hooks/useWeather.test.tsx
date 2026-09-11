@@ -82,3 +82,31 @@ it('signals manual request start only for a real fetch, not cached, offline, or 
   await act(async () => result.current.refresh(true, started)); expect(started).toHaveBeenCalledTimes(2);
   await act(async () => result.current.refresh(true, started)); expect(started).toHaveBeenCalledTimes(2);
 });
+
+it('returns explicit outcomes for completed, failed, and skipped refreshes', async () => {
+  const fresh = normalizeWeather(forecastFixture(Date.now()), asheville);
+  cacheWeather(fresh); mockedFetch.mockResolvedValue(fresh);
+  const { result } = renderHook(() => useWeather(asheville));
+  await act(async () => { expect(await result.current.refresh()).toBe('skipped'); });
+  await act(async () => { expect(await result.current.refresh(true)).toBe('success'); });
+  mockedFetch.mockRejectedValueOnce(new WeatherRequestError('Busy', 60000));
+  await act(async () => { expect(await result.current.refresh(true)).toBe('failure'); });
+  await act(async () => { expect(await result.current.refresh(true)).toBe('skipped'); });
+  Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+  await act(async () => { expect(await result.current.refresh(true)).toBe('skipped'); });
+});
+it.each(['resolve', 'reject'] as const)('returns cancelled for a superseded manual request that later %ss', async outcome => {
+  const fresh = normalizeWeather(forecastFixture(Date.now()), asheville);
+  cacheWeather(fresh); cacheWeather(normalizeWeather(forecastFixture(Date.now()), tokyo));
+  let resolve!: (snapshot: WeatherSnapshot) => void, reject!: (error: Error) => void;
+  mockedFetch.mockImplementationOnce(() => new Promise((yes, no) => { resolve = yes; reject = no; }));
+  const { result, rerender } = renderHook(({ place }) => useWeather(place), { initialProps: { place: asheville } });
+  let pending!: ReturnType<typeof result.current.refresh>;
+  act(() => { pending = result.current.refresh(true); });
+  rerender({ place: tokyo });
+  await act(async () => {
+    if (outcome === 'resolve') resolve(fresh); else reject(new Error('Late failure'));
+    expect(await pending).toBe('cancelled');
+  });
+  expect(result.current.snapshot?.placeId).toBe(tokyo.id);
+});

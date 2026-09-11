@@ -1,14 +1,20 @@
 # Native feedback, power awareness, and Lock Screen widgets
 
-The iOS app uses `NativeExperience`, a small Capacitor bridge backed by UIKit and ProcessInfo. It supports iOS 17 and later. The website never calls this bridge and has no haptics setting.
+The iOS app uses `NativeExperience`, a small Capacitor bridge backed by UIKit, Core Haptics, and ProcessInfo. It supports iOS 17 and later. The website never calls this bridge and has no haptics setting.
 
 ## Haptics
 
 Settings → Touch feedback → Haptic feedback defaults to on, including for existing installations without the preference. Its saved boolean is independent of every audio preference. Invalid stored values use the default; existing places and forecasts are retained.
 
-Selection feedback occurs when the tab or UV/rain chart selection changes. Light impact feedback occurs when selecting a different place or starting a manual forecast request. Both pull-to-refresh and the Refresh button share the request-start path. Offline, cached, and rate-limited returns do not produce refresh feedback. Chart feedback is throttled to one pulse per 80 milliseconds; it never queues a trailing pulse.
+Selection feedback marks changed tabs, forecast hours, radar frames/layers, units, briefing providers, and switches. Volume controls tick when crossing 10% steps, including endpoints. Forecast and volume scrubbing share an 80ms throttle without trailing pulses; volume endpoints bypass that throttle so reaching 0% or 100% is acknowledged. Re-selecting an unchanged value is silent.
 
-The JavaScript client and Swift plugin gate feedback by foreground state and preference. Preference writes are serialized; queued feedback is discarded after preference changes, backgrounding, or a 250ms delay. Native errors are contained. There are no automatic-refresh, ordinary-scroll, discovery, disclosure, cold-launch, or deep-link haptics. Unsupported hardware can silently omit feedback.
+Light impacts acknowledge switching/removing saved places and the start of a real button-triggered forecast request. Native pull-to-refresh retains UIKit's start feedback without an additional app pulse. Manual forecast requests return success/failure/skipped/cancelled; only current, completed requests produce success/error notification feedback. Offline, cached, cancelled, superseded, and rate-limited skips are silent. New search cities and successful location lookups get a single success pattern; location failures get error feedback alongside their visible message. Opening the clear-data confirmation produces warning feedback.
+
+Briefing disclosure uses a soft impact. Tapping the weather station produces a rigid click. Tapping water plays three Core Haptics transients at 0, 80, and 180ms with intensities 0.45, 0.28, and 0.12 and sharpness 0.15. Accepted taps replace the previous pattern; the existing scene tap guard remains 180ms. If custom playback is unavailable, use one soft impact. The engine is lazy, haptics-only, automatically shuts down when idle, restarts on the next touch after interruptions, and is discarded after resets. It never generates audio or ambient weather vibration.
+
+The bridge accepts `{kind:'selection'}`, `{kind:'impact',style?:'light'|'medium'|'heavy'|'soft'|'rigid'}`, `{kind:'notification',type:'success'|'warning'|'error'}`, and `{kind:'pattern',name:'waterRipple'}`. Existing `selection` and `impact` client calls remain valid; omitted impact style means light. Native validation rejects unsupported kinds/styles/outcomes/patterns. Medium and heavy are supported but unused by current controls.
+
+JavaScript and Swift gate feedback by foreground state and preference. Disabling immediately suppresses new requests and stops custom playback; enabling previews one selection tick. Preference writes are serialized. Queued feedback expires after 250ms and is invalidated by preference changes or a background transition, even after returning. Async outcomes additionally require their original screen/place context. Native errors are contained, unsupported hardware can silently omit feedback, and all functionality remains usable without haptics. There are no automatic-refresh, radar-autoplay, ordinary vertical-scroll, cold-launch, or deep-link haptics.
 
 ## Power-aware scenery
 
@@ -45,3 +51,12 @@ Simulator render harnesses can inspect layout, missing/stale data, long names, a
 - An isolated simulator rendering harness exported 40 view checks across five sizes and eight states: fresh, metric, stale, missing readings, cleared selection, long city, reduced luminance, and privacy redaction. This exposed an inline truncation issue; inline now leads with temperature. The harness does not reproduce WidgetKit's container backgrounds/system composition. Simulator Lock Screen gallery registration and addition were confirmed for circular and rectangular widgets.
 - The initial feature build installed and launched on the connected iPhone. Installation of the final refinements was blocked when CoreDevice lost the connection; a follow-up device listing reported the iPhone unavailable. The final signed build was subsequently installed at 13:53 local time after reconnection; an initial transient launch preflight rejection cleared on retry, and launch succeeded at 13:54. The provisioning profile was valid through September 18 and Developer Mode was enabled. Physical haptic feel, real Low Power Mode changes, and physical Lock Screen/Always On checks still need user confirmation.
 - No commit, push, deployment, paid service, or store submission was performed.
+
+
+### Expanded haptics verification — September 11, 2026
+
+- Typechecking and lint passed without errors or lint warnings. Unit/server checks passed: 298 client tests and 99 server tests, with four opt-in live server cases skipped. Native Node ESM smoke check and native bundle checks passed.
+- 46 distinct Chromium/WebKit browser cases passed across experience, briefing, interaction-motion, radar, and forecast-preview suites. The settings case passed again in both engines after refining volume endpoint feedback. Coverage includes unchanged selections, muted sound, disabled/re-enabled haptics, scene patterns, manual refresh success/failure, stale completion suppression, and single acknowledgements for new cities and location outcomes.
+- Simulator and signed device builds passed. The final device app passed deep/strict code-signature verification and installed successfully on the connected iPhone 17 Pro. Launch was rejected because the phone was locked; physical intensity, timing, interruption, and comfort checks remain pending user feedback.
+- The expanded DEBUG-only native bridge probe accepted every supported impact/outcome/pattern and rejected invalid values while feedback was disabled. Direct simulator launch visibly reported “Native experience bridge passed.” The XCTest wrapper stalled at launch/idle detection and was interrupted; it is not recorded as a passing UI test. Probe screenshot: `/tmp/8bit-haptics-native-probe.png`; build logs: `/tmp/8bit-haptics-build.log` and `/tmp/8bit-haptics-device-build.log`; interrupted test log: `/tmp/8bit-haptics-native-bridge.log`.
+- No commit, push, production deployment, or distribution submission was performed.

@@ -16,19 +16,20 @@ test('haptics are deliberate, disabled independently, and persist after relaunch
   expect(pulses()).toHaveLength(0);
   await page.getByRole('button', { name: 'Today', exact: true }).click(); expect(pulses()).toHaveLength(0);
   await page.getByRole('button', { name: 'Refresh', exact: true }).click();
-  await expect.poll(() => pulses().length).toBe(1); expect(pulses()[0].options?.kind).toBe('impact');
+  await expect.poll(() => pulses().length).toBe(2); expect(pulses()[0].options?.kind).toBe('impact');
   await expect(page.getByRole('button', { name: 'Refresh', exact: true })).toBeEnabled();
   await page.evaluate(() => window.__emitNative('refresh', { requestId: 42 }));
-  await expect.poll(() => pulses().length).toBe(2);
-  await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await expect.poll(() => pulses().length).toBe(3);
+  expect(pulses().slice(1).map(call => call.options)).toEqual([{ kind: 'notification', type: 'success' }, { kind: 'notification', type: 'success' }]);
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  await expect.poll(() => pulses().length).toBe(4);
   const toggle = page.getByRole('switch', { name: 'Haptic feedback' });
   await expect(toggle).toHaveAttribute('aria-checked', 'true'); await toggle.click();
   await expect.poll(() => JSON.parse(bridge.store.get(storageKey)!).preferences.haptics).toBe(false);
   await page.getByRole('button', { name: 'Today', exact: true }).click();
-  await page.getByRole('button', { name: 'Settings', exact: true }).click(); expect(pulses()).toHaveLength(3);
+  await page.getByRole('button', { name: 'Settings', exact: true }).click(); expect(pulses()).toHaveLength(4);
   await page.reload(); await page.getByRole('button', { name: 'Settings', exact: true }).click();
-  await expect(toggle).toHaveAttribute('aria-checked', 'false'); expect(pulses()).toHaveLength(3);
+  await expect(toggle).toHaveAttribute('aria-checked', 'false'); expect(pulses()).toHaveLength(4);
 });
 
 test('power changes pause scenery while disclosure animation stays enabled', async ({ page }, info) => {
@@ -77,4 +78,109 @@ test('chart selections pulse only when changed and bridge failures do not block 
   bridge.control.experienceFailure = true;
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
+});
+
+
+test('scene touches and briefing disclosure have distinct textures', async ({ page }) => {
+  const bridge = await setup(page); await page.goto('/');
+  await expect(page.locator('.scenery')).toBeVisible();
+  const pulses = () => bridge.calls.filter(call => call.method === 'triggerHaptic').map(call => call.options);
+  await page.locator('[data-discovery="river"]').click();
+  await expect.poll(pulses).toEqual([{ kind: 'pattern', name: 'waterRipple' }]);
+  await page.waitForTimeout(200);
+  await page.locator('[data-discovery="station"]').click();
+  await expect.poll(pulses).toHaveLength(2);
+  expect(pulses()[1]).toEqual({ kind: 'impact', style: 'rigid' });
+  await page.getByRole('button', { name: /Weather briefing/ }).click();
+  await expect.poll(pulses).toHaveLength(3);
+  expect(pulses()[2]).toEqual({ kind: 'impact', style: 'soft' });
+});
+
+test('settings tick on changes and volume steps, warn on clearing, and preview enabling once', async ({ page }) => {
+  const bridge = await setup(page); await page.goto('/');
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  const pulses = () => bridge.calls.filter(call => call.method === 'triggerHaptic');
+  await expect.poll(() => pulses().length).toBe(1);
+  await page.getByRole('button', { name: '°F / mph', exact: true }).click();
+  expect(pulses()).toHaveLength(1);
+  await page.getByRole('button', { name: '°C / km/h', exact: true }).click();
+  await expect.poll(() => pulses().length).toBe(2);
+  const volume = page.getByRole('slider', { name: 'Music volume', exact: true });
+  await volume.fill('36'); expect(pulses()).toHaveLength(2);
+  await volume.fill('40'); await expect.poll(() => pulses().length).toBe(3);
+  await volume.fill('1'); await page.waitForTimeout(100); const beforeEndpoint = pulses().length;
+  await volume.fill('0'); await expect.poll(() => pulses().length).toBe(beforeEndpoint + 1);
+  await volume.fill('100'); await expect.poll(() => pulses().length).toBe(beforeEndpoint + 2);
+  await page.getByRole('button', { name: 'Clear saved data', exact: true }).click();
+  await expect.poll(() => pulses().at(-1)?.options).toEqual({ kind: 'notification', type: 'warning' });
+  const toggle = page.getByRole('switch', { name: 'Haptic feedback', exact: true });
+  const count = pulses().length;
+  await toggle.click(); await page.getByRole('switch', { name: 'Music', exact: true }).click();
+  expect(pulses()).toHaveLength(count);
+  await toggle.click(); await expect.poll(() => pulses().length).toBe(count + 1);
+  expect(pulses().at(-1)?.options).toEqual({ kind: 'selection' });
+});
+
+test('manual failures signal error once while background refreshes stay silent', async ({ page }) => {
+  const bridge = await setup(page); await page.goto('/');
+  await expect(page.getByRole('heading', { name: '7-day forecast' })).toBeVisible();
+  const pulses = () => bridge.calls.filter(call => call.method === 'triggerHaptic').map(call => call.options);
+  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ status: 500, body: 'Unavailable', headers: { 'access-control-allow-origin': '*' } }));
+  await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+  await expect.poll(pulses).toEqual([{ kind: 'impact' }, { kind: 'notification', type: 'error' }]);
+  await page.evaluate(() => window.__emitNative('refresh', { requestId: 43 }));
+  await expect.poll(pulses).toHaveLength(3);
+  expect(pulses()[2]).toEqual({ kind: 'notification', type: 'error' });
+  await page.evaluate(() => { window.dispatchEvent(new Event('online')); });
+  await expect(page.getByRole('button', { name: 'Refresh', exact: true })).toBeEnabled();
+  expect(pulses()).toHaveLength(3);
+});
+
+test('late refresh completion does not buzz after navigation or backgrounding', async ({ page }) => {
+  const bridge = await setup(page); await page.goto('/');
+  await expect(page.getByRole('heading', { name: '7-day forecast' })).toBeVisible();
+  let release!: () => void;
+  const held = new Promise<void>(resolve => { release = resolve; });
+  let started = false;
+  await page.route('https://api.open-meteo.com/**', async route => {
+    started = true; await held;
+    await route.fulfill({ json: forecastFixture(Date.now()), headers: { 'access-control-allow-origin': '*' } });
+  });
+  await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+  await expect.poll(() => started).toBe(true);
+  await page.evaluate(() => { window.__emitNative('appStateChange', { isActive: false }); window.__emitNative('appStateChange', { isActive: true }); });
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  release();
+  await page.getByRole('button', { name: 'Today', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Refresh', exact: true })).toBeEnabled();
+  expect(bridge.calls.filter(call => call.method === 'triggerHaptic' && call.options?.kind === 'notification')).toHaveLength(0);
+});
+
+
+test('new cities and location outcomes each produce one acknowledgement', async ({ page }) => {
+  const bridge = await setup(page);
+  await page.route('https://geocoding-api.open-meteo.com/**', route => route.fulfill({ json: { results: [
+    { id: 4487042, name: 'Raleigh', latitude: 35.78, longitude: -78.64, admin1: 'North Carolina', country: 'United States' }
+  ] }, headers: { 'access-control-allow-origin': '*' } }));
+  await page.goto('/'); await page.getByRole('button', { name: 'Places', exact: true }).click();
+  const pulses = () => bridge.calls.filter(call => call.method === 'triggerHaptic').map(call => call.options);
+  await page.getByRole('searchbox', { name: 'Find a city' }).fill('Raleigh');
+  const before = pulses().length;
+  await page.getByRole('button', { name: /Raleigh North Carolina/ }).click();
+  await expect.poll(pulses).toHaveLength(before + 1);
+  expect(pulses().at(-1)).toEqual({ kind: 'notification', type: 'success' });
+  await page.getByRole('button', { name: 'Places', exact: true }).click();
+  await page.getByRole('button', { name: /Asheville North Carolina/ }).click();
+  await expect.poll(() => pulses().at(-1)).toEqual({ kind: 'impact' });
+  await page.getByRole('button', { name: 'Places', exact: true }).click();
+  let count = pulses().length;
+  await page.getByRole('button', { name: 'Use my location', exact: true }).click();
+  await expect.poll(pulses).toHaveLength(count + 1);
+  expect(pulses().at(-1)).toEqual({ kind: 'notification', type: 'success' });
+  await page.getByRole('button', { name: 'Places', exact: true }).click();
+  bridge.control.permission = 'denied'; count = pulses().length;
+  await page.getByRole('button', { name: 'Use my location', exact: true }).click();
+  await expect.poll(pulses).toHaveLength(count + 1);
+  expect(pulses().at(-1)).toEqual({ kind: 'notification', type: 'error' });
+  await expect(page.getByRole('alert')).toContainText('Location permission is off');
 });

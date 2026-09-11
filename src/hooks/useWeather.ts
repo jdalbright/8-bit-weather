@@ -5,6 +5,8 @@ import { cachedWeather, cacheWeather } from '../lib/storage';
 import { cacheMatches, FRESH_FOR, isFresh } from '../lib/weather';
 import type { Place, WeatherSnapshot } from '../types';
 
+export type RefreshOutcome = 'success' | 'failure' | 'skipped' | 'cancelled';
+
 type State = { snapshot: WeatherSnapshot | null; loading: boolean; error: string | null; placeId: string | null };
 export function useWeather(place: Place | null) {
   const [state, setState] = useState<State>({ snapshot: null, loading: false, error: null, placeId: null });
@@ -14,18 +16,18 @@ export function useWeather(place: Place | null) {
   const generation = useRef(0);
   const cooldown = useRef(0);
   const latest = useRef<WeatherSnapshot | null>(null);
-  const refresh = useCallback(async (force = false, onRequestStarted?: () => void) => {
+  const refresh = useCallback(async (force = false, onRequestStarted?: () => void): Promise<RefreshOutcome> => {
     request.current?.abort();
     const attempt = ++generation.current;
-    if (!place) { latest.current = null; setState({ snapshot: null, loading: false, error: null, placeId: null }); return; }
+    if (!place) { latest.current = null; setState({ snapshot: null, loading: false, error: null, placeId: null }); return 'skipped'; }
     const stored = cachedWeather(place);
     const memory = latest.current && cacheMatches(latest.current, place) ? latest.current : null;
     const cache = memory && (!stored || memory.fetchedAt >= stored.fetchedAt) ? memory : stored;
     latest.current = cache;
-    if (!navigator.onLine) { setState({ snapshot: cache, loading: false, error: cache ? null : 'You’re offline. Connect to load weather for this place.', placeId: place.id }); return; }
+    if (!navigator.onLine) { setState({ snapshot: cache, loading: false, error: cache ? null : 'You’re offline. Connect to load weather for this place.', placeId: place.id }); return 'skipped'; }
     if ((!force && cache && isFresh(cache)) || Date.now() < cooldown.current) {
       setState(previous => ({ snapshot: cache, loading: false, error: Date.now() < cooldown.current ? previous.error : null, placeId: place.id }));
-      return;
+      return 'skipped';
     }
     onRequestStarted?.();
     const controller = new AbortController();
@@ -33,15 +35,17 @@ export function useWeather(place: Place | null) {
     setState({ snapshot: cache, loading: true, error: null, placeId: place.id });
     try {
       const snapshot = await fetchWeather(place, controller.signal);
-      if (controller.signal.aborted || attempt !== generation.current) return;
+      if (controller.signal.aborted || attempt !== generation.current) return 'cancelled';
       cacheWeather(snapshot);
       latest.current = snapshot;
       setState({ snapshot, loading: false, error: null, placeId: place.id });
       setNow(Date.now());
+      return 'success';
     } catch (error) {
-      if (controller.signal.aborted || attempt !== generation.current) return;
+      if (controller.signal.aborted || attempt !== generation.current) return 'cancelled';
       if (error instanceof WeatherRequestError && error.retryAfterMs) cooldown.current = Date.now() + error.retryAfterMs;
       setState({ snapshot: cache, loading: false, error: error instanceof Error ? error.message : 'Couldn’t load the forecast. Please try again.', placeId: place.id });
+      return 'failure';
     }
   }, [place]);
   useEffect(() => {

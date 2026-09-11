@@ -1,3 +1,4 @@
+import { triggerHaptic } from '../lib/native-experience';
 import { useState } from 'react';
 import type { BriefingProvider, Units, WeatherSnapshot } from '../types';
 import { useBriefing } from '../hooks/useBriefing';
@@ -9,7 +10,7 @@ export function WeatherBriefing({ snapshot, units, online, now, provider = 'open
   const { briefing, error, loading, eligible, retry, canRetry, alternative, canSwitch } = useBriefing(snapshot, units, online, now, provider);
   const [expanded, setExpanded] = useState(true);
   return <section className="weather-briefing" aria-labelledby="briefing-title" aria-busy={loading}>
-    <h2 className="briefing-heading"><button type="button" className="briefing-toggle" aria-expanded={expanded} aria-controls="briefing-details" onClick={() => setExpanded(value => !value)}>
+    <h2 className="briefing-heading"><button type="button" className="briefing-toggle" aria-expanded={expanded} aria-controls="briefing-details" onClick={() => { triggerHaptic({ kind: 'impact', style: 'soft' }); setExpanded(value => !value); }}>
       <span id="briefing-title" className="briefing-title">Weather briefing</span><span className="briefing-badge">{briefing?.provider === 'apple' ? 'Apple Intelligence' : briefing?.provider === 'openai' ? 'OpenAI' : 'AI summary'}</span><Icon name="chevron" size={16}/>
     </button></h2>
     <div id="briefing-details" className="briefing-disclosure" data-expanded={expanded} aria-hidden={!expanded} inert={!expanded}>

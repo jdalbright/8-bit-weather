@@ -27,7 +27,7 @@ function TestSurface({ enabled = true, disabled = false, onRefresh = vi.fn().moc
 }
 function WeatherSurface() {
   const weather = useWeather(asheville);
-  return <PullToRefresh enabled disabled={weather.loading || !weather.online} onRefresh={() => weather.refresh(true)}>
+  return <PullToRefresh enabled disabled={weather.loading || !weather.online} onRefresh={async () => { await weather.refresh(true); }}>
     <p>Forecast surface</p>
     <output aria-label="Temperature">{weather.snapshot?.current.temperature}</output>
     {weather.error ? <p role="alert">{weather.error}</p> : null}

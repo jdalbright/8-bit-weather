@@ -1,8 +1,8 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 const mock = vi.hoisted(() => ({ native: true, active: true, set: vi.fn(), trigger: vi.fn() }));
-vi.mock('./native', () => ({ isNativeApp: () => mock.native, isAppActive: () => mock.active }));
+vi.mock('./native', () => ({ isNativeApp: () => mock.native, isAppActive: () => mock.active, NATIVE_ACTIVITY_EVENT: '8bit-native-activity' }));
 vi.mock('@capacitor/core', () => ({ registerPlugin: () => ({ setHapticsEnabled: mock.set, triggerHaptic: mock.trigger }) }));
-import { setHapticsEnabled, triggerHaptic } from './native-experience';
+import { captureHapticContext, setHapticsEnabled, triggerHaptic } from './native-experience';
 const flush = async () => { for (let i = 0; i < 10; i++) await Promise.resolve(); };
 beforeEach(async () => { mock.native = true; mock.active = true; mock.set.mockReset().mockResolvedValue(undefined); mock.trigger.mockReset().mockResolvedValue(undefined); setHapticsEnabled(true); await flush(); });
 it('gates feedback independently of audio and immediately respects disabling', async () => {
@@ -31,4 +31,31 @@ it('contains native failures and recovers on the next configuration', async () =
   expect(mock.trigger).not.toHaveBeenCalled();
   setHapticsEnabled(true); await flush(); mock.trigger.mockRejectedValueOnce(new Error('hardware unavailable')); triggerHaptic('impact'); await flush();
   expect(mock.trigger).toHaveBeenCalledOnce();
+});
+
+it('preserves typed impact, outcome, and custom pattern requests', async () => {
+  const requests = [{ kind: 'impact', style: 'soft' }, { kind: 'impact', style: 'rigid' },
+    { kind: 'notification', type: 'success' }, { kind: 'notification', type: 'warning' },
+    { kind: 'notification', type: 'error' }, { kind: 'pattern', name: 'waterRipple' }] as const;
+  for (const request of requests) triggerHaptic(request);
+  await flush();
+  expect(mock.trigger.mock.calls.map(([request]) => request)).toEqual(requests);
+});
+it('invalidates outcomes and queued patterns across background and foreground, even after resuming', async () => {
+  const current = captureHapticContext();
+  triggerHaptic({ kind: 'pattern', name: 'waterRipple' });
+  mock.active = false; window.dispatchEvent(new Event('8bit-native-activity'));
+  mock.active = true; window.dispatchEvent(new Event('8bit-native-activity'));
+  await flush(); expect(current()).toBe(false); expect(mock.trigger).not.toHaveBeenCalled();
+});
+it('does not revive old outcomes after toggling feedback off and on', async () => {
+  const current = captureHapticContext();
+  setHapticsEnabled(false); setHapticsEnabled(true);
+  await flush(); expect(current()).toBe(false);
+});
+it('drops a delayed pattern rather than playing it after the interaction', async () => {
+  const clock = vi.spyOn(performance, 'now').mockReturnValue(20000);
+  triggerHaptic({ kind: 'pattern', name: 'waterRipple' });
+  clock.mockReturnValue(20250);
+  await flush(); expect(mock.trigger).not.toHaveBeenCalled(); clock.mockRestore();
 });

@@ -1,5 +1,6 @@
 import { isAppActive, NATIVE_ACTIVITY_EVENT } from '../lib/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { triggerHaptic } from '../lib/native-experience';
 import { WeatherAudio } from '../audio/engine';
 import { compositions, moodFor } from '../audio/compositions';
 import type { Discovery, Preferences, SceneState } from '../types';
@@ -18,6 +19,7 @@ export function useAudio(preferences: Preferences, scene: SceneState) {
     setError(null);
     if (enabledRef.current) {
       enabledRef.current = false; setEnabled(false); setPlaying(false);
+      triggerHaptic('selection');
       await engine.current?.pause(); return;
     }
     try {
@@ -26,6 +28,7 @@ export function useAudio(preferences: Preferences, scene: SceneState) {
       engine.current.configure(preferences, { kind, isDay, wind, phase, transition, daylight, windStrength, precipitationIntensity });
       enabledRef.current = true;
       setEnabled(true);
+      triggerHaptic('selection');
       await engine.current.start();
       if (attempt !== activity.current || !enabledRef.current || !isAppActive()) return;
       setPlaying(true); engine.current.effect('success');
