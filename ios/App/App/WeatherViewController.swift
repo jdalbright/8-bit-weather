@@ -108,6 +108,29 @@ final class WeatherViewController: CAPBridgeViewController {
             """
             configuration.userContentController.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true))
         }
+        if environment["EIGHTBIT_UI_TEST_EXPERIENCE_PROBE"] == "true" {
+            let script = """
+            window.addEventListener('load', async () => {
+              const result = document.createElement('p');
+              result.style.cssText = 'position:fixed;top:80px;left:10px;z-index:9999;background:white;color:black';
+              document.body.appendChild(result);
+              try {
+                const plugin = window.Capacitor.Plugins.NativeExperience;
+                const state = await plugin.getPowerState();
+                if (typeof state.lowPowerMode !== 'boolean' || !['nominal','fair','serious','critical'].includes(state.thermalState)) throw new Error('Invalid power state');
+                const listener = await plugin.addListener('powerStateChanged', () => {});
+                await listener.remove();
+                await plugin.setHapticsEnabled({enabled:false});
+                await plugin.triggerHaptic({kind:'selection'});
+                let code = '';
+                try { await plugin.triggerHaptic({kind:'invalid'}); } catch (error) { code = error.code; }
+                if (code !== 'INVALID_ARGUMENT') throw new Error('Missing argument validation');
+                result.textContent = 'Native experience bridge passed: ' + JSON.stringify(state);
+              } catch (error) { result.textContent = 'Native experience bridge failed: ' + error.message; }
+            });
+            """
+            configuration.userContentController.addUserScript(WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        }
         return super.webView(with: frame, configuration: configuration)
     }
     #endif
@@ -119,6 +142,7 @@ final class WeatherViewController: CAPBridgeViewController {
         webView?.scrollView.showsVerticalScrollIndicator = false
         webView?.scrollView.showsHorizontalScrollIndicator = false
         bridge?.registerPluginInstance(NativeScrollPlugin())
+        bridge?.registerPluginInstance(NativeExperiencePlugin())
         bridge?.registerPluginInstance(WeatherWidgetPlugin())
         bridge?.registerPluginInstance(AppleBriefingPlugin())
         // Ambient audio respects the silent switch and mixes with a user's other audio.

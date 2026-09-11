@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { asheville, tokyo } from '../src/test/fixtures';
 
 export const storageKey = '8bit-weather:v1';
-export const preferences = { briefingProvider: 'openai', units: 'imperial', music: true, ambience: true, effects: true, musicVolume: .35, ambienceVolume: .25, effectsVolume: .4, reducedMotion: true };
+export const preferences = { haptics: true, briefingProvider: 'openai', units: 'imperial', music: true, ambience: true, effects: true, musicVolume: .35, ambienceVolume: .25, effectsVolume: .4, reducedMotion: true };
 export const savedState = { preferences, places: [asheville, tokyo], selected: asheville };
 
 type Call = { plugin: string; method: string; options?: Record<string, unknown> };
@@ -29,7 +29,7 @@ export async function installBridge(page: Page, initial: Record<string, string> 
   const calls: Call[] = [];
   const widgets: (WidgetPayload | null)[] = [];
   const control = { launchUrl: '', permission: 'granted', positionError: '', failReads: false, failWrites: false, hydrationDelayMs: 0,
-    appleAvailable: false, appleOSMajor: 27, appleError: '', appleHang: false, appleText: 'Temperatures stay mild today. Bring a light layer tonight.' };
+    lowPowerMode: false, thermalState: 'nominal', experienceFailure: false, appleAvailable: false, appleOSMajor: 27, appleError: '', appleHang: false, appleText: 'Temperatures stay mild today. Bring a light layer tonight.' };
   const pendingApple = new Map<string, (reply: Reply) => void>();
   await page.exposeFunction('__nativeInvoke', async (call: Call): Promise<Reply> => {
     calls.push(call);
@@ -47,6 +47,10 @@ export async function installBridge(page: Page, initial: Record<string, string> 
       return { result: {} };
     }
     if (plugin === 'App' && method === 'getLaunchUrl') return { result: control.launchUrl ? { url: control.launchUrl } : {} };
+    if (plugin === 'NativeExperience') {
+      if (control.experienceFailure) return { error: { message: 'Bridge unavailable' } };
+      if (method === 'getPowerState') return { result: { lowPowerMode: control.lowPowerMode, thermalState: control.thermalState } };
+    }
     if (plugin === 'AppleBriefing') {
       if (method === 'availability') return { result: { available: control.appleAvailable && control.appleOSMajor >= 27,
         modelOSMajor: control.appleOSMajor, reason: control.appleOSMajor < 27 ? 'requires_ios27' : 'device_unsupported' } };
@@ -73,6 +77,7 @@ export async function installBridge(page: Page, initial: Record<string, string> 
       App: ['getLaunchUrl', 'removeListener'],
       Geolocation: ['checkPermissions', 'requestPermissions', 'getCurrentPosition'],
       WeatherWidget: ['update', 'clear'],
+      NativeExperience: ['setHapticsEnabled', 'triggerHaptic', 'getPowerState', 'removeListener'],
       NativeScroll: ['configure', 'finish', 'removeListener'],
       AppleBriefing: ['availability', 'generate', 'cancel'],
     };
@@ -81,7 +86,7 @@ export async function installBridge(page: Page, initial: Record<string, string> 
       Capacitor: {
         PluginHeaders: Object.entries(methods).map(([name, names]) => ({ name, methods: [
           ...names.map(name => ({ name, rtype: 'promise' })),
-          ...(['App', 'NativeScroll'].includes(name) ? [{ name: 'addListener', rtype: 'callback' }] : []),
+          ...(['App', 'NativeScroll', 'NativeExperience'].includes(name) ? [{ name: 'addListener', rtype: 'callback' }] : []),
         ] })),
         nativePromise: async (plugin: string, method: string, options?: Record<string, unknown>) => {
           const reply = await window.__nativeInvoke({ plugin, method, options });

@@ -29,6 +29,7 @@
 		8B59CEC4148CC3DDBA760512 /* WidgetWeatherStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39C680C71C974A54B936430 /* WidgetWeatherStore.swift */; };
 		9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9582B6822FE993A50072D4E8 /* SceneDelegate.swift */; };
 		A11EB81EF000000000000002 /* AppleBriefingPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11EB81EF000000000000001 /* AppleBriefingPlugin.swift */; };
+		B22EB81EF000000000000002 /* NativeExperiencePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = B22EB81EF000000000000001 /* NativeExperiencePlugin.swift */; };
 		A985260C980483AB8379D3B8 /* WidgetWeatherClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = C824C0F244F8D056F5E63999 /* WidgetWeatherClient.swift */; };
 		B128A4C439ADE8FD74255438 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8761614DBD68428D7E342348 /* Foundation.framework */; };
 		BD818B0DF3186E32B7462877 /* WeatherWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 443C33B116CDFCAE187A46C6 /* WeatherWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -90,6 +91,7 @@
 		9582B6822FE993A50072D4E8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 		A11EB81EF000000000000001 /* AppleBriefingPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppleBriefingPlugin.swift; sourceTree = "<group>"; };
+		B22EB81EF000000000000001 /* NativeExperiencePlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NativeExperiencePlugin.swift; sourceTree = "<group>"; };
 		AE43975BEDDE584D5C2D5BDD /* AppUITests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppUITests.swift; sourceTree = "<group>"; };
 		C28F460C51427C0F202BCA36 /* WeatherWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeatherWidget.swift; sourceTree = "<group>"; };
 		C824C0F244F8D056F5E63999 /* WidgetWeatherClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetWeatherClient.swift; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 				0370C9901ADF588FF3AC290B /* WeatherViewController.swift */,
 				EE3DE6EC01F03BE4287EA40E /* WeatherWidgetPlugin.swift */,
 				A11EB81EF000000000000001 /* AppleBriefingPlugin.swift */,
+		B22EB81EF000000000000001 /* NativeExperiencePlugin.swift */,
 				2505FB7439262FBDE8B75010 /* PrivacyInfo.xcprivacy */,
 				00670474695F1FA6C8AD1BD8 /* App.entitlements */,
 			);
@@ -378,6 +381,7 @@
 				41C6C0161CE3F4EEDB587077 /* WeatherViewController.swift in Sources */,
 				8468DD870D88F72B94715952 /* WeatherWidgetPlugin.swift in Sources */,
 				A11EB81EF000000000000002 /* AppleBriefingPlugin.swift in Sources */,
+		B22EB81EF000000000000002 /* NativeExperiencePlugin.swift in Sources */,
 				7C078AE72F6840A088615CD8 /* WidgetWeather.swift in Sources */,
 				8B59CEC4148CC3DDBA760512 /* WidgetWeatherStore.swift in Sources */,
 				A985260C980483AB8379D3B8 /* WidgetWeatherClient.swift in Sources */,

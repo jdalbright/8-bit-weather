@@ -68,3 +68,17 @@ it('retains an uncached forecast offline but never leaks it to another location'
   rerender({ place: tokyo });
   expect(result.current.snapshot).toBeNull();
 });
+
+it('signals manual request start only for a real fetch, not cached, offline, or rate-limited returns', async () => {
+  const fresh = normalizeWeather(forecastFixture(Date.now()), asheville);
+  cacheWeather(fresh); mockedFetch.mockResolvedValue(fresh);
+  const started = vi.fn(); const { result } = renderHook(() => useWeather(asheville));
+  await act(async () => result.current.refresh(false, started)); expect(started).not.toHaveBeenCalled();
+  await act(async () => result.current.refresh(true, started)); expect(started).toHaveBeenCalledOnce();
+  Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+  await act(async () => result.current.refresh(true, started)); expect(started).toHaveBeenCalledOnce();
+  Object.defineProperty(navigator, 'onLine', { configurable: true, value: true });
+  mockedFetch.mockRejectedValueOnce(new WeatherRequestError('Rate limited', 60000));
+  await act(async () => result.current.refresh(true, started)); expect(started).toHaveBeenCalledTimes(2);
+  await act(async () => result.current.refresh(true, started)); expect(started).toHaveBeenCalledTimes(2);
+});

@@ -1,6 +1,6 @@
 # Native weather widget
 
-The iOS app embeds a WidgetKit extension supporting small and medium Home Screen widgets on iOS 17+. Both sizes display the app's selected place, temperature, conditions, daily high/low, preferred units, and the same authored regional scenery. Six landscapes each have day, overcast, and night artwork. Static artwork is appropriate for WidgetKit's scheduled rendering model; app animations remain in the shared React screens.
+The iOS app embeds a WidgetKit extension supporting small and medium Home Screen widgets plus circular, rectangular, and inline Lock Screen widgets on iOS 17+. See [Lock Screen layouts and verification](ios-experience.md). Both sizes display the app's selected place, temperature, conditions, daily high/low, preferred units, and the same authored regional scenery. Six landscapes each have day, overcast, and night artwork. Static artwork is appropriate for WidgetKit's scheduled rendering model; app animations remain in the shared React screens.
 
 ## Data contract and ownership
 

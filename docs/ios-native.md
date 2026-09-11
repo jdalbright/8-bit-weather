@@ -98,3 +98,7 @@ The signed app is `/tmp/eightbit-iphone-connected-derived/Build/Products/Debug-i
 - Native UI test/runtime results are recorded in [the implementation ledger](ios/IMPLEMENTATION.md), including checks that remain blocked or unperformed.
 
 The initial simulator boot stalled in `CoreLocationMigrator`. A targeted shutdown and boot recovered it; the second boot completed in 10 seconds. The ledger records simulator launch and test results separately from build success.
+
+## Native feedback and power awareness
+
+The app now includes optional native haptics, automatic decorative-animation reduction for Low Power Mode/thermal pressure, and three Lock Screen widget layouts. See [behavior and verification](ios-experience.md).

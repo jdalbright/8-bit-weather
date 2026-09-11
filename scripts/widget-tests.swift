@@ -67,6 +67,19 @@ struct WidgetTests {
         payload.weather?.current.isDay = false
         check(payload.artworkName == "raleigh-night", "Night overrides precipitation artwork")
         payload.weather = forecast
+        for (code, expected) in [(0, "sun"), (1, "sun"), (2, "cloud"), (3, "cloud"), (45, "fog"), (48, "fog"), (61, "rain"), (73, "snow"), (95, "storm"), (52, "unknown"), (999, "unknown")] {
+            payload.weather?.current.code = code
+            payload.weather?.current.isDay = true
+            check(payload.accessorySymbol == expected, "Accessory symbol matches supported condition \(code)")
+        }
+        payload.weather?.current.code = 0
+        payload.weather?.current.isDay = false
+        check(payload.accessorySymbol == "moon", "Accessory symbol respects cached night conditions")
+        payload.weather?.current.code = nil
+        check(payload.accessorySymbol == "unknown", "Missing condition uses unavailable accessory symbol")
+        payload.weather = nil
+        check(payload.accessorySymbol == "unknown", "Missing weather has no invented accessory condition")
+        payload.weather = forecast
         let deepLink = URLComponents(url: place.deepLink!, resolvingAgainstBaseURL: false)!
         check(deepLink.scheme == "eightbitweather" && deepLink.host == "place", "Deep link routes to place")
         check(deepLink.queryItems?.first?.value == place.id, "Deep link safely round-trips reserved characters")

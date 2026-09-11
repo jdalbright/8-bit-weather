@@ -362,7 +362,7 @@
   @keyframes fog-drift { to { transform: translateX(15%); } }
   @keyframes lightning-glimmer { 0%, 86%, 100% { opacity: 0; } 90%, 94% { opacity: .5; } }
   @keyframes music-bars { to { height: 14px; } }
-  [data-animate='false'] .landscape *, .motion-reduced .equalizer i { animation-play-state: paused !important; }
+  [data-animate='false'] .landscape *, .decoration-paused .equalizer i { animation-play-state: paused !important; }
   [data-animate='false'] .art-layer, [data-animate='false'] .twilight-light { transition: none; }
   [data-animate='false'] .river-discovery { transform: scale(1); opacity: .8; animation: none; }
   [data-animate='false'] .indicator-active { opacity: 1; animation: none; }

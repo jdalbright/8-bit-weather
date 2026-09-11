@@ -4,13 +4,14 @@ import type { useAudio } from '../hooks/useAudio';
 import type { useInstall } from '../hooks/useInstall';
 import { useAppleAvailability } from '../hooks/useAppleAvailability';
 import { appleUnavailableMessage } from '../lib/apple-briefing';
+import type { PowerState } from '../lib/native-experience';
 import { Icon } from './Icons';
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return <button className="switch-button" role="switch" aria-label={label} aria-checked={checked} onClick={onChange}><span className="switch-track"><span /></span></button>;
 }
-interface Props { preferences: Preferences; onChange: (preferences: Preferences) => void; audio: ReturnType<typeof useAudio>; install: ReturnType<typeof useInstall>; systemReduced: boolean; onClear: () => void }
-export default function Settings({ preferences, onChange, audio, install, systemReduced, onClear }: Props) {
+interface Props { preferences: Preferences; onChange: (preferences: Preferences) => void; audio: ReturnType<typeof useAudio>; install: ReturnType<typeof useInstall>; systemReduced: boolean; power?: PowerState & { savingPower: boolean }; onClear: () => void }
+export default function Settings({ preferences, onChange, audio, install, systemReduced, power, onClear }: Props) {
   const apple = useAppleAvailability(install.native);
   const [confirmClear, setConfirmClear] = useState(false);
   const change = <K extends keyof Preferences>(key: K, value: Preferences[K]) => { onChange({ ...preferences, [key]: value }); };
@@ -36,7 +37,8 @@ export default function Settings({ preferences, onChange, audio, install, system
       })}
       <div className={`now-playing ${audio.playing && preferences.music ? 'is-playing' : ''}`}><span className="equalizer" aria-hidden="true"><i/><i/><i/><i/></span><span>{audio.playing && preferences.music ? audio.trackName : 'A soundtrack for your sky'}</span></div>
     </section>
-    <section className="settings-section" aria-labelledby="motion-title"><h2 id="motion-title">Motion</h2><div className="setting-row"><span><strong>Reduce animation</strong><small>A quieter sky, with the same forecast.</small></span><Toggle label="Reduce animation" checked={preferences.reducedMotion} onChange={() => change('reducedMotion', !preferences.reducedMotion)}/></div>{systemReduced ? <p className="settings-description">Your device’s reduced motion setting is already being respected.</p> : null}<p className="settings-description">A couple of little discoveries: tap the river for a ripple, or the weather station for a light. Their sounds follow your interface sounds setting.</p></section>
+    {install.native ? <section className="settings-section" aria-labelledby="haptics-title"><h2 id="haptics-title">Touch feedback</h2><div className="setting-row"><span><strong>Haptic feedback</strong><small>Subtle taps for navigation, charts, and refresh.</small></span><Toggle label="Haptic feedback" checked={preferences.haptics} onChange={() => change('haptics', !preferences.haptics)}/></div></section> : null}
+    <section className="settings-section" aria-labelledby="motion-title"><h2 id="motion-title">Motion</h2>{install.native && power?.savingPower ? <p className="settings-description" role="status">{power.thermalState === 'serious' || power.thermalState === 'critical' ? 'Decorative animation is paused to help your iPhone cool down.' : 'Decorative animation is paused while Low Power Mode is on.'}</p> : null}<div className="setting-row"><span><strong>Reduce animation</strong><small>A quieter sky, with the same forecast.</small></span><Toggle label="Reduce animation" checked={preferences.reducedMotion} onChange={() => change('reducedMotion', !preferences.reducedMotion)}/></div>{systemReduced ? <p className="settings-description">Your device’s reduced motion setting is already being respected.</p> : null}<p className="settings-description">A couple of little discoveries: tap the river for a ripple, or the weather station for a light. Their sounds follow your interface sounds setting.</p></section>
     {!install.native ? <section className="settings-section" aria-labelledby="install-title"><h2 id="install-title">A home for your weather</h2><p className="settings-description">Add 8-Bit Weather to your home screen. Your last forecast stays with you offline.</p><button className="pixel-button full-width" disabled={install.installed} onClick={() => void install.install()}><Icon name={install.installed ? 'check' : 'download'} size={18}/>{install.installed ? 'App installed' : install.canPrompt ? 'Install app' : 'How to install'}</button>
       {install.showHelp ? <div className="install-help" role="status"><strong>{install.ios ? 'On your iPhone or iPad' : 'From your browser'}</strong>{install.ios ? <ol><li>Open this page in Safari.</li><li>Tap Share, then Add to Home Screen.</li><li>Tap Add to keep your little pixel world.</li></ol> : <p>Open your browser’s menu and choose Install app or Add to Home Screen. In Safari on Mac, use File → Add to Dock.</p>}<p className="fine-print">Phone installation needs an HTTPS address. A local network HTTP address won’t enable installation or location access.</p></div> : null}
       {install.error ? <p role="alert" className="error-text">{install.error}</p> : null}

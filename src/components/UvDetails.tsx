@@ -1,3 +1,4 @@
+import { triggerHaptic } from '../lib/native-experience';
 import { useState } from 'react';
 import { localTime } from '../lib/weather';
 import { UV_LEVELS, uvInfo, validUv, type UvForecast } from '../lib/uv';
@@ -36,7 +37,7 @@ export function UvDetails({ forecast, timezone, now, isDay, online }: Props) {
           <i style={{ height: validUv(hour.uv) ? `${hour.uv / scale * 100}%` : undefined }}/>{!validUv(hour.uv) ? <b>?</b> : null}
         </span>)}</div>
         <input type="range" min="0" max={hours.length - 1} step="1" value={activeIndex} aria-label="UV forecast hour" aria-valuetext={detail}
-          onChange={event => setSelectedTime(hours[Number(event.target.value)].time)}/>
+          onChange={event => { const index = Number(event.target.value); if (index !== activeIndex) { setSelectedTime(hours[index].time); triggerHaptic('selection', true); } }}/>
       </div>
       <div className="uv-times" aria-hidden="true"><span>{clock(hours[0].time)}</span><span>{clock(hours[Math.floor(hours.length / 2)].time)}</span><span>{clock(hours.at(-1)!.time)}</span></div>
       <p className="uv-hour-detail" role="status">{detail}</p><p className="uv-hint">Tap or slide the bars to explore.</p>

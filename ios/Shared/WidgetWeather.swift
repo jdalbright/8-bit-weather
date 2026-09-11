@@ -135,6 +135,20 @@ struct WidgetPayload: Codable, Sendable {
         return "\(landscape)-\(light)"
     }
 
+    /// Template artwork shared by all accessory families, including inline images.
+    var accessorySymbol: String {
+        guard let code = weather?.current.code else { return "unknown" }
+        switch code {
+        case 0, 1: return weather?.current.isDay == false ? "moon" : "sun"
+        case 2, 3: return "cloud"
+        case 45, 48: return "fog"
+        case 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82: return "rain"
+        case 71, 73, 75, 77, 85, 86: return "snow"
+        case 95, 96, 99: return "storm"
+        default: return "unknown"
+        }
+    }
+
     var condition: String {
         guard let code = weather?.current.code else { return "Conditions unavailable" }
         switch code {

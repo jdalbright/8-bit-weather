@@ -73,6 +73,7 @@ export interface WeatherSnapshot {
 }
 export type BriefingProvider = 'openai' | 'apple';
 export interface Preferences {
+  haptics: boolean;
   briefingProvider: BriefingProvider;
   units: Units;
   music: boolean;

@@ -1,3 +1,4 @@
+import { triggerHaptic } from '../lib/native-experience';
 import { useState } from 'react';
 import type { Units } from '../types';
 import { rainAmount, RAIN_INTERVAL, type RainOutlookData } from '../lib/rain';
@@ -25,7 +26,7 @@ export function RainOutlook({ outlook, timezone, units, now }: Props) {
         <i style={{ height: `${period.amount > 0 ? Math.max(4, period.amount / scale * 100) : 0}%` }}/>
       </span>)}</div>
       <input type="range" min="0" max={periods.length - 1} step="1" value={activeIndex} aria-label="Rain forecast time" aria-valuetext={detail}
-        onChange={event => setSelectedTime(periods[Number(event.target.value)].time)}/>
+        onChange={event => { const index = Number(event.target.value); if (index !== activeIndex) { setSelectedTime(periods[index].time); triggerHaptic('selection', true); } }}/>
     </div>
     <div className="rain-times" aria-hidden="true"><span>{clock(periods[0].time - RAIN_INTERVAL)}</span><span>{clock(periods[Math.floor(periods.length / 2)].time - RAIN_INTERVAL)}</span><span>{clock(periods.at(-1)!.time)}</span></div>
     <p className="rain-detail" role="status">{detail}</p>

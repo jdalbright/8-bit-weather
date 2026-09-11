@@ -13,12 +13,12 @@ import { SunTimes } from './SunTimes';
 
 interface Props {
   briefingProvider?: BriefingProvider; onBriefingProviderChange?: (provider: BriefingProvider) => void;
-  place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean;
+  place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean; decorativeAnimate?: boolean;
   loading: boolean; error: string | null; online: boolean; now: number; locating: boolean;
   onLocate: () => void; onPlaces: () => void; onRefresh: () => void;
   onDiscover: (discovery: Discovery) => void;
 }
-export default function Today({ briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, loading, error, online, now, locating, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
+export default function Today({ briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, decorativeAnimate = animate, loading, error, online, now, locating, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
   const hourlyRef = useRef<HTMLDivElement>(null);
   const [uvExpanded, setUvExpanded] = useState(false);
   const days = snapshot ? futureDays(snapshot.daily, snapshot.timezone, now) : [];
@@ -35,7 +35,7 @@ export default function Today({ briefingProvider, onBriefingProviderChange, plac
   const rainOutlook = snapshot ? upcomingRain(snapshot, now, online) : null;
   const uv = snapshot ? uvForecast(snapshot, now, online) : null;
   return <main id="main-content" tabIndex={-1} className="today-view">
-    <Scenery key={snapshot ? place?.id : 'loading'} scene={scene} landscape={landscapeForPlace(place)} animate={animate} onDiscover={onDiscover} className={!place ? 'welcome-scene' : ''}>
+    <Scenery key={snapshot ? place?.id : 'loading'} scene={scene} landscape={landscapeForPlace(place)} animate={decorativeAnimate} onDiscover={onDiscover} className={!place ? 'welcome-scene' : ''}>
       {!place ? <div className="welcome-content">
         <h1>Find your weather</h1>
         <p>A little pixel world.<br/>Your real forecast.</p>

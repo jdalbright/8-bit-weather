@@ -43,6 +43,24 @@ final class AppUITests: XCTestCase {
         add(screenshot)
     }
 
+    func testNativeExperienceBridgeAndSettings() {
+        app.terminate()
+        app.launchEnvironment["EIGHTBIT_UI_TEST_EXPERIENCE_PROBE"] = "true"
+        app.launch()
+        let passed = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Native experience bridge passed:")).firstMatch
+        XCTAssertTrue(passed.waitForExistence(timeout: 20), app.debugDescription)
+        let evidence = XCTAttachment(string: passed.label)
+        evidence.name = "Actual UIKit and ProcessInfo bridge validation"
+        evidence.lifetime = .keepAlways
+        add(evidence)
+        app.terminate()
+        app.launchEnvironment.removeValue(forKey: "EIGHTBIT_UI_TEST_EXPERIENCE_PROBE")
+        app.launch()
+        app.buttons["Settings"].tap()
+        XCTAssertTrue(app.staticTexts["Touch feedback"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Haptic feedback")).firstMatch.exists)
+    }
+
     func testAppleBriefingNativeBridgeAvailabilityAndValidation() {
         app.terminate()
         app.launchEnvironment["EIGHTBIT_UI_TEST_BRIEFING_PROBE"] = "true"

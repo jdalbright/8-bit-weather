@@ -55,3 +55,12 @@ it.each([undefined, 'invalid', 'apple', 'openai'])('migrates briefing preference
   expect(loaded.preferences.musicVolume).toBe(0.7);
   expect(loaded.places).toEqual([asheville]); expect(loaded.selected).toEqual(asheville);
 });
+
+it.each([undefined, 'invalid', false, true])('migrates haptics %s and preserves all existing user data', haptics => {
+  const preferences = { ...defaultPreferences(), haptics, music: false, reducedMotion: true, briefingProvider: 'apple' as const };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ preferences, places: [asheville], selected: asheville }));
+  const loaded = loadState();
+  expect(loaded.preferences).toEqual({ ...preferences, haptics: typeof haptics === 'boolean' ? haptics : true });
+  expect(loaded.places).toEqual([asheville]); expect(loaded.selected).toEqual(asheville);
+  saveState(loaded); expect(loadState()).toEqual(loaded);
+});

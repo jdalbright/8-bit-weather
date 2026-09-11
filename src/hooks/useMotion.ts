@@ -1,6 +1,6 @@
 import { isAppActive, NATIVE_ACTIVITY_EVENT } from '../lib/native';
 import { useEffect, useState } from 'react';
-export function useMotion(reduced: boolean) {
+export function useMotion(reduced: boolean, savingPower = false) {
   const [systemReduced, setSystemReduced] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [visible, setVisible] = useState(isAppActive);
   useEffect(() => {
@@ -10,5 +10,5 @@ export function useMotion(reduced: boolean) {
     window.addEventListener(NATIVE_ACTIVITY_EVENT, visibility); media.addEventListener('change', update); document.addEventListener('visibilitychange', visibility);
     return () => { window.removeEventListener(NATIVE_ACTIVITY_EVENT, visibility); media.removeEventListener('change', update); document.removeEventListener('visibilitychange', visibility); };
   }, []);
-  return { animate: !reduced && !systemReduced && visible, systemReduced, visible };
+  return { decorativeAnimate: !savingPower && !reduced && !systemReduced && visible, animate: !reduced && !systemReduced && visible, systemReduced, visible };
 }

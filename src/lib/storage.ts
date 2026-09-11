@@ -6,7 +6,7 @@ import { clearBriefingCache } from './briefing-client';
 export const STORAGE_KEY = '8bit-weather:v1';
 type StoredState = { preferences: Preferences; places: Place[]; selected: Place | null };
 export function defaultPreferences(locale = navigator.language): Preferences {
-  return { briefingProvider: 'openai', units: /(?:^|-)US\b/i.test(locale) ? 'imperial' : 'metric', music: true, ambience: true, effects: true,
+  return { haptics: true, briefingProvider: 'openai', units: /(?:^|-)US\b/i.test(locale) ? 'imperial' : 'metric', music: true, ambience: true, effects: true,
     musicVolume: 0.35, ambienceVolume: 0.25, effectsVolume: 0.4, reducedMotion: false };
 }
 function read(key: string): unknown { try { return JSON.parse(readStoredValue(key) ?? 'null'); } catch { return null; } }
@@ -26,7 +26,7 @@ export function loadState(): StoredState {
   const prefs = { ...fallback.preferences };
   if (raw.briefingProvider === 'apple' || raw.briefingProvider === 'openai') prefs.briefingProvider = raw.briefingProvider;
   if (raw.units === 'metric' || raw.units === 'imperial') prefs.units = raw.units;
-  for (const key of ['music', 'ambience', 'effects', 'reducedMotion'] as const) if (typeof raw[key] === 'boolean') prefs[key] = raw[key];
+  for (const key of ['music', 'ambience', 'effects', 'reducedMotion', 'haptics'] as const) if (typeof raw[key] === 'boolean') prefs[key] = raw[key];
   for (const key of ['musicVolume', 'ambienceVolume', 'effectsVolume'] as const) if (typeof raw[key] === 'number' && Number.isFinite(raw[key])) prefs[key] = Math.min(1, Math.max(0, raw[key]));
   return { preferences: prefs, places: Array.isArray(state.places) ? state.places.filter(isPlace) : [], selected: isPlace(state.selected) ? state.selected : null };
 }

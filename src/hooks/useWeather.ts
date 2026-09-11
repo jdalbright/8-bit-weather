@@ -14,7 +14,7 @@ export function useWeather(place: Place | null) {
   const generation = useRef(0);
   const cooldown = useRef(0);
   const latest = useRef<WeatherSnapshot | null>(null);
-  const refresh = useCallback(async (force = false) => {
+  const refresh = useCallback(async (force = false, onRequestStarted?: () => void) => {
     request.current?.abort();
     const attempt = ++generation.current;
     if (!place) { latest.current = null; setState({ snapshot: null, loading: false, error: null, placeId: null }); return; }
@@ -27,6 +27,7 @@ export function useWeather(place: Place | null) {
       setState(previous => ({ snapshot: cache, loading: false, error: Date.now() < cooldown.current ? previous.error : null, placeId: place.id }));
       return;
     }
+    onRequestStarted?.();
     const controller = new AbortController();
     request.current = controller;
     setState({ snapshot: cache, loading: true, error: null, placeId: place.id });
