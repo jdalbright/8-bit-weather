@@ -99,6 +99,7 @@ export function normalizeWeather(raw: unknown, place: Place, now = Date.now()): 
       time: time as number, temperature: series(hourly, 'temperature_2m', index), precipitation: series(hourly, 'precipitation_probability', index),
       code: series(hourly, 'weather_code', index), isDay: series(hourly, 'is_day', index) !== 0,
       uv: nonnegative(series(hourly, 'uv_index', index)),
+      wind: nonnegative(series(hourly, 'wind_speed_10m', index)),
     }]),
     daily: daily.time.flatMap((time, index) => numeric(time) === null ? [] : [{
       // Daily timestamps use the response's fixed offset, including across DST.

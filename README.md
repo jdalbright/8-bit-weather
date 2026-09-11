@@ -102,6 +102,16 @@ On a touchscreen, scroll to the top of Today and pull down on the forecast. A vi
 
 This uses the same refresh action and rate-limit handling as the footer button, without reloading the app or resetting sound and preferences. It is inactive while offline, while a request is running, or before choosing a place. Horizontal forecast scrolling, controls, multi-touch, and zoomed-page panning are left alone. Native browser pull-to-refresh is suppressed on the selected Today view on touch devices to avoid a duplicate page reload; other tabs retain their usual scrolling. The existing Refresh button remains available for keyboard and assistive-technology users. Reduced motion removes the spinner animation and settling transition.
 
+### Forecast time travel
+
+Use the compact Preview slider beneath the landscape or select an hourly forecast to preview the next 24 hours. The scene shows that hour's lighting, weather, wind, temperature, and precipitation chance. A **Forecast preview** label and the location's date, time, and time zone distinguish the preview from current conditions. The current conditions grid, rain outlook, UV, briefing, and widget continue to show real-time forecast information.
+
+When sound is enabled, music and ambience follow the selection after a short pause in dragging. Previewing never switches sound on. The **Now** control restores the current scene and audio. Selection clears when leaving Today, changing locations, reloading, or when the hour becomes current or disappears; refresh retains a still-available selection.
+
+On iOS, selecting a different hourly tile gives light haptic feedback, and scrolling ticks at tile boundaries. These follow Settings → Haptic feedback, stop in the background, and are throttled during fast scrolling.
+
+Remaining future hours work from saved forecasts offline, labeled **Saved forecast preview** with the saved time. Missing measurements stay unavailable, and old caches without hourly wind use neutral wind animation. Touch and keyboard controls respect reduced motion; selecting an hourly tile leaves the page in place.
+
 ### Rain outlook
 
 A compact pixel timeline appears below the current conditions only when rain or showers are forecast within the next two hours. Tap or slide the timeline (or use the arrow keys) for the time window and expected amount in inches or millimeters. Dry weather adds no extra card. Snow alone does not trigger it.

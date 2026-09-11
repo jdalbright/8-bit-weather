@@ -1,4 +1,4 @@
-import type { SceneState, WeatherSnapshot } from '../types';
+import type { HourWeather, SceneState, WeatherSnapshot } from '../types';
 import { localDate, STALE_AFTER, weatherInfo } from './weather';
 
 const HALF_TWILIGHT = 30 * 60;
@@ -25,10 +25,19 @@ export function deriveScene(snapshot: WeatherSnapshot | null, now: number, onlin
     || now - current.time * 1000 > 3600000;
   // Saved weather keeps the light of its observation, rather than inventing a current scene.
   const time = stale ? current.time : now / 1000;
+  return sceneAt(snapshot, time, current);
+}
+
+/** Forecast time is intentional: saved snapshots must not freeze this at observation time. */
+export function deriveHourlyScene(snapshot: WeatherSnapshot, hour: HourWeather): SceneState {
+  return sceneAt(snapshot, hour.time, hour);
+}
+
+function sceneAt(snapshot: WeatherSnapshot, time: number, conditions: Pick<HourWeather, 'code' | 'isDay' | 'wind'>): SceneState {
   const date = localDate(time * 1000, snapshot.timezone);
   const day = snapshot.daily.find(day => day.date === date);
-  let phase: SceneState['phase'] = current.isDay ? 'day' : 'night';
-  let daylight = current.isDay ? 1 : 0;
+  let phase: SceneState['phase'] = conditions.isDay ? 'day' : 'night';
+  let daylight = conditions.isDay ? 1 : 0;
   let transition = 0;
   const sunrise = day?.sunrise, sunset = day?.sunset;
   // Polar days/nights, absent solar data, and overlapping twilight windows use is_day.
@@ -44,10 +53,10 @@ export function deriveScene(snapshot: WeatherSnapshot | null, now: number, onlin
       daylight = time >= sunrise && time < sunset ? 1 : 0; phase = daylight ? 'day' : 'night';
     }
   }
-  const wind = current.wind != null && Number.isFinite(current.wind) ? Math.max(0, current.wind) : 0;
+  const wind = conditions.wind != null && Number.isFinite(conditions.wind) ? Math.max(0, conditions.wind) : 0;
   return {
-    kind: weatherInfo(current.code).kind, isDay: daylight >= .5, wind, phase, transition, daylight,
-    windStrength: clamp(wind / 40), precipitationIntensity: precipitationIntensity(current.code),
+    kind: weatherInfo(conditions.code).kind, isDay: daylight >= .5, wind, phase, transition, daylight,
+    windStrength: clamp(wind / 40), precipitationIntensity: precipitationIntensity(conditions.code),
   };
 }
 

@@ -17,10 +17,14 @@ test('radar loads on demand, renders frames, plays, switches layers, and respect
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   const loaded: string[] = []; page.on('request', request => loaded.push(request.url()));
   const radar = await mockRadar(page, fixtureTime);
+  const rainyForecast = forecastFixture(); rainyForecast.minutely_15.rain[3] = 0.8;
+  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: rainyForecast }));
   await page.goto('/'); await expect(page.locator('.current-temperature')).toBeVisible();
   expect(radar.requests).toHaveLength(0);
   expect(loaded.some(url => /radar-(map|vendor|worker)-/.test(url))).toBe(false);
-  await page.getByRole('button', { name: 'Radar', exact: true }).click();
+  await page.getByRole('slider', { name: 'Forecast preview time' }).press('End');
+  await expect(page.locator('.forecast-preview-badge')).toHaveText('Forecast preview');
+  await page.getByRole('button', { name: 'Open radar', exact: true }).click();
   await expect(page.getByRole('main')).toBeFocused();
   await expect(page.getByText('Slide through recent observations, or play the loop.')).toBeVisible();
   await expect(page.locator('.radar-map-warning')).toHaveCount(0);
@@ -48,6 +52,7 @@ test('radar loads on demand, renders frames, plays, switches layers, and respect
   await expect(page.getByRole('button', { name: 'Play', exact: true })).toBeDisabled();
   await expect(page.getByRole('slider', { name: 'Radar observation time' })).toBeEnabled();
   await page.getByRole('button', { name: 'Today', exact: true }).click();
+  await expect(page.getByRole('slider', { name: 'Forecast preview time' })).toHaveValue('0');
   const count = radar.requests.length;
   await page.clock.fastForward(125000); expect(radar.requests).toHaveLength(count);
   expect(errors).toEqual([]);

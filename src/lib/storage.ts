@@ -42,7 +42,7 @@ function validSnapshot(value: unknown): value is WeatherSnapshot {
   if (!uv(s.current.uv) || !s.hourly.every(h => h && uv(h.uv)) || !s.daily.every(d => d && uv(d.uvMax))) return false;
   if (![s.current.temperature, s.current.feelsLike, s.current.humidity, s.current.wind, s.current.code].every(measurement) || typeof s.current.isDay !== 'boolean') return false;
   if (s.minutely !== undefined && (!Array.isArray(s.minutely) || !s.minutely.every(r => r && Number.isFinite(r.time) && measurement(r.amount) && (r.amount === null || r.amount >= 0)))) return false;
-  return s.hourly.every(h => h && Number.isFinite(h.time) && [h.temperature, h.precipitation, h.code].every(measurement) && typeof h.isDay === 'boolean')
+  return s.hourly.every(h => h && Number.isFinite(h.time) && [h.temperature, h.precipitation, h.code].every(measurement) && uv(h.wind) && typeof h.isDay === 'boolean')
     && s.daily.every(d => d && Number.isFinite(d.time) && typeof d.date === 'string' && [d.high, d.low, d.precipitation, d.code, d.sunrise, d.sunset].every(measurement));
 }
 function readCache(): WeatherSnapshot[] { const data = read(`${STORAGE_KEY}:forecasts`); return Array.isArray(data) ? data.filter(validSnapshot) : []; }

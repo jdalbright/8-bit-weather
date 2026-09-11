@@ -37,7 +37,7 @@ export async function fetchWeather(place: Place, signal: AbortSignal): Promise<W
     forecast_days: '7', forecast_hours: '48', past_hours: '24',
     minutely_15: 'rain,showers', forecast_minutely_15: '16', precipitation_unit: 'mm',
     current: 'temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m,uv_index',
-    hourly: 'temperature_2m,precipitation_probability,weather_code,is_day,uv_index',
+    hourly: 'temperature_2m,precipitation_probability,weather_code,is_day,uv_index,wind_speed_10m',
     daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max',
   });
   return normalizeWeather(await requestJson(`https://api.open-meteo.com/v1/forecast?${params}`, signal), place);
