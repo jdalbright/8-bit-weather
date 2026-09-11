@@ -1,0 +1,202 @@
+diff --git a/scripts/check-server.mjs b/scripts/check-server.mjs
+index d782306..fe39301 100644
+--- a/scripts/check-server.mjs
++++ b/scripts/check-server.mjs
+@@ -11,7 +11,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
+ const output = await mkdtemp(join(root, 'node_modules', '.briefing-smoke-'));
+ try {
+   await writeFile(join(output, 'package.json'), JSON.stringify({ type: 'module' }));
+-  for (const file of ['api/weather-briefing.ts', 'server/briefing.ts', 'src/lib/briefing.ts', 'src/lib/weather.ts']) {
++  for (const file of ['api/weather-briefing.ts', 'server/briefing.ts', 'src/lib/briefing.ts', 'src/lib/briefing-prompt.ts', 'src/lib/weather.ts']) {
+     const source = await readFile(join(root, file), 'utf8');
+     const result = ts.transpileModule(source, { compilerOptions: {
+       target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext, verbatimModuleSyntax: true,
+diff --git a/server/briefing.test.ts b/server/briefing.test.ts
+index e5e9b2b..934d7eb 100644
+--- a/server/briefing.test.ts
++++ b/server/briefing.test.ts
+@@ -15,6 +15,7 @@ function request(body: unknown = payload(), init: RequestInit = {}) { return new
+ beforeEach(() => {
+   vi.useFakeTimers(); vi.setSystemTime(fixtureTime); create.mockReset(); construct.mockReset();
+   vi.stubEnv('OPENAI_API_KEY', 'test-server-only-key'); vi.stubEnv('WEATHER_BRIEFING_ENABLED', 'true'); vi.stubEnv('OPENAI_WEATHER_MODEL', '');
++  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', '');
+   vi.spyOn(console, 'info').mockImplementation(() => {});
+   create.mockResolvedValue({ status: 'completed', output_text: summary, usage: { input_tokens: 1200, output_tokens: 30 } });
+ });
+@@ -101,3 +102,77 @@ it('returns a recoverable error on timeout, with no automatic retry', async () =
+   const response = await handleBriefing(request()); expect(response.status).toBe(503);
+   expect(await response.json()).toEqual({ code: 'briefing_unavailable' }); expect(create).toHaveBeenCalledTimes(1);
+ });
++
++function nativeRequest(body: unknown = payload(), origin = 'capacitor://localhost') {
++  return request(body, { headers: { 'Content-Type': 'application/json', Origin: origin } });
++}
++function preflight(origin = 'capacitor://localhost', method = 'POST', headers = 'content-type') {
++  return new Request('https://weather.example/api/weather-briefing', { method: 'OPTIONS', headers: {
++    Origin: origin, 'Access-Control-Request-Method': method, 'Access-Control-Request-Headers': headers,
++  } });
++}
++it('keeps native access disabled until the exact origin is configured', async () => {
++  expect((await handleBriefing(nativeRequest())).status).toBe(403);
++  expect((await handleBriefing(preflight())).status).toBe(403);
++  expect(create).not.toHaveBeenCalled();
++  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', 'capacitor://localhost');
++  const response = await handleBriefing(nativeRequest());
++  expect(response.status).toBe(200);
++  expect(response.headers.get('Access-Control-Allow-Origin')).toBe('capacitor://localhost');
++  expect(response.headers.get('Access-Control-Allow-Credentials')).toBeNull();
++  expect(response.headers.get('Vary')).toBe('Origin');
++});
++it('permits a bounded native preflight without calling the provider or requiring its secret', async () => {
++  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', 'capacitor://localhost');
++  vi.stubEnv('OPENAI_API_KEY', '');
++  const response = await handleBriefing(preflight());
++  expect(response.status).toBe(204);
++  expect(await response.text()).toBe('');
++  expect(response.headers.get('Access-Control-Allow-Origin')).toBe('capacitor://localhost');
++  expect(response.headers.get('Access-Control-Allow-Methods')).toBe('POST');
++  expect(response.headers.get('Access-Control-Allow-Headers')).toBe('Content-Type');
++  expect(response.headers.get('Access-Control-Max-Age')).toBe('600');
++  expect((await handleBriefing(preflight('capacitor://localhost', 'DELETE'))).status).toBe(403);
++  expect((await handleBriefing(preflight('capacitor://localhost', 'POST', 'content-type, authorization'))).status).toBe(403);
++  expect(create).not.toHaveBeenCalled();
++});
++it.each(['capacitor://localhost.evil', 'capacitor://localhost/', 'capacitor://localhost:1234', 'https://evil.example', 'null', '*'])('does not broaden native access to %s', async origin => {
++  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', 'capacitor://localhost');
++  const response = await handleBriefing(nativeRequest(payload(), origin));
++  expect(response.status).toBe(403);
++  expect(response.headers.has('Access-Control-Allow-Origin')).toBe(false);
++  expect(create).not.toHaveBeenCalled();
++});
++it.each(['null', '*', 'capacitor://localhost/path', 'capacitor://user@localhost', 'http://evil.example'])('rejects unsafe configured origin %s', async origin => {
++  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', origin);
++  expect((await handleBriefing(nativeRequest(payload(), origin))).status).toBe(403);
++  expect(create).not.toHaveBeenCalled();
++});
++it('keeps native errors and provider cooldowns readable without bypassing protections', async () => {
++  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', ' capacitor://localhost, https://localhost ');
++  for (const [body, status] of [[{}, 400], ['x'.repeat(13000), 413], [{ ...payload(), fetchedAt: fixtureTime - 45 * 60000 }, 422]] as const) {
++    const response = await handleBriefing(nativeRequest(body));
++    expect(response.status).toBe(status);
++    expect(response.headers.get('Access-Control-Allow-Origin')).toBe('capacitor://localhost');
++  }
++  expect(create).not.toHaveBeenCalled();
++  const OpenAI = (await import('openai')).default;
++  create.mockRejectedValue(new OpenAI.APIError(429, {}, 'private provider detail', new Headers({ 'retry-after': '120' })));
++  const response = await handleBriefing(nativeRequest());
++  expect(response.status).toBe(429);
++  expect(response.headers.get('Access-Control-Expose-Headers')).toBe('Retry-After');
++  expect(response.headers.get('Retry-After')).toBe('120');
++  expect(await response.json()).toEqual({ code: 'rate_limited' });
++  vi.stubEnv('WEATHER_BRIEFING_ENABLED', 'false');
++  const disabled = await handleBriefing(nativeRequest());
++  expect(disabled.status).toBe(503);
++  expect(disabled.headers.get('Access-Control-Allow-Origin')).toBe('capacitor://localhost');
++  expect(create).toHaveBeenCalledTimes(1);
++});
++it('never opens unprotected endpoint aliases to native preflights', async () => {
++  vi.stubEnv('WEATHER_BRIEFING_NATIVE_ORIGINS', 'capacitor://localhost');
++  const response = await handleBriefing(new Request('https://weather.example/api/weather-briefing.ts', preflight()));
++  expect(response.status).toBe(404);
++  expect(response.headers.has('Access-Control-Allow-Origin')).toBe(false);
++  expect(create).not.toHaveBeenCalled();
++});
+diff --git a/server/briefing.ts b/server/briefing.ts
+index 631e249..9fb60b3 100644
+--- a/server/briefing.ts
++++ b/server/briefing.ts
+@@ -1,18 +1,10 @@
+ import OpenAI from 'openai';
+ import { BRIEFING_PATH, BRIEFING_TTL, BRIEFING_VERSION, briefingFacts, forecastUsable, parseBriefingForecast } from '../src/lib/briefing.js';
+ 
+-const factualInstructions = `Write an English weather briefing for the supplied 24-hour window using ONLY the supplied hourly forecast. Give 2–3 sentences, at most 75 words, in plain text. Cover the temperature trend/range, precipitation timing and chance, and notable changes only when the data supports them. The listed precipitation probability belongs to its displayed interval. Missing values are unknown, never zero. Preserve uncertainty: probability is not a promise. Do not invent amounts, wind forecasts, warnings, official alerts, or exact onset times. Do not extrapolate outside the supplied window. Use the supplied local day/time labels and temperature unit. Avoid relative phrases like "in an hour" that become misleading in a cached summary. Include one everyday practical takeaway if justified. No heading, markdown, greeting, sign-off, or mention of being an AI.`;
+-const personalities = { 'warm-practical': 'Speak warmly and naturally, like a helpful neighbor. Use simple dayparts such as this evening, overnight, and tomorrow afternoon; avoid full dates, timezone abbreviations, and unnecessary minute precision. Focus on the most useful change, not an inventory of intervals. Group low precipitation chances together instead of listing every small peak. Never say "supplied window", "listed intervals", or describe your input data. Keep advice practical and restrained; no game jargon, jokes, or alarmism.' };
++import { briefingInstructions, validSummary } from '../src/lib/briefing-prompt.js';
++export { briefingInstructions } from '../src/lib/briefing-prompt.js';
+ 
+-export const briefingInstructions = `${factualInstructions}\n${personalities['warm-practical']}`;
+ const MAX_BODY_BYTES = 12000;
+-const sentenceSegmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
+-
+-function validSummary(text: string): boolean {
+-  if (!text || text.length > 1600 || text.split(/\s+/).length > 75) return false;
+-  const sentences = [...sentenceSegmenter.segment(text)].filter(part => part.segment.trim());
+-  return sentences.length >= 2 && sentences.length <= 3;
+-}
+ 
+ function providerCooldown(headers: Headers | undefined): string {
+   const milliseconds = Number(headers?.get('retry-after-ms'));
+@@ -51,16 +43,52 @@ async function readBody(request: Request): Promise<unknown> {
+   return JSON.parse(new TextDecoder().decode(buffer));
+ }
+ 
++function isNativeOrigin(origin: string): boolean {
++  // Compare complete, serialized origins. Never permit wildcard, opaque ("null"),
++  // credentials, paths, or substring matches. Capacitor's custom scheme has a
++  // WHATWG URL.origin of "null", so serialize its scheme and host explicitly.
++  try {
++    const url = new URL(origin);
++    if (!['capacitor:', 'https:'].includes(url.protocol) || !url.hostname || url.username || url.password
++      || origin !== `${url.protocol}//${url.host}`) return false;
++    return (process.env.WEATHER_BRIEFING_NATIVE_ORIGINS ?? '').split(',').map(value => value.trim()).includes(origin);
++  } catch { return false; }
++}
++
+ export async function handleBriefing(request: Request): Promise<Response> {
+   // Vercel can resolve aliases such as /api/weather-briefing.ts to this function.
+   // Only the canonical path is covered by the published firewall rule.
+   if (new URL(request.url).pathname !== BRIEFING_PATH) return json({ code: 'not_found' }, 404);
++  const origin = request.headers.get('origin');
++  const nativeOrigin = origin !== null && isNativeOrigin(origin);
++  if (origin && origin !== new URL(request.url).origin && !nativeOrigin) return json({ code: 'invalid_origin' }, 403);
++  const headers: Record<string, string> = { Vary: 'Origin' };
++  if (nativeOrigin) {
++    headers['Access-Control-Allow-Origin'] = origin!;
++    // Provider rate-limit responses remain readable in the native WebView.
++    headers['Access-Control-Expose-Headers'] = 'Retry-After';
++  }
++  if (request.method === 'OPTIONS') {
++    const requestedHeaders = (request.headers.get('access-control-request-headers') ?? '')
++      .split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
++    if (!nativeOrigin || request.headers.get('access-control-request-method') !== 'POST'
++      || requestedHeaders.some(header => header !== 'content-type')) return json({ code: 'invalid_preflight' }, 403);
++    return new Response(null, { status: 204, headers: {
++      ...headers, 'Cache-Control': 'no-store', 'Access-Control-Allow-Methods': 'POST',
++      'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600',
++      Vary: 'Origin, Access-Control-Request-Method, Access-Control-Request-Headers',
++    } });
++  }
++  const response = await generateBriefing(request);
++  for (const [key, value] of Object.entries(headers)) response.headers.set(key, value);
++  return response;
++}
++
++async function generateBriefing(request: Request): Promise<Response> {
+   if (request.method !== 'POST') return json({ code: 'method_not_allowed' }, 405, { Allow: 'POST' });
+   // Disabled by default. Public activation requires the endpoint's WAF rate-limit rule.
+   if (process.env.WEATHER_BRIEFING_ENABLED !== 'true' || !process.env.OPENAI_API_KEY) return json({ code: 'disabled' }, 503);
+   if (request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return json({ code: 'invalid_request' }, 415);
+-  const origin = request.headers.get('origin');
+-  if (origin && origin !== new URL(request.url).origin) return json({ code: 'invalid_origin' }, 403);
+   if (Number(request.headers.get('content-length')) > MAX_BODY_BYTES) return json({ code: 'body_too_large' }, 413);
+   let raw: unknown;
+   try { raw = await readBody(request); }
+diff --git a/src/lib/briefing-prompt.ts b/src/lib/briefing-prompt.ts
+new file mode 100644
+index 0000000..0d8a50c
+--- /dev/null
++++ b/src/lib/briefing-prompt.ts
+@@ -0,0 +1,13 @@
++const factualInstructions = `Write an English weather briefing for the supplied 24-hour window using ONLY the supplied hourly forecast. Give 2–3 sentences, at most 75 words, in plain text. Cover the temperature trend/range, precipitation timing and chance, and notable changes only when the data supports them. The listed precipitation probability belongs to its displayed interval. Missing values are unknown, never zero. Preserve uncertainty: probability is not a promise. Do not invent amounts, wind forecasts, warnings, official alerts, or exact onset times. Do not extrapolate outside the supplied window. Use the supplied local day/time labels and temperature unit. Avoid relative phrases like "in an hour" that become misleading in a cached summary. Include one everyday practical takeaway if justified. No heading, markdown, greeting, sign-off, or mention of being an AI.`;
++const personalities = { 'warm-practical': 'Speak warmly and naturally, like a helpful neighbor. Use simple dayparts such as this evening, overnight, and tomorrow afternoon; avoid full dates, timezone abbreviations, and unnecessary minute precision. Focus on the most useful change, not an inventory of intervals. Group low precipitation chances together instead of listing every small peak. Never say "supplied window", "listed intervals", or describe your input data. Keep advice practical and restrained; no game jargon, jokes, or alarmism.' };
++
++export const briefingInstructions = `${factualInstructions}\n${personalities['warm-practical']}`;
++const sentenceSegmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
++
++export function validSummary(text: string): boolean {
++  if (!text || text.length > 1600 || text.split(/\s+/).length > 75) return false;
++  const sentences = [...sentenceSegmenter.segment(text)].filter(part => part.segment.trim());
++  return sentences.length >= 2 && sentences.length <= 3;
++}
++
++export const appleBriefingInstructions = `Write a warm, practical English weather briefing from these calculated facts only. Produce exactly two sentences totaling at most 75 words. Describe the temperature range and change, and precipitation chance and timing. Use the given temperature unit. Add a brief everyday takeaway only when supported. A null value is unknown. When missingTemperatureHours or temperature.missingHours is positive, describe only the available readings. When missingPrecipitationHours is positive, explicitly state that precipitation data is incomplete; never claim dry weather or no chance of precipitation across the window. A probability is not a promise. Use natural local dayparts. Do not add a greeting, heading, or sign-off. Never invent numbers, rain amounts, wind, warnings, or exact onset times. If all precipitation chances are known and zero, say no rain is forecast; never introduce a nonzero chance. Only use numeric temperatures and probabilities present in the facts.`;

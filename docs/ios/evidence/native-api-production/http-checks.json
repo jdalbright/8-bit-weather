@@ -1,0 +1,61 @@
+[
+  {
+    "check": "homepage",
+    "status": 200,
+    "allowOrigin": "*",
+    "allowMethods": null,
+    "exposeHeaders": null
+  },
+  {
+    "check": "native-preflight",
+    "status": 204,
+    "allowOrigin": "capacitor://localhost",
+    "allowMethods": "POST",
+    "exposeHeaders": "Retry-After"
+  },
+  {
+    "check": "untrusted-origin",
+    "status": 403,
+    "allowOrigin": null,
+    "allowMethods": null,
+    "exposeHeaders": null,
+    "body": {
+      "code": "invalid_origin"
+    }
+  },
+  {
+    "check": "native-validation",
+    "status": 400,
+    "allowOrigin": "capacitor://localhost",
+    "allowMethods": null,
+    "exposeHeaders": "Retry-After",
+    "body": {
+      "code": "invalid_forecast"
+    }
+  },
+  {
+    "check": "native-real-openai",
+    "status": 200,
+    "allowOrigin": "capacitor://localhost",
+    "allowMethods": null,
+    "exposeHeaders": "Retry-After",
+    "body": {
+      "text": "Overcast skies continue, with temperatures gradually falling from 72\u00b0F this Friday morning to 67\u201369\u00b0F this evening, then reaching 63\u00b0F by Saturday morning. There\u2019s a 30% chance of precipitation from this Friday evening through late evening, with no precipitation chance shown overnight or Saturday morning. A light jacket should be comfortable, and an umbrella may be worth keeping nearby this evening.",
+      "generatedAt": 1789135682688,
+      "windowStart": 1789135678271,
+      "windowEnd": 1789222078271,
+      "expiresAt": 1789136582688,
+      "version": "1:warm-practical"
+    }
+  },
+  {
+    "check": "api-alias-rejected",
+    "status": 404,
+    "allowOrigin": null,
+    "allowMethods": null,
+    "exposeHeaders": null,
+    "body": {
+      "code": "not_found"
+    }
+  }
+]

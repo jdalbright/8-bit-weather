@@ -1,0 +1,55 @@
+{
+  "schema": "xcodebuildmcp.output.test-result",
+  "schemaVersion": "3",
+  "didError": false,
+  "error": null,
+  "data": {
+    "summary": {
+      "status": "SUCCEEDED",
+      "durationMs": 26883,
+      "counts": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 1
+      },
+      "target": "simulator"
+    },
+    "artifacts": {
+      "buildLogPath": "~/Library/Developer/XcodeBuildMCP/workspaces/8-bit_weather-6492982856c4/logs/test_sim_2026-09-11T13-48-28-322Z_pid32477_807caaca.log",
+      "xcresultPath": "/tmp/ios27-briefing-version-gate.xcresult",
+      "testProductsPath": "~/Library/Developer/XcodeBuildMCP/workspaces/8-bit_weather-6492982856c4/test-products/test_sim_2026-09-11T13-48-28-323Z_pid32477_11a30910.xctestproducts"
+    },
+    "tests": {
+      "selected": [
+        "AppUITests/AppUITests/testAppleBriefingNativeBridgeAvailabilityAndValidation",
+        "AppUITests/AppUITests/testLiveAppleBriefingSamples"
+      ],
+      "discovered": {
+        "total": 2,
+        "items": [
+          "AppUITests/AppUITests/testAppleBriefingNativeBridgeAvailabilityAndValidation",
+          "AppUITests/AppUITests/testLiveAppleBriefingSamples"
+        ]
+      }
+    },
+    "diagnostics": {
+      "warnings": [],
+      "errors": [],
+      "testFailures": []
+    },
+    "testCases": [
+      {
+        "suite": "AppUITests",
+        "test": "testAppleBriefingNativeBridgeAvailabilityAndValidation",
+        "status": "passed",
+        "durationMs": 11832
+      },
+      {
+        "suite": "AppUITests",
+        "test": "testLiveAppleBriefingSamples",
+        "status": "skipped",
+        "durationMs": 78
+      }
+    ]
+  }
+}

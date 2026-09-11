@@ -1,0 +1,1 @@
+Native briefing bridge passed: requires_ios27

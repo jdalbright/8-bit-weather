@@ -1,0 +1,17 @@
+{
+  "verifiedAt": "2026-09-11",
+  "projectId": "prj_gZQkzrjMjLKMPMqnDgamI6uRmYv3",
+  "deploymentId": "dpl_GJg4JmuXWvXJXg471mRQq6YAfUVr",
+  "state": "READY",
+  "productionUrl": "https://8-bit-weather.vercel.app",
+  "deploymentUrl": "https://8-bit-weather-gj42td1qs-jdalbrights-projects.vercel.app",
+  "baseCommit": "d8442917ddbdb59ceafe2ae8b6aad0236e767d5a",
+  "changedSourceFiles": ["server/briefing.ts", "server/briefing.test.ts", "scripts/check-server.mjs", "src/lib/briefing-prompt.ts"],
+  "addedProductionSetting": {"WEATHER_BRIEFING_NATIVE_ORIGINS": "capacitor://localhost"},
+  "openAIKeyChanged": false,
+  "modelConfigurationChanged": false,
+  "firewallChanged": false,
+  "gitPushed": false,
+  "physicalIPhoneVerified": false,
+  "nativeSimulatorLiveBriefingVerified": true
+}

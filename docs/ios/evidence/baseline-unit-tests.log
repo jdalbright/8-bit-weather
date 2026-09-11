@@ -1,0 +1,23 @@
+
+> 8-bit-weather@1.1.0 test
+> vitest run && vitest run --config vitest.server.config.ts && node scripts/check-server.mjs
+
+
+ RUN  v4.1.11 /private/tmp/8bit-weather-baseline
+
+
+ Test Files  17 passed (17)
+      Tests  162 passed (162)
+   Start at  07:56:43
+   Duration  2.13s (transform 1.08s, setup 1.86s, import 1.16s, tests 2.99s, environment 5.52s)
+
+
+ RUN  v4.1.11 /private/tmp/8bit-weather-baseline
+
+
+ Test Files  1 passed | 1 skipped (2)
+      Tests  22 passed | 3 skipped (25)
+   Start at  07:56:46
+   Duration  315ms (transform 111ms, setup 0ms, import 299ms, tests 66ms, environment 0ms)
+
+Native Node ESM function smoke check passed.

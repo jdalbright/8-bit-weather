@@ -1,0 +1,23 @@
+
+> 8-bit-weather@1.1.0 test
+> vitest run && vitest run --config vitest.server.config.ts && node scripts/check-server.mjs
+
+
+ RUN  v4.1.11 /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather
+
+
+ Test Files  22 passed (22)
+      Tests  188 passed (188)
+   Start at  08:04:57
+   Duration  4.06s (transform 1.50s, setup 4.88s, import 1.43s, tests 3.26s, environment 11.78s)
+
+
+ RUN  v4.1.11 /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather
+
+
+ Test Files  1 passed | 1 skipped (2)
+      Tests  37 passed | 3 skipped (40)
+   Start at  08:05:02
+   Duration  857ms (transform 180ms, setup 0ms, import 551ms, tests 156ms, environment 0ms)
+
+Native Node ESM function smoke check passed.

@@ -1,0 +1,477 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/App.xcodeproj -scheme App -configuration Debug -skipMacroValidation -destination "platform=iOS Simulator,id=893B0ADB-6BA1-4DF3-AC4C-D52134139EE5" -collect-test-diagnostics never COMPILER_INDEX_STORE_ENABLE=NO ONLY_ACTIVE_ARCH=YES -packageCachePath /Users/jacobalbright/Library/Caches/org.swift.swiftpm -derivedDataPath /tmp/eightbit-ios-derived CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- -clonedSourcePackagesDirPath /tmp/eightbit-ios-packages "-only-testing:AppUITests/AppUITests/testLiveAppleBriefingSamples" -testProductsPath /Users/jacobalbright/Library/Developer/XcodeBuildMCP/workspaces/8-bit_weather-6492982856c4/test-products/test_sim_2026-09-11T13-35-50-958Z_pid32477_d2a6bff0.xctestproducts build-for-testing
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = -
+    CODE_SIGNING_ALLOWED = YES
+    COMPILER_INDEX_STORE_ENABLE = NO
+    ONLY_ACTIVE_ARCH = YES
+
+2026-09-11 09:35:52.411 xcodebuild[90027:4453693] Writing test products to /Users/jacobalbright/Library/Developer/XcodeBuildMCP/workspaces/8-bit_weather-6492982856c4/test-products/test_sim_2026-09-11T13-35-50-958Z_pid32477_d2a6bff0.xctestproducts
+Resolve Package Graph
+
+
+Resolved source packages:
+  capacitor-swift-pm: https://github.com/ionic-team/capacitor-swift-pm.git @ 8.5.1
+  CapacitorPreferences: /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/node_modules/@capacitor/preferences @ local
+  CapacitorGeolocation: /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/node_modules/@capacitor/geolocation @ local
+  IONGeolocationLib: https://github.com/ionic-team/ion-ios-geolocation.git @ 2.1.1
+  CapacitorApp: /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/node_modules/@capacitor/app @ local
+  CapApp-SPM: /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/CapApp-SPM @ local
+
+note: Using codesigning identity override: -
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (15 targets)
+    Target 'AppUITests' in project 'App'
+        ➜ Explicit dependency on target 'App' in project 'App'
+    Target 'App' in project 'App'
+        ➜ Explicit dependency on target 'WeatherWidgetExtension' in project 'App'
+        ➜ Explicit dependency on target 'CapApp-SPM' in project 'CapApp-SPM'
+    Target 'CapApp-SPM' in project 'CapApp-SPM'
+        ➜ Explicit dependency on target 'CapApp-SPM' in project 'CapApp-SPM'
+        ➜ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'CapacitorApp' in project 'CapacitorApp'
+        ➜ Explicit dependency on target 'CapacitorGeolocation' in project 'CapacitorGeolocation'
+        ➜ Explicit dependency on target 'CapacitorPreferences' in project 'CapacitorPreferences'
+    Target 'CapApp-SPM' in project 'CapApp-SPM'
+        ➜ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'CapacitorApp' in project 'CapacitorApp'
+        ➜ Explicit dependency on target 'CapacitorGeolocation' in project 'CapacitorGeolocation'
+        ➜ Explicit dependency on target 'CapacitorPreferences' in project 'CapacitorPreferences'
+    Target 'CapacitorPreferences' in project 'CapacitorPreferences'
+        ➜ Explicit dependency on target 'PreferencesPlugin' in project 'CapacitorPreferences'
+        ➜ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+    Target 'PreferencesPlugin' in project 'CapacitorPreferences'
+        ➜ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+    Target 'CapacitorGeolocation' in project 'CapacitorGeolocation'
+        ➜ Explicit dependency on target 'GeolocationPlugin' in project 'CapacitorGeolocation'
+        ➜ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'IONGeolocationLib' in project 'IONGeolocationLib'
+    Target 'GeolocationPlugin' in project 'CapacitorGeolocation'
+        ➜ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'IONGeolocationLib' in project 'IONGeolocationLib'
+    Target 'IONGeolocationLib' in project 'IONGeolocationLib'
+        ➜ Explicit dependency on target 'IONGeolocationLib' in project 'IONGeolocationLib'
+    Target 'IONGeolocationLib' in project 'IONGeolocationLib' (no dependencies)
+    Target 'CapacitorApp' in project 'CapacitorApp'
+        ➜ Explicit dependency on target 'AppPlugin' in project 'CapacitorApp'
+        ➜ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+    Target 'AppPlugin' in project 'CapacitorApp'
+        ➜ Explicit dependency on target 'Capacitor' in project 'capacitor-swift-pm'
+        ➜ Explicit dependency on target 'Cordova' in project 'capacitor-swift-pm'
+    Target 'Cordova' in project 'capacitor-swift-pm' (no dependencies)
+    Target 'Capacitor' in project 'capacitor-swift-pm' (no dependencies)
+    Target 'WeatherWidgetExtension' in project 'App' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk /tmp/eightbit-ios-derived/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/App.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -o /tmp/eightbit-ios-derived/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache
+
+SwiftDriver AppUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AppUITests -Onone @/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /tmp/eightbit-ios-derived/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/eightbit-ios-derived/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/eightbit-ios-derived/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/eightbit-ios-derived/ModuleCache.noindex -sdk-module-cache-path /tmp/eightbit-ios-derived/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /tmp/eightbit-ios-derived/ModuleCache.noindex/Session.modulevalidation -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-generated-files.hmap -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-own-target-headers.hmap -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App-0ca3007d900a678c2b4d53418799ee3d-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-project-headers.hmap -Xcc -I/tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/include -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/DerivedSources-normal/arm64 -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/DerivedSources/arm64 -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests-Swift.h -working-directory /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App -experimental-emit-module-separately -disable-cmo
+
+CpResource /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app/capacitor.config.json /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/App/capacitor.config.json (in target 'App' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/App/capacitor.config.json /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app
+
+CpResource /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app/config.xml /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/App/config.xml (in target 'App' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/App/config.xml /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app
+
+CpResource /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app/public /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/App/public (in target 'App' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/App/public /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app
+
+CodeSign /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app/App.debug.dylib (in target 'App' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+
+    Signing Identity:     "Sign to Run Locally"
+
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app/App.debug.dylib
+/tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app/App.debug.dylib: replacing existing signature
+
+CodeSign /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app/__preview.dylib (in target 'App' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+
+    Signing Identity:     "Sign to Run Locally"
+
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app/__preview.dylib
+/tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app/__preview.dylib: replacing existing signature
+
+CodeSign /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app (in target 'App' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+
+    Signing Identity:     "Sign to Run Locally"
+
+    /usr/bin/codesign --force --sign - --entitlements /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/App.app.xcent --timestamp\=none --generate-entitlement-der /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app
+/tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app: replacing existing signature
+
+Validate /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app (in target 'App' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-validationUtility /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/App.app -shallow-bundle -infoplist-subpath Info.plist
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ AppUITests (in target 'AppUITests' from project 'App')
+
+SwiftCompile normal arm64 /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/AppUITests/AppUITests.swift (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+
+
+SwiftCompile normal arm64 Compiling\ AppUITests.swift /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/AppUITests/AppUITests.swift (in target 'AppUITests' from project 'App')
+SwiftCompile normal arm64 /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App/AppUITests/AppUITests.swift (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+
+
+SwiftDriverJobDiscovery normal arm64 Emitting module for AppUITests (in target 'AppUITests' from project 'App')
+
+SwiftDriver\ Compilation\ Requirements AppUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-Swift-Compilation-Requirements -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AppUITests -Onone @/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /tmp/eightbit-ios-derived/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/eightbit-ios-derived/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/eightbit-ios-derived/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/eightbit-ios-derived/ModuleCache.noindex -sdk-module-cache-path /tmp/eightbit-ios-derived/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /tmp/eightbit-ios-derived/ModuleCache.noindex/Session.modulevalidation -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-generated-files.hmap -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-own-target-headers.hmap -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App-0ca3007d900a678c2b4d53418799ee3d-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-project-headers.hmap -Xcc -I/tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/include -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/DerivedSources-normal/arm64 -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/DerivedSources/arm64 -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests-Swift.h -working-directory /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App -experimental-emit-module-separately -disable-cmo
+
+Copy /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.swiftsourceinfo (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.swiftsourceinfo /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo
+
+Copy /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests.swiftmodule/arm64-apple-ios-simulator.abi.json /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.abi.json (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-copy -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -exclude .hg -resolve-src-symlinks -rename /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.abi.json /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests.swiftmodule/arm64-apple-ios-simulator.abi.json
+
+SwiftDriverJobDiscovery normal arm64 Compiling AppUITests.swift (in target 'AppUITests' from project 'App')
+
+SwiftDriver\ Compilation AppUITests normal arm64 com.apple.xcode.tools.swift.compiler (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-Swift-Compilation -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name AppUITests -Onone @/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.SwiftFileList -DDEBUG -module-alias Testing\=_Testing_Unavailable -plugin-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /tmp/eightbit-ios-derived/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator -Isystem /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -F /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -parse-as-library -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /tmp/eightbit-ios-derived/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-6cfe768891a92b912361537c460fe42b.sdkstatcache -output-file-map /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /tmp/eightbit-ios-derived/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /tmp/eightbit-ios-derived/ModuleCache.noindex -sdk-module-cache-path /tmp/eightbit-ios-derived/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.swiftmodule -validate-clang-modules-once -clang-build-session-file /tmp/eightbit-ios-derived/ModuleCache.noindex/Session.modulevalidation -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests_const_extract_protocols.json -Xcc -iquote -Xcc /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-generated-files.hmap -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-own-target-headers.hmap -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-all-non-framework-target-headers.hmap -Xcc -ivfsoverlay -Xcc /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App-0ca3007d900a678c2b4d53418799ee3d-VFS-iphonesimulator/all-product-headers.yaml -Xcc -iquote -Xcc /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests-project-headers.hmap -Xcc -I/tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/include -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/DerivedSources-normal/arm64 -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/DerivedSources/arm64 -Xcc -I/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests-Swift.h -working-directory /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App -experimental-emit-module-separately -disable-cmo
+
+Ld /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/AppUITests normal (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -Xlinker -reproducible -target arm64-apple-ios17.0-simulator -bundle -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -O0 -L/tmp/eightbit-ios-derived/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -L/tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib -F/tmp/eightbit-ios-derived/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator -F/tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator -iframework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks -iframework /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk/Developer/Library/Frameworks -filelist /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.LinkFileList -Xlinker -rpath -Xlinker /usr/lib/swift -Xlinker -rpath -Xlinker @loader_path/Frameworks -Xlinker -dead_strip -Xlinker -object_path_lto -Xlinker /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests_lto.o -rdynamic -Xlinker -no_deduplicate -Xlinker -objc_abi_version -Xlinker 2 -Xlinker -dependency_info -Xlinker /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests_dependency_info.dat -fobjc-link-runtime -L/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphonesimulator -L/usr/lib/swift -Xlinker -add_ast_path -Xlinker /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.swiftmodule @/tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests-linker-args.resp -Xlinker -needed_framework -Xlinker XCTest -framework XCTest -Xlinker -needed-lXCTestSwiftSupport -lXCTestSwiftSupport -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __entitlements -Xlinker /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests.xctest-Simulated.xcent -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __ents_der -Xlinker /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests.xctest-Simulated.xcent.der -framework Foundation -Xlinker -no_adhoc_codesign -o /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/AppUITests
+
+GenerateDSYMFile /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest.dSYM /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/AppUITests (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/dsymutil /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/AppUITests -o /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest.dSYM
+
+ExtractAppIntentsMetadata (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/appintentsmetadataprocessor --toolchain-dir /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --module-name AppUITests --sdk-root /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk --xcode-version 17F113 --platform-family iOS --deployment-target 17.0 --bundle-identifier app.eightbitweather.app.uitests --output /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest --target-triple arm64-apple-ios17.0-simulator --binary-file /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/AppUITests --dependency-file /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests_dependency_info.dat --stringsdata-file /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/ExtractedAppShortcutsMetadata.stringsdata --source-file-list /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.SwiftFileList --metadata-file-list /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests.DependencyMetadataFileList --static-metadata-file-list /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/AppUITests.DependencyStaticMetadataFileList --swift-const-vals-list /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/Objects-normal/arm64/AppUITests.SwiftConstValuesFileList --compile-time-extraction --deployment-aware-processing --validate-assistant-intents --no-app-shortcuts-localization
+2026-09-11 09:35:56.149 appintentsmetadataprocessor[90059:4453941] Starting appintentsmetadataprocessor export
+2026-09-11 09:35:56.157 appintentsmetadataprocessor[90059:4453941] warning: Metadata extraction skipped. No AppIntents.framework dependency found.
+
+CopySwiftLibs /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+    builtin-swiftStdLibTool --copy --verbose --sign - --scan-executable /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/AppUITests --scan-folder /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/Frameworks --scan-folder /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/PlugIns --scan-folder /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/SystemExtensions --scan-folder /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/Extensions --scan-folder /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework --platform iphonesimulator --toolchain /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain --destination /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest/Frameworks --strip-bitcode --scan-executable /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/usr/lib/libXCTestSwiftSupport.dylib --strip-bitcode-tool /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/bitcode_strip --emit-dependency-info /tmp/eightbit-ios-derived/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/AppUITests.build/SwiftStdLibToolInputDependencies.dep --filter-for-swift-os
+
+CodeSign /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+
+    Signing Identity:     "Sign to Run Locally"
+
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app/PlugIns/AppUITests.xctest
+
+CodeSign /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app (in target 'AppUITests' from project 'App')
+    cd /Users/jacobalbright/.codex/worktrees/f107/8-bit_weather/ios/App
+
+    Signing Identity:     "Sign to Run Locally"
+
+    /usr/bin/codesign --force --sign - --timestamp\=none --generate-entitlement-der /tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app
+/tmp/eightbit-ios-derived/Build/Products/Debug-iphonesimulator/AppUITests-Runner.app: replacing existing signature
+
+** TEST BUILD SUCCEEDED **
+
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -testProductsPath /Users/jacobalbright/Library/Developer/XcodeBuildMCP/workspaces/8-bit_weather-6492982856c4/test-products/test_sim_2026-09-11T13-35-50-958Z_pid32477_d2a6bff0.xctestproducts -destination "platform=iOS Simulator,id=893B0ADB-6BA1-4DF3-AC4C-D52134139EE5" -collect-test-diagnostics never CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- -clonedSourcePackagesDirPath /tmp/eightbit-ios-packages "-only-testing:AppUITests/AppUITests/testLiveAppleBriefingSamples" -resultBundlePath /tmp/apple-briefing-live-accepted-or-fallback.xcresult test-without-building
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = -
+    CODE_SIGNING_ALLOWED = YES
+
+2026-09-11 09:35:57.260 xcodebuild[90062:4453961] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+Writing result bundle at path:
+	/tmp/apple-briefing-live-accepted-or-fallback.xcresult
+
+2026-09-11 09:35:57.265 xcodebuild[90062:4453961] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-09-11 09:35:58.589 xcodebuild[90062:4453961] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+2026-09-11 09:36:00.394059-0400 AppUITests-Runner[90068:4454238] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-09-11 09:36:01.172.
+Test Suite 'AppUITests.xctest' started at 2026-09-11 09:36:01.174.
+Test Suite 'AppUITests' started at 2026-09-11 09:36:01.175.
+Test Case '-[AppUITests.AppUITests testLiveAppleBriefingSamples]' started.
+    t =     0.00s Start Test at 2026-09-11 09:36:01.175
+    t =     0.04s Set Up
+    t =     0.05s Terminate app.eightbitweather.app:0
+    t =     0.05s Open app.eightbitweather.app
+    t =     0.05s     Launch app.eightbitweather.app
+2026-09-11 09:36:01.496 xcodebuild[90062:4453961] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-09-11 09:36:01.497 xcodebuild[90062:4453961] [MT] IDELaunchParametersSnapshot: no debugger version
+objc[90068]: Class UIAccessibilityLoaderWebShared is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x1089f0310) and /Library/Developer/CoreSimulator/Volumes/iOS_23F77/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.5.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x1082a0398). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =     1.16s         Setting up automation session
+    t =     2.23s         Wait for app.eightbitweather.app to idle
+    t =     4.14s Waiting 30.0s for "Apple Intelligence" StaticText to exist
+    t =     5.21s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =     5.21s         Checking existence of `"Apple Intelligence" StaticText`
+    t =     5.58s         Capturing element debug description
+    t =     6.22s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =     6.23s         Checking existence of `"Apple Intelligence" StaticText`
+    t =     6.49s         Capturing element debug description
+    t =     7.23s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =     7.23s         Checking existence of `"Apple Intelligence" StaticText`
+    t =     7.38s         Capturing element debug description
+    t =     8.24s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =     8.27s         Checking existence of `"Apple Intelligence" StaticText`
+    t =     8.47s         Capturing element debug description
+    t =     9.19s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =     9.20s         Checking existence of `"Apple Intelligence" StaticText`
+    t =     9.39s         Capturing element debug description
+    t =    10.23s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    10.23s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    10.42s         Capturing element debug description
+    t =    11.25s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    11.25s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    11.41s         Capturing element debug description
+    t =    12.24s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    12.24s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    12.41s         Capturing element debug description
+    t =    13.24s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    13.24s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    13.39s         Capturing element debug description
+    t =    14.22s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    14.22s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    14.40s         Capturing element debug description
+    t =    15.23s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    15.23s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    15.40s         Capturing element debug description
+    t =    16.23s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    16.23s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    16.38s         Capturing element debug description
+    t =    17.20s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    17.21s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    17.38s         Capturing element debug description
+    t =    18.21s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    18.21s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    18.36s         Capturing element debug description
+    t =    19.19s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    19.20s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    19.31s Checking existence of `"OpenAI" StaticText`
+    t =    19.46s Requesting snapshot of accessibility hierarchy for app with pid 90074
+    t =    21.05s Requesting snapshot of accessibility hierarchy for app with pid 90074
+    t =    21.39s Added attachment named 'Actual Apple model output - temperature-trend'
+    t =    21.39s Swipe up WebView (First Match)
+    t =    21.39s     Wait for app.eightbitweather.app to idle
+    t =    21.40s     Find the WebView (First Match)
+    t =    21.42s     Check for interrupting elements affecting WebView
+    t =    21.54s     Synthesize event
+    t =    22.02s     Wait for app.eightbitweather.app to idle
+    t =    22.19s Added attachment named 'Apple briefing - temperature-trend'
+    t =    22.20s Terminate app.eightbitweather.app:90074
+    t =    23.31s Open app.eightbitweather.app
+    t =    23.31s     Launch app.eightbitweather.app
+2026-09-11 09:36:24.489 xcodebuild[90062:4453961] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-09-11 09:36:24.489 xcodebuild[90062:4453961] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    23.76s         Setting up automation session
+    t =    24.99s         Wait for app.eightbitweather.app to idle
+    t =    26.87s Waiting 30.0s for "Apple Intelligence" StaticText to exist
+    t =    27.92s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    27.97s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    28.49s         Capturing element debug description
+    t =    28.90s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    28.91s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    29.08s         Capturing element debug description
+    t =    29.91s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    29.91s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    30.04s         Capturing element debug description
+    t =    30.87s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    30.87s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    30.99s         Capturing element debug description
+    t =    31.93s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    31.93s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    32.05s         Capturing element debug description
+    t =    32.88s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    32.88s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    33.00s         Capturing element debug description
+    t =    33.95s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    33.95s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    34.19s         Capturing element debug description
+    t =    34.92s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    34.92s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    35.04s         Capturing element debug description
+    t =    35.88s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    35.88s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    36.00s         Capturing element debug description
+    t =    36.93s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    36.93s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    37.07s         Capturing element debug description
+    t =    37.90s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    37.90s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    38.02s         Capturing element debug description
+    t =    38.95s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    38.95s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    39.08s         Capturing element debug description
+    t =    39.91s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    39.91s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    40.04s         Capturing element debug description
+    t =    40.97s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    40.97s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    41.09s Checking existence of `"OpenAI" StaticText`
+    t =    41.23s Requesting snapshot of accessibility hierarchy for app with pid 90349
+    t =    42.81s Requesting snapshot of accessibility hierarchy for app with pid 90349
+    t =    42.96s Added attachment named 'Actual Apple model output - rain-timing'
+    t =    42.97s Swipe up WebView (First Match)
+    t =    42.97s     Wait for app.eightbitweather.app to idle
+    t =    42.97s     Find the WebView (First Match)
+    t =    42.98s     Check for interrupting elements affecting WebView
+    t =    43.11s     Synthesize event
+    t =    43.59s     Wait for app.eightbitweather.app to idle
+    t =    44.41s Added attachment named 'Apple briefing - rain-timing'
+    t =    44.41s Terminate app.eightbitweather.app:90349
+    t =    45.43s Open app.eightbitweather.app
+    t =    45.43s     Launch app.eightbitweather.app
+2026-09-11 09:36:46.619 xcodebuild[90062:4453961] [MT] IDELaunchParametersSnapshot: The operation couldn’t be completed. (DebuggerLLDB.DebuggerVersionStore.StoreError error 0.)
+2026-09-11 09:36:46.619 xcodebuild[90062:4453961] [MT] IDELaunchParametersSnapshot: no debugger version
+    t =    45.86s         Setting up automation session
+    t =    47.20s         Wait for app.eightbitweather.app to idle
+    t =    49.63s Waiting 30.0s for "Apple Intelligence" StaticText to exist
+    t =    50.64s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    50.65s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    50.96s         Capturing element debug description
+    t =    51.67s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    51.67s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    51.81s         Capturing element debug description
+    t =    52.73s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    52.73s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    52.87s         Capturing element debug description
+    t =    53.70s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    53.70s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    53.83s         Capturing element debug description
+    t =    54.67s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    54.67s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    54.80s         Capturing element debug description
+    t =    55.63s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    55.63s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    55.76s         Capturing element debug description
+    t =    56.69s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    56.69s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    56.82s         Capturing element debug description
+    t =    57.64s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    57.65s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    57.77s         Capturing element debug description
+    t =    58.70s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    58.71s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    58.84s         Capturing element debug description
+    t =    59.66s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    59.66s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    59.79s         Capturing element debug description
+    t =    60.72s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    60.72s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    60.86s         Capturing element debug description
+    t =    61.68s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    61.69s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    61.92s         Capturing element debug description
+    t =    62.64s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    62.64s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    62.78s         Capturing element debug description
+    t =    63.71s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    63.71s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    63.86s         Capturing element debug description
+    t =    64.69s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    64.69s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    64.84s         Capturing element debug description
+    t =    65.67s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    65.67s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    65.83s         Capturing element debug description
+    t =    66.65s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    66.66s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    66.80s         Capturing element debug description
+    t =    67.72s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    67.73s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    67.86s         Capturing element debug description
+    t =    68.69s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    68.69s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    68.82s         Capturing element debug description
+    t =    69.65s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    69.65s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    69.78s         Capturing element debug description
+    t =    70.71s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    70.71s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    70.84s         Capturing element debug description
+    t =    71.65s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    71.65s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    71.78s         Capturing element debug description
+    t =    72.68s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    72.68s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    72.81s         Capturing element debug description
+    t =    73.72s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    73.72s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    73.85s         Capturing element debug description
+    t =    74.67s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    74.67s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    74.80s         Capturing element debug description
+    t =    75.63s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    75.63s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    75.76s         Capturing element debug description
+    t =    76.69s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    76.69s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    76.82s         Capturing element debug description
+    t =    77.64s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    77.64s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    77.77s         Capturing element debug description
+    t =    78.69s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    78.70s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    78.82s         Capturing element debug description
+    t =    79.64s     Checking `Expect predicate `existsNoRetry == 1` for object "Apple Intelligence" StaticText`
+    t =    79.64s         Checking existence of `"Apple Intelligence" StaticText`
+    t =    79.76s         Capturing element debug description
+    t =    79.77s     Checking existence of `"Apple Intelligence" StaticText`
+    t =    79.89s Collecting debug information to assist test failure triage
+    t =    79.89s     Requesting snapshot of accessibility hierarchy for app with pid 90392
+    t =    80.10s Checking existence of `"On-device briefing unavailable. Connect to use OpenAI, or retry." StaticText`
+    t =    80.20s Checking existence of `"OpenAI" StaticText`
+    t =    80.29s Requesting snapshot of accessibility hierarchy for app with pid 90392
+    t =    81.80s Requesting snapshot of accessibility hierarchy for app with pid 90392
+    t =    81.95s Added attachment named 'Actual Apple model output - missing-values'
+    t =    81.95s Swipe up WebView (First Match)
+    t =    81.95s     Wait for app.eightbitweather.app to idle
+    t =    81.96s     Find the WebView (First Match)
+    t =    81.97s     Check for interrupting elements affecting WebView
+    t =    82.09s     Synthesize event
+    t =    82.55s     Wait for app.eightbitweather.app to idle
+    t =    82.74s Added attachment named 'Apple briefing - missing-values'
+    t =    82.74s Tear Down
+Test Case '-[AppUITests.AppUITests testLiveAppleBriefingSamples]' passed (83.208 seconds).
+Test Suite 'AppUITests' passed at 2026-09-11 09:37:24.384.
+	 Executed 1 test, with 0 failures (0 unexpected) in 83.208 (83.210) seconds
+Test Suite 'AppUITests.xctest' passed at 2026-09-11 09:37:24.385.
+	 Executed 1 test, with 0 failures (0 unexpected) in 83.208 (83.211) seconds
+Test Suite 'Selected tests' passed at 2026-09-11 09:37:24.385.
+	 Executed 1 test, with 0 failures (0 unexpected) in 83.208 (83.213) seconds
+2026-09-11 09:37:24.781 xcodebuild[90062:4453961] [MT] IDETestOperationsObserverDebug: 86.189 elapsed -- Testing started completed.
+2026-09-11 09:37:24.781 xcodebuild[90062:4453961] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-09-11 09:37:24.781 xcodebuild[90062:4453961] [MT] IDETestOperationsObserverDebug: 86.189 sec, +86.189 sec -- end
+
+Test session results, code coverage, and logs:
+	/tmp/apple-briefing-live-accepted-or-fallback.xcresult
+
+** TEST EXECUTE SUCCEEDED **
+
+Testing started

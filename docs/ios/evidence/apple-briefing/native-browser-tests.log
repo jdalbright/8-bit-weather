@@ -1,0 +1,54 @@
+
+> 8-bit-weather@1.1.0 test:native-web
+> playwright test --config playwright.native.config.ts
+
+[WebServer] (node:88301) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:88340) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer]
+[WebServer] (!) Some chunks are larger than 500 kB after minification. Consider:
+[WebServer] - Using dynamic import() to code-split the application
+[WebServer] - Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+[WebServer] - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[WebServer] (node:88350) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:88384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 24 tests using 2 workers
+
+(node:88414) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:88415) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [native-chromium] › native-tests/briefing.spec.ts:41:3 › falls back to OpenAI when Apple is unavailable (902ms)
+  ✓   1 [native-chromium] › native-tests/briefing.spec.ts:22:1 › Apple briefing uses the real proxy, shows attribution and survives offline reload (1.3s)
+  ✓   3 [native-chromium] › native-tests/briefing.spec.ts:41:3 › falls back to OpenAI when Apple is GENERATION_FAILED (393ms)
+  ✓   4 [native-chromium] › native-tests/briefing.spec.ts:51:1 › fresh cached weather can generate locally offline without a saved briefing (792ms)
+  ✓   5 [native-chromium] › native-tests/briefing.spec.ts:63:1 › navigation cancels local work without cloud fallback and return can generate again (775ms)
+  ✓   6 [native-chromium] › native-tests/briefing.spec.ts:74:1 › cloud failure leaves the forecast usable and exposes bounded retry (384ms)
+  ✓   7 [native-chromium] › native-tests/native.spec.ts:15:1 › native bundle hydrates durable preferences before writing and omits browser installation (1.0s)
+  ✓   8 [native-chromium] › native-tests/native.spec.ts:41:1 › unit changes and cached forecasts survive a fresh offline JS context using Preferences (839ms)
+  ✓   9 [native-chromium] › native-tests/native.spec.ts:63:1 › native location permission errors preserve manual search and successful coordinates are rounded (1.1s)
+  ✓  10 [native-chromium] › native-tests/native.spec.ts:81:1 › widget receives matching weather and deep links select saved places on cold and warm launch (1.5s)
+  ✓  12 [native-chromium] › native-tests/native.spec.ts:127:1 › failed Preferences hydration never overwrites durable saved data (507ms)
+  ✓  11 [native-chromium] › native-tests/native.spec.ts:106:1 › native background pauses user-started audio and stale weather refreshes on resume (1.7s)
+(node:88492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:88499) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  14 [native-webkit] › native-tests/briefing.spec.ts:41:3 › falls back to OpenAI when Apple is unavailable (1.7s)
+  ✓  13 [native-webkit] › native-tests/briefing.spec.ts:22:1 › Apple briefing uses the real proxy, shows attribution and survives offline reload (2.1s)
+  ✓  15 [native-webkit] › native-tests/briefing.spec.ts:41:3 › falls back to OpenAI when Apple is GENERATION_FAILED (584ms)
+  ✓  16 [native-webkit] › native-tests/briefing.spec.ts:51:1 › fresh cached weather can generate locally offline without a saved briefing (957ms)
+  ✓  17 [native-webkit] › native-tests/briefing.spec.ts:63:1 › navigation cancels local work without cloud fallback and return can generate again (932ms)
+  ✓  18 [native-webkit] › native-tests/briefing.spec.ts:74:1 › cloud failure leaves the forecast usable and exposes bounded retry (711ms)
+  ✓  20 [native-webkit] › native-tests/native.spec.ts:41:1 › unit changes and cached forecasts survive a fresh offline JS context using Preferences (961ms)
+  ✓  19 [native-webkit] › native-tests/native.spec.ts:15:1 › native bundle hydrates durable preferences before writing and omits browser installation (1.6s)
+  ✓  21 [native-webkit] › native-tests/native.spec.ts:63:1 › native location permission errors preserve manual search and successful coordinates are rounded (649ms)
+  ✓  22 [native-webkit] › native-tests/native.spec.ts:81:1 › widget receives matching weather and deep links select saved places on cold and warm launch (768ms)
+  ✓  24 [native-webkit] › native-tests/native.spec.ts:127:1 › failed Preferences hydration never overwrites durable saved data (394ms)
+  ✓  23 [native-webkit] › native-tests/native.spec.ts:106:1 › native background pauses user-started audio and stale weather refreshes on resume (1.1s)
+
+  24 passed (18.7s)

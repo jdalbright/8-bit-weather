@@ -1,0 +1,20 @@
+{
+  "source": "Actual Apple Foundation Models in iPhone 17 Pro simulator, iOS 26.5; synthetic forecasts; no cloud calls",
+  "samples": [
+    {
+      "scenario": "temperature-trend",
+      "status": "accepted Apple generation",
+      "text": "The temperature will drop from 79\u00b0F to 57\u00b0F over the next 24 hours. There is no chance of precipitation over the next 24 hours."
+    },
+    {
+      "scenario": "rain-timing",
+      "status": "accepted Apple generation",
+      "text": "The temperature will remain at 72\u00b0F throughout the day. There is a 70% chance of light rain from 5:00 PM to 12:00 AM EDT. If you're planning an outdoor activity, it's a good idea to bring an umbrella."
+    },
+    {
+      "scenario": "missing-values",
+      "status": "local output rejected; recoverable offline state",
+      "text": "On-device briefing unavailable. Connect to use OpenAI, or retry."
+    }
+  ]
+}

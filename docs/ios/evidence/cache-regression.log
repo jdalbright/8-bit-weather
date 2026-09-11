@@ -1,0 +1,23 @@
+
+> 8-bit-weather@1.1.0 test:e2e
+> playwright test tests/weather.spec.ts --grep expired cache|retains cached
+
+[WebServer] (node:49834) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 3 workers
+
+(node:49838) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49837) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:49836) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/weather.spec.ts:84:1 › expired cache is visibly old and never invents future rows (828ms)
+  ✓  3 [chromium] › tests/weather.spec.ts:73:1 › retains cached weather on refresh failure, shows offline state, and reconnects (964ms)
+(node:49860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [webkit] › tests/weather.spec.ts:73:1 › retains cached weather on refresh failure, shows offline state, and reconnects (1.4s)
+  ✓  4 [webkit] › tests/weather.spec.ts:84:1 › expired cache is visibly old and never invents future rows (612ms)
+
+  4 passed (4.1s)
