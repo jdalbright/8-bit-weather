@@ -2,6 +2,7 @@ import { MAX_BRIEFING_TEXT_LENGTH } from './briefing-prompt';
 import { describe, expect, it } from 'vitest';
 import { briefingFacts, briefingForecast, forecastUsable, parseBriefingForecast, isWeatherBriefing, BRIEFING_VERSION, BRIEFING_TTL } from './briefing';
 import { normalizeWeather } from './weather';
+import { hoursFrom } from './xweather';
 import { asheville, fixtureTime, forecastFixture } from '../test/fixtures';
 
 function forecast(now = fixtureTime) { return briefingForecast(normalizeWeather(forecastFixture(now), asheville, now), 'imperial', now); }
@@ -57,6 +58,24 @@ it.each([0, 63, 75, 95])('retains dry/rain/snow/storm evidence (%i)', code => {
   const f = forecast(); f.hourly.forEach(h => { h.code = code; });
   expect(forecastUsable(f, fixtureTime)).toBe(true);
   expect(briefingFacts(f, fixtureTime).hours[0].conditions).not.toBe('Conditions unavailable');
+});
+it.each([
+  ['::WM', 100, 'Wintry mix'], ['::IP', 101, 'Sleet'], ['::A', 102, 'Hail'],
+] as const)('retains Xweather %s through briefing parsing and facts', (providerCode, code, label) => {
+  const snapshot = normalizeWeather(forecastFixture(), asheville, fixtureTime);
+  snapshot.hourly = hoursFrom({ success: true, response: [{ periods: snapshot.hourly.map(hour => ({
+    timestamp: hour.time, tempC: hour.temperature, pop: hour.precipitation, isDay: hour.isDay, weatherPrimaryCoded: providerCode,
+  })) }] });
+  const prepared = briefingForecast(snapshot, 'imperial', fixtureTime);
+  const parsed = parseBriefingForecast(prepared);
+  expect(parsed).toEqual(prepared);
+  expect(parsed?.hourly[0].code).toBe(code);
+  expect(forecastUsable(parsed!, fixtureTime)).toBe(true);
+  expect(briefingFacts(parsed!, fixtureTime).hours[0].conditions).toBe(label);
+});
+it.each([-1, 103, 100.5, NaN, Infinity, '100', undefined])('rejects invalid condition code %s', code => {
+  const f = forecast();
+  expect(parseBriefingForecast({ ...f, hourly: f.hourly.map(h => ({ ...h, code })) })).toBeNull();
 });
 it('rejects malformed times, units, measurements, timezone and oversized arrays', () => {
   const f = forecast();

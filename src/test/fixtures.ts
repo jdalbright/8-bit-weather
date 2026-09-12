@@ -52,7 +52,7 @@ export function apiFixture(raw: ReturnType<typeof forecastFixture>, requestUrl: 
   const section = url.searchParams.get('section');
   const base = { provider: 'xweather', latitude: Number(url.searchParams.get('latitude')), longitude: Number(url.searchParams.get('longitude')),
     timezone: snapshot.timezone, updatedAt: raw.fetchedAt, expiresAt: raw.fetchedAt + (section === 'forecast' || section === 'history' ? 3600000 : 600000) };
-  if (section === 'current') return { ...base, current: { ...snapshot.current, code: currentWeatherCode(snapshot.current) } };
+  if (section === 'current') return { ...base, current: { ...snapshot.current, precipitationProbability: null, code: currentWeatherCode(snapshot.current) } };
   if (section === 'forecast') return { ...base, hourly:snapshot.hourly, daily:snapshot.daily };
   if (section === 'history') return { ...base, hourly: [] };
   return { ...base, minutely: Array.from({length:60},(_,i)=> {

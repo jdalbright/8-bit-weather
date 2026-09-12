@@ -1,0 +1,1501 @@
+[
+  {
+    "id": "complete-dry",
+    "now": 1789223400000,
+    "forecast": {
+      "timezone": "America/New_York",
+      "fetchedAt": 1789223400000,
+      "observationTime": 1789223400,
+      "units": "imperial",
+      "hourly": [
+        {
+          "time": 1789221600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789225200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789228800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789232400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789236000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789239600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789243200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789246800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789250400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789254000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789257600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789261200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789264800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789268400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789272000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789275600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789279200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789282800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789286400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789290000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789293600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789297200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789300800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789304400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789308000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789311600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        }
+      ]
+    },
+    "facts": {
+      "from": "Sat, Sep 12, 10:30 AM EDT",
+      "until": "Sun, Sep 13, 10:30 AM EDT",
+      "temperatureUnit": "Fahrenheit",
+      "coverage": {
+        "temperature": "complete",
+        "precipitation": "complete"
+      },
+      "temperature": {
+        "pattern": "steady",
+        "steadyAt": "72°F"
+      },
+      "precipitation": {
+        "statement": "Precipitation is not expected."
+      }
+    },
+    "acceptedText": "Temperatures stay near 72°F. Precipitation is not expected.",
+    "rejectedText": "The temperature remains steady at 72°F this morning, with no change expected through this afternoon, this evening, and overnight. Precipitation data is incomplete; peak periods include this morning, this afternoon, this evening, and overnight, but no highest probability value is available."
+  },
+  {
+    "id": "frozen-precipitation",
+    "now": 1789223400000,
+    "forecast": {
+      "timezone": "America/New_York",
+      "fetchedAt": 1789223400000,
+      "observationTime": 1789223400,
+      "units": "imperial",
+      "hourly": [
+        {
+          "time": 1789221600,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789225200,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789228800,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789232400,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789236000,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789239600,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789243200,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789246800,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789250400,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789254000,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789257600,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789261200,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789264800,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789268400,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789272000,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789275600,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789279200,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789282800,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789286400,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789290000,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789293600,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789297200,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789300800,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789304400,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789308000,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        },
+        {
+          "time": 1789311600,
+          "temperature": -4,
+          "precipitation": 80,
+          "code": 101,
+          "isDay": true
+        }
+      ]
+    },
+    "facts": {
+      "from": "Sat, Sep 12, 10:30 AM EDT",
+      "until": "Sun, Sep 13, 10:30 AM EDT",
+      "temperatureUnit": "Fahrenheit",
+      "coverage": {
+        "temperature": "complete",
+        "precipitation": "complete"
+      },
+      "temperature": {
+        "pattern": "steady",
+        "steadyAt": "25°F"
+      },
+      "precipitation": {
+        "statement": "Hourly precipitation chances peak at 80%."
+      }
+    },
+    "acceptedText": "Temperatures stay near 25°F. Hourly precipitation chances peak at 80%."
+  },
+  {
+    "id": "metric-warming",
+    "now": 1789223400000,
+    "forecast": {
+      "timezone": "America/New_York",
+      "fetchedAt": 1789223400000,
+      "observationTime": 1789223400,
+      "units": "metric",
+      "hourly": [
+        {
+          "time": 1789221600,
+          "temperature": 2,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789225200,
+          "temperature": 2.5,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789228800,
+          "temperature": 3,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789232400,
+          "temperature": 3.5,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789236000,
+          "temperature": 4,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789239600,
+          "temperature": 4.5,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789243200,
+          "temperature": 5,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789246800,
+          "temperature": 5.5,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789250400,
+          "temperature": 6,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789254000,
+          "temperature": 6.5,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789257600,
+          "temperature": 7,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789261200,
+          "temperature": 7.5,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789264800,
+          "temperature": 8,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789268400,
+          "temperature": 8.5,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789272000,
+          "temperature": 9,
+          "precipitation": 10,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789275600,
+          "temperature": 9.5,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789279200,
+          "temperature": 10,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789282800,
+          "temperature": 10.5,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789286400,
+          "temperature": 11,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789290000,
+          "temperature": 11.5,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789293600,
+          "temperature": 12,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789297200,
+          "temperature": 12.5,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789300800,
+          "temperature": 13,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789304400,
+          "temperature": 13.5,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789308000,
+          "temperature": 14,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        },
+        {
+          "time": 1789311600,
+          "temperature": 14.5,
+          "precipitation": 60,
+          "code": 63,
+          "isDay": true
+        }
+      ]
+    },
+    "facts": {
+      "from": "Sat, Sep 12, 10:30 AM EDT",
+      "until": "Sun, Sep 13, 10:30 AM EDT",
+      "temperatureUnit": "Celsius",
+      "coverage": {
+        "temperature": "complete",
+        "precipitation": "complete"
+      },
+      "temperature": {
+        "pattern": "warming after the low",
+        "high": {
+          "value": "14°C",
+          "period": "tomorrow morning"
+        },
+        "low": {
+          "value": "2°C",
+          "period": "this morning"
+        }
+      },
+      "precipitation": {
+        "statement": "Hourly precipitation chances peak at 60% overnight and tomorrow morning."
+      }
+    },
+    "acceptedText": "Temperatures rise from 2°C this morning to 14°C tomorrow morning. Hourly precipitation chances peak at 60% overnight and tomorrow morning."
+  },
+  {
+    "id": "partial-zero",
+    "now": 1789223400000,
+    "forecast": {
+      "timezone": "America/New_York",
+      "fetchedAt": 1789223400000,
+      "observationTime": 1789223400,
+      "units": "imperial",
+      "hourly": [
+        {
+          "time": 1789221600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789225200,
+          "temperature": 22.2,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789228800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789232400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789236000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789239600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789243200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789246800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789250400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789254000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789257600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789261200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789264800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789268400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789272000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789275600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789279200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789282800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789286400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789290000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789293600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789297200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789300800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789304400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789308000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789311600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        }
+      ]
+    },
+    "facts": {
+      "from": "Sat, Sep 12, 10:30 AM EDT",
+      "until": "Sun, Sep 13, 10:30 AM EDT",
+      "temperatureUnit": "Fahrenheit",
+      "coverage": {
+        "temperature": "complete",
+        "precipitation": "partial"
+      },
+      "temperature": {
+        "pattern": "steady",
+        "steadyAt": "72°F"
+      },
+      "missingPrecipitationHours": 1,
+      "precipitation": {
+        "statement": "Precipitation data is incomplete; available hourly chances peak at 0%."
+      }
+    },
+    "acceptedText": "Temperatures stay near 72°F. Precipitation data is incomplete; available hourly chances peak at 0%."
+  },
+  {
+    "id": "partial-both",
+    "now": 1789223400000,
+    "forecast": {
+      "timezone": "America/New_York",
+      "fetchedAt": 1789223400000,
+      "observationTime": 1789223400,
+      "units": "imperial",
+      "hourly": [
+        {
+          "time": 1789221600,
+          "temperature": null,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789225200,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789228800,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789232400,
+          "temperature": null,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789236000,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789239600,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789243200,
+          "temperature": null,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789246800,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789250400,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789254000,
+          "temperature": null,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789257600,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789261200,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789264800,
+          "temperature": null,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789268400,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789272000,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789275600,
+          "temperature": null,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789279200,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789282800,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789286400,
+          "temperature": null,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789290000,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789293600,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789297200,
+          "temperature": null,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789300800,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789304400,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789308000,
+          "temperature": null,
+          "precipitation": null,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789311600,
+          "temperature": 22.2,
+          "precipitation": 40,
+          "code": 0,
+          "isDay": true
+        }
+      ]
+    },
+    "facts": {
+      "from": "Sat, Sep 12, 10:30 AM EDT",
+      "until": "Sun, Sep 13, 10:30 AM EDT",
+      "temperatureUnit": "Fahrenheit",
+      "coverage": {
+        "temperature": "partial",
+        "precipitation": "partial"
+      },
+      "temperature": {
+        "pattern": "steady",
+        "steadyAt": "72°F",
+        "missingHours": 9
+      },
+      "missingPrecipitationHours": 8,
+      "precipitation": {
+        "statement": "Precipitation data is incomplete; available hourly chances peak at 40%."
+      }
+    },
+    "acceptedText": "Available temperature readings show temperatures stay near 72°F. Precipitation data is incomplete; available hourly chances peak at 40%.",
+    "rejectedText": "Temperature data is available readings: 72°F steady at high. High of 72°F, low unavailable.  \nPrecipitation data is incomplete: peak chance of 40% during this morning, this afternoon, this evening, overnight, tomorrow morning."
+  },
+  {
+    "id": "unavailable-both",
+    "now": 1789223400000,
+    "forecast": {
+      "timezone": "America/New_York",
+      "fetchedAt": 1789223400000,
+      "observationTime": 1789223400,
+      "units": "imperial",
+      "hourly": [
+        {
+          "time": 1789221600,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789225200,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789228800,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789232400,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789236000,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789239600,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789243200,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789246800,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789250400,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789254000,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789257600,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789261200,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789264800,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789268400,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789272000,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789275600,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789279200,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789282800,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789286400,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789290000,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789293600,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789297200,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789300800,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789304400,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789308000,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        },
+        {
+          "time": 1789311600,
+          "temperature": null,
+          "precipitation": null,
+          "code": 3,
+          "isDay": true
+        }
+      ]
+    },
+    "facts": {
+      "from": "Sat, Sep 12, 10:30 AM EDT",
+      "until": "Sun, Sep 13, 10:30 AM EDT",
+      "temperatureUnit": "Fahrenheit",
+      "coverage": {
+        "temperature": "unavailable",
+        "precipitation": "unavailable"
+      },
+      "temperature": {
+        "pattern": "unknown",
+        "high": null,
+        "low": null,
+        "missingHours": 25
+      },
+      "missingPrecipitationHours": 25,
+      "precipitation": {
+        "statement": "Precipitation data is unavailable."
+      }
+    },
+    "acceptedText": "Temperature data is unavailable.  \nPrecipitation data is unavailable."
+  },
+  {
+    "id": "clipped-daypart",
+    "now": 1789173900000,
+    "forecast": {
+      "timezone": "Asia/Kolkata",
+      "fetchedAt": 1789173900000,
+      "observationTime": 1789173900,
+      "units": "imperial",
+      "hourly": [
+        {
+          "time": 1789171200,
+          "temperature": 30,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789174800,
+          "temperature": 22.2,
+          "precipitation": 80,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789178400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789182000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789185600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789189200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789192800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789196400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789200000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789203600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789207200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789210800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789214400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789218000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789221600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789225200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789228800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789232400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789236000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789239600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789243200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789246800,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789250400,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789254000,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789257600,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        },
+        {
+          "time": 1789261200,
+          "temperature": 22.2,
+          "precipitation": 0,
+          "code": 0,
+          "isDay": true
+        }
+      ]
+    },
+    "facts": {
+      "from": "Sat, Sep 12, 6:15 AM GMT+5:30",
+      "until": "Sun, Sep 13, 6:15 AM GMT+5:30",
+      "temperatureUnit": "Fahrenheit",
+      "coverage": {
+        "temperature": "complete",
+        "precipitation": "complete"
+      },
+      "temperature": {
+        "pattern": "cooling after the high",
+        "high": {
+          "value": "86°F",
+          "period": "this morning"
+        },
+        "low": {
+          "value": "72°F",
+          "period": "this morning"
+        }
+      },
+      "precipitation": {
+        "statement": "Hourly precipitation chances peak at 80% this morning."
+      }
+    },
+    "acceptedText": "Temperatures drop from 86°F this morning to 72°F this morning. Hourly precipitation chances peak at 80% this morning."
+  }
+]

@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, afterEach, expect, it, vi } from 'vitest';
 import { StrictMode } from 'react';
-import { appleBriefingFacts, validAppleSummary } from './apple-briefing';
+import { APPLE_BRIEFING_REVISION, appleBriefingFacts, validAppleSummary } from './apple-briefing';
 import { readStoredValue, writeStoredValue } from './persistence';
 import { acquireBriefing, cachedBriefing, clearBriefingCache } from './briefing-client';
 import { BRIEFING_STORAGE, BRIEFING_TTL, BRIEFING_VERSION, briefingForecast, isWeatherBriefing } from './briefing';
@@ -17,7 +17,7 @@ vi.mock('@capacitor/core', async importOriginal => {
 });
 const snapshot = () => normalizeWeather(forecastFixture(), asheville, fixtureTime);
 const forecast = () => briefingForecast(snapshot(), 'imperial', fixtureTime);
-const localText = 'Temperatures stay mild today. Bring a light layer tonight.';
+const localText = 'Temperatures stay mild today. Hourly precipitation chances peak at 20%.';
 const cloud = () => ({ text: 'Expect mild weather today. Keep a light layer handy.', generatedAt: Date.now(), windowStart: Date.now(),
   windowEnd: Date.now() + 86400000, expiresAt: Date.now() + BRIEFING_TTL, version: BRIEFING_VERSION });
 const flush = () => act(async () => { for (let i = 0; i < 20; i++) await Promise.resolve(); });
@@ -37,14 +37,27 @@ beforeEach(() => {
 afterEach(() => { clearBriefingCache(); vi.unstubAllEnvs(); vi.restoreAllMocks(); });
 
 it('generates on Apple, labels and persists it, and reuses the cache', async () => {
-  await expect(request().promise).resolves.toMatchObject({ text: localText, provider: 'apple', appleModelOSMajor: 27 });
+  await expect(request().promise).resolves.toMatchObject({ text: localText, provider: 'apple', appleModelOSMajor: 27, applePromptRevision: APPLE_BRIEFING_REVISION });
   expect(fetch).not.toHaveBeenCalled();
   expect(JSON.parse(readStoredValue(BRIEFING_STORAGE)!)[0].briefing.provider).toBe('apple');
   expect(JSON.parse(readStoredValue(BRIEFING_STORAGE)!)[0].briefing.appleModelOSMajor).toBe(27);
+  expect(JSON.parse(readStoredValue(BRIEFING_STORAGE)!)[0].briefing.applePromptRevision).toBe(APPLE_BRIEFING_REVISION);
   await request().promise;
   expect(plugin.generate).toHaveBeenCalledTimes(1);
   expect(plugin.generate.mock.calls[0][0].facts).not.toMatch(/latitude|longitude|Asheville|placeId/);
 });
+
+for (const provider of ['apple', 'openai'] as const) {
+  it.each([100, 101, 102])(`generates on ${provider} with supported condition code %i`, async code => {
+    const payload = forecast(); payload.hourly[2].code = code;
+    const job = acquireBriefing('supported-code', 'scope', payload, false, true, provider);
+    await expect(job.promise).resolves.toMatchObject({ provider });
+    expect(plugin.generate).toHaveBeenCalledTimes(provider === 'apple' ? 1 : 0);
+    expect(fetch).toHaveBeenCalledTimes(provider === 'openai' ? 1 : 0);
+    if (provider === 'openai') expect(JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string).hourly[2].code).toBe(code);
+    job.release();
+  });
+}
 
 it.each(['requires_ios27', 'os_unsupported', 'device_unsupported', 'intelligence_disabled', 'model_not_ready', 'language_unsupported'])('never falls back when Apple is %s', async reason => {
   plugin.availability.mockResolvedValue({ available: false, reason });
@@ -149,7 +162,7 @@ it('preserves interval probability, missing temperatures, units and midnight in 
   const f = forecast(); f.hourly[0].temperature = null; f.hourly[0].precipitation = 99; f.hourly[1].precipitation = null;
   const facts = JSON.parse(appleBriefingFacts(f, fixtureTime));
   expect(facts.temperature.missingHours).toBe(1); expect(facts.missingPrecipitationHours).toBe(1);
-  expect(facts.precipitation.peakChancePercent).not.toBe(99);
+  expect(facts.precipitation.statement).toBe('Precipitation data is incomplete; available hourly chances peak at 20%.');
   expect(facts.temperature.missingHours).toBe(1); expect(facts.temperatureUnit).toBe('Fahrenheit');
   expect(facts.from).not.toBe(facts.until);
   expect(JSON.parse(appleBriefingFacts({ ...f, units: 'metric' }, fixtureTime)).temperatureUnit).toBe('Celsius');
@@ -185,9 +198,9 @@ it('discards late local results after changing location or units', async () => {
 
 it('rejects invented explicit numeric probabilities and temperatures', () => {
   const f = forecast(); f.hourly.forEach(h => { h.precipitation = 0; h.temperature = 22.2; });
-  expect(validAppleSummary('Temperatures stay around 72°. Expect a 10% chance of rain.', f, fixtureTime)).toBe(false);
-  expect(validAppleSummary('Temperatures stay around 80 degrees. Expect dry weather.', f, fixtureTime)).toBe(false);
-  expect(validAppleSummary('Temperatures stay around 72°. Expect dry weather with a 0 percent rain chance.', f, fixtureTime)).toBe(true);
+  expect(validAppleSummary('Temperatures stay around 72°. Expect a 10% chance of precipitation.', f, fixtureTime)).toBe(false);
+  expect(validAppleSummary('Temperatures stay around 80 degrees. Precipitation is not expected.', f, fixtureTime)).toBe(false);
+  expect(validAppleSummary('Temperatures stay around 72°F. Precipitation is not expected.', f, fixtureTime)).toBe(true);
 });
 
 it('rejects confident dry-weather prose when precipitation measurements are missing', () => {
@@ -195,7 +208,7 @@ it('rejects confident dry-weather prose when precipitation measurements are miss
   f.hourly[1].precipitation = null;
   expect(validAppleSummary('Temperatures stay at 72°F. There is no chance of precipitation throughout the day.', f, fixtureTime)).toBe(false);
   expect(validAppleSummary('Available readings stay at 72°F. There is no chance of precipitation throughout the day.', f, fixtureTime)).toBe(false);
-  expect(validAppleSummary('Available temperatures are around 72°F. Precipitation data is incomplete, so check the forecast before heading out.', f, fixtureTime)).toBe(true);
+  expect(validAppleSummary('Available temperatures are around 72°F. Precipitation data is incomplete; available hourly chances peak at 0%.', f, fixtureTime)).toBe(true);
   f.hourly[0].temperature = null;
   expect(validAppleSummary('There are no available readings between 9 AM and 9 AM. Precipitation data is incomplete.', f, fixtureTime)).toBe(false);
 });
@@ -217,7 +230,7 @@ it.each([true, false])('routes an overconfident missing-data answer safely with 
 it('rejects invented missing-rain claims when coverage is complete', () => {
   const f = forecast(); f.hourly.forEach(h => { h.precipitation = 10; });
   expect(validAppleSummary('Temperatures stay mild today. Precipitation data is incomplete.', f, fixtureTime)).toBe(false);
-  expect(validAppleSummary('Temperatures stay mild today. Rain chances stay low at 10%.', f, fixtureTime)).toBe(true);
+  expect(validAppleSummary('Temperatures stay mild today. Hourly precipitation chances peak at 10%.', f, fixtureTime)).toBe(true);
 });
 
 it.each(['2026-03-08T05:00:00Z', '2026-11-01T04:00:00Z'])('keeps local dayparts and temperature peaks across DST at %s', date => {
@@ -225,12 +238,11 @@ it.each(['2026-03-08T05:00:00Z', '2026-11-01T04:00:00Z'])('keeps local dayparts 
   const f = forecast(); f.timezone = 'America/New_York';
   f.hourly = Array.from({ length: 26 }, (_, i) => ({ ...f.hourly[0], time: now / 1000 + i * 3600, temperature: i === 8 ? 30 : i === 20 ? 10 : 20, precipitation: i === 9 ? 70 : 0 }));
   const facts = JSON.parse(appleBriefingFacts(f, now));
-  expect(facts.temperature.high).toEqual({ value: '86°', period: 'this morning' });
-  expect(facts.temperature.low).toEqual({ value: '50°', period: 'this evening' });
-  expect(facts.precipitation.peakChancePercent).toBe(70);
-  expect(facts.precipitation.peakPeriods).toEqual(['this morning']);
+  expect(facts.temperature.high).toEqual({ value: '86°F', period: 'this morning' });
+  expect(facts.temperature.low).toEqual({ value: '50°F', period: 'this evening' });
+  expect(facts.precipitation.statement).toBe('Hourly precipitation chances peak at 70% this morning.');
   expect(facts.coverage.precipitation).toMatch(/^complete/);
-  expect(facts.missingPrecipitationHours).toBe(0);
+  expect(facts.missingPrecipitationHours).toBeUndefined();
 });
 
 
@@ -238,13 +250,12 @@ it('gives steady weather one temperature instead of repeated high and low values
   const f = forecast(); f.hourly.forEach(h => { h.temperature = 22; h.precipitation = 0; });
   const facts = JSON.parse(appleBriefingFacts(f, fixtureTime));
   expect(facts.temperature.pattern).toBe('steady');
-  expect(facts.temperature.steadyAt).toBe('72°');
+  expect(facts.temperature.steadyAt).toBe('72°F');
   expect(facts.temperature.high).toBeUndefined();
   expect(facts.temperature.low).toBeUndefined();
-  expect(facts.temperature.highDescription).toBe('mild');
-  expect(facts.precipitation.peakChancePercent).toBe(0);
-  expect(validAppleSummary('Expect temperatures near 72°F, then cooling overnight. Rain chances stay low.', f, fixtureTime)).toBe(false);
-  expect(validAppleSummary('Expect temperatures to stay near 72°F. Rain chances stay low.', f, fixtureTime)).toBe(true);
+  expect(facts.precipitation.statement).toBe('Precipitation is not expected.');
+  expect(validAppleSummary('Expect temperatures near 72°F, then cooling overnight. Precipitation is not expected.', f, fixtureTime)).toBe(false);
+  expect(validAppleSummary('Expect temperatures to stay near 72°F. Precipitation is not expected.', f, fixtureTime)).toBe(true);
 });
 
 

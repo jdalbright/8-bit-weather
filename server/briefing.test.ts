@@ -35,6 +35,13 @@ it('calls only the server-selected model with bounded instructions and no person
   expect(console.info).toHaveBeenCalledWith('weather_briefing', expect.objectContaining({ promptRevision: OPENAI_BRIEFING_REVISION }));
   expect(response.headers.get('cache-control')).toBe('no-store');
 });
+it.each([100, 101, 102])('accepts supported condition code %i at the server boundary', async code => {
+  const forecast = payload(); forecast.hourly[2].code = code;
+  const response = await handleBriefing(request(forecast));
+  expect(response.status).toBe(200);
+  expect(create).toHaveBeenCalledTimes(1);
+  expect(JSON.parse(create.mock.calls[0][0].input)).toEqual(openAIBriefingFacts(forecast, fixtureTime));
+});
 it.each([
   'Temperatures stay near 99°F. Rain chances are low.',
   'Available temperatures stay near 72°F. Rain data is incomplete, but expect dry weather.',

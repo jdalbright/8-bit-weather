@@ -25,7 +25,10 @@ test('zero-percent forecast and resolved clouds do not inherit a cached possible
     const raw = forecastFixture(Date.now(), 3);
     raw.hourly.precipitation_probability = raw.hourly.time.map(() => 0);
     const data = apiFixture(raw, route.request().url());
-    if (data.current) data.current.conditionLabel = 'Thunderstorms possible';
+    if (data.current) {
+      data.current.conditionLabel = 'Thunderstorms possible';
+      data.current.precipitationProbability = 0;
+    }
     return route.fulfill({ json: data });
   });
   await page.goto('/');

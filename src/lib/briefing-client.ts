@@ -1,7 +1,7 @@
 import type { BriefingProvider } from '../types';
 import { BRIEFING_PATH, BRIEFING_STORAGE, forecastUsable, isWeatherBriefing, parseBriefingForecast, type BriefingForecast, type WeatherBriefing } from './briefing';
 import { isAppActive, isNativeApp } from './native';
-import { generateAppleBriefing, MIN_APPLE_MODEL_OS, appleUnavailableMessage } from './apple-briefing';
+import { generateAppleBriefing, MIN_APPLE_MODEL_OS, APPLE_BRIEFING_REVISION, appleUnavailableMessage } from './apple-briefing';
 import { readStoredValue, writeStoredValue, removeStoredValue } from './persistence';
 
 interface Cached { key: string; scope: string; briefing: WeatherBriefing }
@@ -36,7 +36,7 @@ function entries(): Cached[] {
     if (Array.isArray(stored)) {
       const valid = stored.filter((e): e is Cached => !!e && typeof e.key === 'string' && typeof e.scope === 'string' && isWeatherBriefing(e.briefing)
         // Drop earlier Apple evaluations while retaining legacy OpenAI entries.
-        && (e.briefing.provider !== 'apple' || (e.briefing.appleModelOSMajor ?? 0) >= MIN_APPLE_MODEL_OS));
+        && (e.briefing.provider !== 'apple' || (e.briefing.appleModelOSMajor ?? 0) >= MIN_APPLE_MODEL_OS && e.briefing.applePromptRevision === APPLE_BRIEFING_REVISION));
       memory = [...memory, ...valid.filter(e => !memory.some(m => m.key === e.key && (m.briefing.provider ?? 'openai') === (e.briefing.provider ?? 'openai')))].slice(0, 12);
     }
   } catch { /* In-memory caching still works when storage is unavailable. */ }
@@ -44,7 +44,8 @@ function entries(): Cached[] {
 }
 export function cachedBriefing(key: string, scope: string, now: number, offline: boolean, selectedProvider: BriefingProvider = 'openai'): WeatherBriefing | null {
   const provider = isNativeApp() ? selectedProvider : 'openai';
-  return entries().find(e => (e.briefing.provider ?? 'openai') === provider && (offline ? e.scope === scope : e.key === key)
+  return entries().find(e => (e.briefing.provider ?? 'openai') === provider
+    && (provider !== 'apple' || e.briefing.applePromptRevision === APPLE_BRIEFING_REVISION) && (offline ? e.scope === scope : e.key === key)
     && e.briefing.generatedAt <= now && now >= e.briefing.windowStart && now < e.briefing.windowEnd
     && (offline || now < e.briefing.expiresAt))?.briefing ?? null;
 }

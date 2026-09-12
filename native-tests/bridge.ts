@@ -29,7 +29,7 @@ export async function installBridge(page: Page, initial: Record<string, string> 
   const calls: Call[] = [];
   const widgets: (WidgetPayload | null)[] = [];
   const control = { launchUrl: '', permission: 'granted', positionError: '', failReads: false, failWrites: false, hydrationDelayMs: 0,
-    lowPowerMode: false, thermalState: 'nominal', experienceFailure: false, appleAvailable: false, appleOSMajor: 27, appleError: '', appleHang: false, appleText: 'Temperatures stay mild today. Bring a light layer tonight.' };
+    lowPowerMode: false, thermalState: 'nominal', experienceFailure: false, appleAvailable: false, appleOSMajor: 27, appleError: '', appleHang: false, appleText: 'Temperatures stay mild today. Hourly precipitation chances peak at 20%.' };
   const pendingApple = new Map<string, (reply: Reply) => void>();
   await page.exposeFunction('__nativeInvoke', async (call: Call): Promise<Reply> => {
     calls.push(call);

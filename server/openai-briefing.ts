@@ -1,4 +1,4 @@
-import { briefingFacts, HOUR, type BriefingForecast } from '../src/lib/briefing.js';
+import { briefingFacts, validBriefingClaims, HOUR, type BriefingForecast } from '../src/lib/briefing.js';
 import { THUNDERSTORM_TAKEAWAY, MAX_BRIEFING_TEXT_LENGTH } from '../src/lib/briefing-prompt.js';
 import { localDate, localTime, temperature, weatherInfo } from '../src/lib/weather.js';
 
@@ -90,49 +90,5 @@ export function validOpenAISummary(text: string, forecast: BriefingForecast, now
   // Rain gear is never an allowed takeaway in a briefing containing thunderstorm
   // forecasts. Even a separate shower period cannot turn it into storm protection.
   if (hasThunderstorms && /\b(?:umbrellas?|raincoats?|ponchos?|rain\s*gear|rainwear)\b/i.test(text)) return false;
-  const facts = briefingFacts(forecast, now);
-  const normalized = text.replaceAll('−', '-');
-  const probabilities = new Set(facts.hours.flatMap(hour => hour.precipitationChancePercent === null ? [] : [hour.precipitationChancePercent]));
-  const temperatures = new Set(facts.hours.flatMap(hour => hour.temperature === null ? [] : [Number.parseFloat(hour.temperature)]));
-  // A range's two endpoints share its trailing unit ("58–76°F", "10 to 20%").
-  const numbers = /(-?\d+(?:\.\d+)?)(?:\s*(?:–|—|-|to|and)\s*(-?\d+(?:\.\d+)?))?\s*(%|percent\b|degrees?(?:\s*(?:Fahrenheit|Celsius|[FC]\b))?|°\s*[FC]?)/gi;
-  for (const match of normalized.matchAll(numbers)) {
-    const probability = /%|percent/i.test(match[3]);
-    const allowed = probability ? probabilities : temperatures;
-    if (!allowed.has(Number(match[1])) || (match[2] !== undefined && !allowed.has(Number(match[2])))) return false;
-    if (!probability && (forecast.units === 'imperial' ? /C|Celsius/i : /F|Fahrenheit/i).test(match[3])) return false;
-  }
-  const missingTemperature = facts.hours.some(hour => hour.temperature === null);
-  const missingPrecipitation = facts.hours.some(hour => hour.precipitationChancePercent === null);
-  // Match each measurement separately: "available temperatures" cannot excuse
-  // an unsupported claim about rain, or vice versa.
-  const missingClaim = (topic: string, otherTopic: string) => {
-    const missing = '(?:missing|unknown|incomplete|unavailable|limited|partial)';
-    // A comma can connect "precipitation data ..., though the data is incomplete".
-    // Another measurement or sentence boundary still ends that topic's scope.
-    const sameTopic = `(?:(?!\\b(?:${otherTopic})\\b)[^.!?;]){0,45}`;
-    return new RegExp(`(?:${topic})${sameTopic}\\b${missing}\\b|\\b${missing}(?:\\s+(?:data|readings|information|coverage|for|on|about|the)){0,4}\\s+(?:${topic})|\\bno (?:available )?(?:${topic})(?: data| readings?| information)?`, 'i');
-  };
-  const temperatureMissingClaim = missingClaim('temperatures?', 'rain|precipitation');
-  const rainMissingClaim = missingClaim('rain|precipitation', 'temperatures?');
-  if (!missingTemperature && temperatureMissingClaim.test(text)) return false;
-  if (!missingPrecipitation && rainMissingClaim.test(text)) return false;
-  const availableTemperatures = /\b(?:available|known) (?:temperature|readings)|\b(?:temperature|readings)[^.!?;,]{0,40}\b(?:available|known)\b/i.test(text);
-  if (temperatures.size === 0 && availableTemperatures) return false;
-  if (missingTemperature && !availableTemperatures && !temperatureMissingClaim.test(text)) return false;
-  if (missingPrecipitation && !rainMissingClaim.test(text)) return false;
-  if (missingPrecipitation && /\b(?:no|zero) (?:chance|rain|snow|precipitation)|\b(?:stay|stays|remain|remains|expect|be|is|looks?) (?:\w+ ){0,2}dry\b|\bdry (?:weather|throughout|conditions|day|night)|\b(?:won't|will not) (?:rain|snow)\b/i.test(text)) return false;
-  if (missingTemperature && temperatures.size > 0 && /\bno (?:available )?temperature (?:data|readings)|\ball temperature (?:data|readings)[^.!?;]{0,20}(?:missing|unavailable)/i.test(text)) return false;
-  if (missingPrecipitation && probabilities.size > 0 && /\bno (?:available )?(?:rain|precipitation) (?:data|readings)|\ball (?:rain|precipitation) (?:data|readings)[^.!?;]{0,20}(?:missing|unavailable)/i.test(text)) return false;
-  // Unqualified "unavailable" overstates partial coverage. A nearby explicit
-  // qualifier such as "for part of the forecast" remains valid.
-  for (const clause of text.split(/[.!?;,]/)) {
-    if (!/\bunavailable\b/i.test(clause) || /\b(?:some|part|partly|partial|partially|incomplete|limited)\b/i.test(clause)) continue;
-    if (missingTemperature && temperatures.size > 0 && /\btemperature/i.test(clause)) return false;
-    if (missingPrecipitation && probabilities.size > 0 && /\b(?:rain|precipitation)\b/i.test(clause)) return false;
-  }
-  const known = forecast.hourly.filter(hour => hour.time < now / 1000 + 24 * HOUR && hour.time + HOUR > now / 1000)
-    .flatMap(hour => hour.temperature === null ? [] : [hour.temperature]);
-  if (known.length && Math.max(...known) - Math.min(...known) < 2 && /\b(?:cooling|warming|warm up|cool down|warms up|cools down)\b/i.test(text)) return false;
-  return true;
+  return validBriefingClaims(text, forecast, now);
 }

@@ -5,6 +5,18 @@ import { THUNDERSTORM_TAKEAWAY } from '../src/lib/briefing-prompt';
 import { comparisonForecast, comparisonScenarios, comparisonTime } from './briefing-scenarios.fixture';
 import { openAIBriefingFacts, validOpenAISummary } from './openai-briefing';
 
+it('distinguishes no precipitation expected from missing precipitation data', () => {
+  const forecast = comparisonForecast('steady');
+  forecast.hourly.forEach(hour => { hour.precipitation = 0; });
+  const dry = 'Temperatures stay near 72°F. No precipitation is expected.';
+  expect(validOpenAISummary(dry, forecast, comparisonTime)).toBe(true);
+  expect(validOpenAISummary('Temperatures stay near 72°F. There is no precipitation data.', forecast, comparisonTime)).toBe(false);
+  expect(validOpenAISummary('No temperatures are available. No precipitation is expected.', forecast, comparisonTime)).toBe(false);
+  forecast.hourly[1].precipitation = null;
+  expect(validOpenAISummary(dry, forecast, comparisonTime)).toBe(false);
+  expect(validOpenAISummary('Temperatures stay near 72°F. Precipitation data is incomplete, with available chances peaking at 0%.', forecast, comparisonTime)).toBe(true);
+});
+
 it('uses one temperature for steady weather with the selected units', () => {
   const forecast = comparisonForecast('steady');
   expect(openAIBriefingFacts(forecast, comparisonTime).temperature).toEqual({ pattern: 'steady', steadyAt: '72°F', timeline: [] });

@@ -23,11 +23,35 @@ Provider tests cover migration, strict routing, per-provider caches, offline swi
 - Physical Settings then selected OpenAI and refreshed weather; a real OpenAI summary appeared. That run contained no Apple generation calls. The app was reopened normally with OpenAI saved.
 - Failure isolation, explicit fallback actions, and cancellation races are covered by deterministic tests; physical success-path verification does not simulate every provider outage.
 
+## September 12: accuracy loop on the connected iPhone
+
+The signed Debug build with Apple prompt revision 2 was installed over the existing app on the connected iPhone 17 Pro running iOS 27. Seven synthetic forecasts were passed through the real Swift bridge and on-device model with WebView networking disabled. Saved preferences, places, and weather were not seeded or replaced. The returned texts were reviewed against the inputs and passed through the production JavaScript validator locally; this checks actual model output, but is not a physical end-to-end UI or persistence test.
+
+The initial revision 1 samples exposed false precipitation gaps for a complete dry forecast and an invented unavailable low for partial temperature data. The latter previously passed validation. Revision 2 supplies plain coverage states, full temperature units, omits zero missing counts and redundant steady high descriptions, and computes a precipitation sentence for the model to copy. Validation requires that exact sentence and rejects invented high/low claims in steady temperature prose. Older Apple cache revisions are invalidated online and offline.
+
+| Final physical case | Result | Launch plus generation |
+| --- | --- | --- |
+| Complete dry forecast | Correct steady 72°F and no precipitation expected | 1.42 s |
+| Frozen precipitation code | Correct 25°F and generic 80% precipitation wording | 1.53 s |
+| Celsius warming | Correct 2°C to 14°C and 60% peak timing | 1.70 s |
+| Partial zero precipitation readings | Explicit incomplete data with available peak 0% | 2.28 s |
+| Partial temperatures and precipitation | Available temperature readings and explicit incomplete precipitation data | 1.61 s |
+| Both topics unavailable | Both unavailable statements retained | 1.41 s |
+| Clipped first interval at local morning boundary | 86°F to 72°F and 80% peak correctly assigned to this morning | 6.12 s |
+
+All seven final outputs passed the production validator. Device locks blocked several launch attempts; those produced no model sample and are excluded from this table. The initial four successful candidate cases were also repeated successfully on the final installed build. This is a small synthetic evaluation, not a guarantee against all model hallucinations.
+
+[Sanitized synthetic inputs and exact final outputs](../src/test/apple-device-samples.json) are replayed by [the device regression tests](../src/lib/apple-briefing-device.test.ts). These include both original incorrect outputs as rejection regressions and contain no device identifiers, coordinates, or saved user data. Final validation included 401 client tests and 150 server tests (four opt-in live tests skipped), then six additional device replays and two previous-revision cache cases; all passed. The 22 native browser briefing cases passed in Chromium and WebKit with mocked transport. Typechecking, lint, web/native builds, asset checks, native packaging checks, signed iPhone build, strict signature verification, and device installation passed. Independent accuracy, replay, and native integration reviews reported no remaining material code findings after a TypeScript guard correction.
+
 ## September 11: on-device wording refinement
 
 The connected iPhone 17 Pro on iOS 27 reports the model available and has generated and cached a real Apple briefing. Earlier OpenAI attribution persisted until a forecast refresh replaced the cached summary.
 
-Apple input now calculates the temperature high/low and their local dayparts, distinguishes steady temperatures, and supplies only the peak precipitation chance and its dayparts. This removes the misleading start/end comparison and long lists of small probabilities. Local calendar labels respect the forecast timezone, including daylight-saving transitions. Native generation now requests a plain-text response rather than a guided two-field structure; the shared validator still enforces sentence count, length, forecast numbers, and missing-data uncertainty. New validation checks reject invented missing-rain claims when precipitation coverage is complete and invented warming/cooling when calculated temperatures are steady; existing measurement checks remain in place.
+Apple input calculates the temperature high/low and their local dayparts, distinguishes steady temperatures, and supplies peak hourly precipitation chances and their dayparts. The first overlapping interval is clipped to the briefing start before assigning its daypart. Local calendar labels respect the forecast timezone, including daylight-saving transitions. Native generation requests a plain-text response rather than a guided two-field structure.
+
+The local accuracy revision uses generic precipitation wording because compact Apple facts omit precipitation type. It distinguishes complete, partial, and unavailable temperature and precipitation coverage separately; partial zero readings cannot imply a dry forecast. Shared numeric validation checks both range endpoints and explicit temperature units, and rejects contradictory coverage claims. Apple retains its compact sentence/length policy and rejects specific precipitation types unsupported by its facts. OpenAI's existing claim checks are shared without changing its fuller prompt or output limits.
+
+Generated Apple summaries carry `applePromptRevision`; only the current revision is reused, including offline. Earlier Apple summaries are regenerated when fresh weather and the local model are available. OpenAI caches remain eligible. Offline cards say **Saved briefing** with the original generation timestamp. Revision 2 has physical-model verification recorded below; the September 11 samples are historical.
 
 The debug-only `EIGHTBIT_UI_TEST_APPLE_SAMPLE` launch variable accepts a JSON object containing `facts` and `instructions`. It calls the real native bridge while suppressing the normal UI request, without modifying saved places, preferences, or cached weather. Use `EIGHTBIT_UI_TEST_OFFLINE=true` alongside it to prevent cloud requests. Console output is prefixed `APPLE_SAMPLE_RESULT`; relaunch normally after evaluation. These hooks are absent from Release builds.
 

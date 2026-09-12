@@ -15,7 +15,8 @@ for (const width of [320, 390, 480]) {
     await page.evaluate(() => document.fonts.ready);
     await grid.screenshot({ path: testInfo.outputPath('conditions.png') });
     await expect(grid.getByText('Precip chance', { exact: true })).toBeVisible();
-    await expect(grid.getByText('This hour', { exact: true })).toBeVisible();
+    await expect(grid.getByText('Now', { exact: true })).toBeVisible();
+    await expect(grid.locator('dd').first()).toContainText('—');
     await expect(grid.locator('button')).toHaveCount(1);
     const uv = grid.getByRole('button', { name: /UV index/ });
     await expect(uv.getByText('Details', { exact: true })).toBeVisible();
