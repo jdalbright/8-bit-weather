@@ -116,7 +116,7 @@ for (const source of ['search', 'gps'] as const) {
     });
     await page.goto('/');
     await expect(page.locator('.condition')).toHaveText('Overcast');
-    await expect(page.locator('.current-weather .saved-observation')).toContainText('Estimated conditions');
+    await expect(page.locator('.current-weather .saved-observation')).toContainText('As of');
     await expect(page.locator('.forecast-scene .rainfall')).toHaveCount(0);
     await expect(page.locator('.hour').first()).toHaveAccessibleName(/Now, Overcast/);
     // Upcoming rain is still allowed in the forecast, without becoming rain now.
@@ -124,7 +124,7 @@ for (const source of ['search', 'gps'] as const) {
     await page.screenshot({ path: testInfo.outputPath(`raleigh-${source}-dry.png`) });
     wet = true;
     await page.getByRole('button', { name: 'Refresh', exact: true }).click();
-    await expect(page.locator('.condition')).toHaveText('Light rain possible');
+    await expect(page.locator('.condition')).toHaveText('Light rain');
     await expect(page.locator('.forecast-scene .rainfall')).toHaveCount(1);
     wet = false;
     await page.getByRole('button', { name: 'Refresh', exact: true }).click();

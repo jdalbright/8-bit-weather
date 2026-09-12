@@ -36,9 +36,9 @@ describe('current model conditions', () => {
   it.each([45, 48, 56, 57, 66, 67, 71, 73, 75, 77, 85, 86, 95, 96, 99])('preserves fog, freezing precipitation, snow and storm code %s', code => {
     expect(currentWeatherCode(snapshot(code).current)).toBe(code);
   });
-  it('keeps nonzero rain, including drizzle, but labels it as an estimate', () => {
-    expect(currentWeatherInfo(snapshot(51, 0.01).current).label).toBe('Light drizzle possible');
-    expect(currentWeatherInfo(snapshot(63, 0.4).current).label).toBe('Rain possible');
+  it('keeps nonzero rain, including drizzle, without adding possible', () => {
+    expect(currentWeatherInfo(snapshot(51, 0.01).current).label).toBe('Light drizzle');
+    expect(currentWeatherInfo(snapshot(63, 0.4).current).label).toBe('Rain');
     expect(currentWeatherCode(snapshot(80, 0, 0.2).current)).toBe(80);
     expect(deriveScene(snapshot(61, 0.1), fixtureTime).precipitationIntensity).toBeGreaterThan(0);
   });
@@ -69,4 +69,19 @@ describe('current model conditions', () => {
     cacheWeather(weather);
     expect(currentWeatherCode(cachedWeather(asheville)!.current)).toBe(61);
   });
+});
+
+it('keeps cached chance-only labels out of the headline and widget at zero forecast probability', () => {
+  const weather = snapshot(3);
+  weather.current.conditionLabel = 'Thunderstorms possible';
+  weather.hourly.forEach(hour => { hour.precipitation = 0; });
+  expect(currentWeatherInfo(weather.current)).toEqual({ kind: 'cloudy', label: 'Overcast' });
+  expect(deriveScene(weather, fixtureTime)).toMatchObject({ kind: 'cloudy', precipitationIntensity: 0 });
+  expect(widgetPayload(asheville, 'imperial', weather).weather?.current).toMatchObject({ code: 3, conditionLabel: 'Overcast' });
+});
+it('does not erase reported active thunderstorms just because hourly forecast probability is zero', () => {
+  const weather = snapshot(95, 1);
+  weather.hourly.forEach(hour => { hour.precipitation = 0; });
+  expect(currentWeatherInfo(weather.current)).toEqual({ kind: 'storm', label: 'Thunderstorms' });
+  expect(deriveScene(weather, fixtureTime).kind).toBe('storm');
 });

@@ -39,10 +39,10 @@ export function forecastWeatherInfo(period: {code:number|null;conditionLabel?:st
 }
 export function currentWeatherInfo(current: CurrentWeather, isDay = current.isDay) {
   const info = weatherInfo(currentWeatherCode(current), isDay);
-  if (current.conditionLabel && ![0,1].includes(currentWeatherCode(current) ?? -1)) return { ...info, label: current.conditionLabel };
-  // Model estimate, not an observation at the user's exact location.
+  // Cached provider labels may describe chance/nearby weather that was already
+  // resolved to cloud cover. Keep text aligned with the code used by the scene.
   const label = info.label === 'Rainy' ? 'Rain' : info.label === 'Snowy' ? 'Snow' : info.label;
-  return { ...info, label: ['rain', 'snow', 'storm'].includes(info.kind) ? `${label} possible` : label };
+  return { ...info, label };
 }
 export function temperature(value: number | null | undefined, units: Units): string {
   if (value == null || !Number.isFinite(value)) return '—';

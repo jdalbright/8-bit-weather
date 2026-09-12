@@ -18,3 +18,20 @@ test('fresh Xweather sections are reused for manual refresh and NOAA is independ
   await expect(page.getByText(/NOAA/).first()).toBeVisible();
   expect(requests).toBe(4);
 });
+
+test('zero-percent forecast and resolved clouds do not inherit a cached possible-storm headline', async ({ page }) => {
+  await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected: place, places: [place], preferences: { reducedMotion: true } })), asheville);
+  await page.route('**/api/weather?**', route => {
+    const raw = forecastFixture(Date.now(), 3);
+    raw.hourly.precipitation_probability = raw.hourly.time.map(() => 0);
+    const data = apiFixture(raw, route.request().url());
+    if (data.current) data.current.conditionLabel = 'Thunderstorms possible';
+    return route.fulfill({ json: data });
+  });
+  await page.goto('/');
+  await expect(page.locator('.condition')).toHaveText('Overcast');
+  await expect(page.locator('.hour').first()).toHaveAccessibleName(/Now, Overcast.*Chance of precipitation: 0%/);
+  await expect(page.locator('.forecast-scene .rainfall')).toHaveCount(0);
+  await expect(page.locator('.current-weather')).not.toContainText(/possible|Estimated conditions/);
+  await expect(page.locator('.current-weather .saved-observation')).toContainText('As of');
+});

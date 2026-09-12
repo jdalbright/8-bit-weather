@@ -70,7 +70,14 @@ struct WidgetTests {
         check(corrupt.isStale(at: now), "Future observation does not appear current")
         check(payload.artworkName == "raleigh-day", "Regional daytime artwork")
         payload.weather?.current.code = 61
-        check(payload.artworkName == "raleigh-overcast" && payload.condition == "Light rain possible", "WMO rain label and artwork")
+        check(payload.artworkName == "raleigh-overcast" && payload.condition == "Light rain", "WMO rain label and artwork")
+        payload.weather?.current.code = 3
+        payload.weather?.current.conditionLabel = "Thunderstorms possible"
+        check(payload.condition == "Overcast" && payload.accessorySymbol == "cloud", "Cached chance-only label cannot override resolved current clouds")
+        for (code, expected) in [(95, "Thunderstorms"), (100, "Wintry mix"), (101, "Sleet"), (102, "Hail")] {
+            payload.weather?.current.code = code
+            check(payload.condition == expected, "Current labels use the resolved code without possible")
+        }
         payload.weather?.current.isDay = false
         check(payload.artworkName == "raleigh-night", "Night overrides precipitation artwork")
         payload.weather = forecast

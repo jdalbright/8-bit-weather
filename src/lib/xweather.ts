@@ -57,10 +57,7 @@ export function currentFrom(raw: unknown): CurrentWeather {
   const current: CurrentWeather = { time: p.timestamp as number, temperature: number(p.tempC), feelsLike: number(p.feelslikeC),
     humidity: percent(p.humidity), wind: positive(p.windSpeedKPH), code, isDay: p.isDay, uv: positive(p.uvi),
     precipitationRate: rate, cloudCover: percent(p.sky) };
-  if (qualified && precipitation && !(ordinaryRain && rate === 0 && !['VC','C','S','L'].includes(wx.coverage))) {
-    const label = currentWeatherInfo({ ...current, code: wx.code }).label.replace(/ possible$/, '');
-    current.conditionLabel = wx.coverage === 'VC' ? `${label} nearby` : `${label} possible`;
-  } else current.conditionLabel = currentWeatherInfo(current).label;
+  current.conditionLabel = currentWeatherInfo(current).label;
   return current;
 }
 function forecastLabel(p: Obj): string {

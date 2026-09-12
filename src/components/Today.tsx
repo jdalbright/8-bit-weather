@@ -62,7 +62,7 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
         <h1 className="current-temperature" aria-label={displayTemperature == null ? 'Temperature unavailable' : `${degree} ${units === 'imperial' ? 'Fahrenheit' : 'Celsius'}`}><span>{degree.replace('°', '')}</span>{degree.includes('°') ? <sup>°</sup> : null}</h1>
         <p className="condition">{snapshot ? displayInfo.label : loading ? 'Gathering the forecast…' : 'Forecast unavailable'}</p>
         {previewHour && snapshot ? <p className="feels-like">Chance of precipitation: {percent(precipitationForHour(snapshot.hourly, previewHour.time))}</p> : snapshot ? <p className="feels-like">Feels like {temperature(snapshot.current.feelsLike, units)}<span aria-hidden="true"> · </span>H {temperature(today?.high, units)} / L {temperature(today?.low, units)}</p> : null}
-        {snapshot && !previewHour && !stale ? <p className="saved-observation">Estimated conditions · {localTime(snapshot.current.time, snapshot.timezone, { hour: 'numeric', minute: '2-digit' })}</p> : null}
+        {snapshot && !previewHour && !stale ? <p className="saved-observation">As of {localTime(snapshot.current.time, snapshot.timezone, { hour: 'numeric', minute: '2-digit' })}</p> : null}
         {stale ? <p className="saved-observation">Saved forecast · {localTime(previewHour ? snapshot!.fetchedAt / 1000 : snapshot!.current.time, snapshot!.timezone, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</p> : null}
       </div>}
     </Scenery>

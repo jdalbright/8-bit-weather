@@ -15,7 +15,17 @@ describe('Xweather condition interpretation',()=> {
  });
  it.each(['C','S','L','VC','IS','SC'])('does not animate %s precipitation without local evidence',coverage=> {
   const result=currentFrom(raw({weatherPrimaryCoded:`${coverage}:L:R`,precipRateMM:null}));
-  expect(result.code).toBe(3);expect(result.conditionLabel).toContain(coverage==='VC'?'nearby':'possible');
+  expect(result.code).toBe(3);expect(result.conditionLabel).toBe('Overcast');
+ });
+ it.each(['C','S','L','VC','IS','SC'])('uses cloud conditions for %s thunderstorms without local precipitation evidence', coverage => {
+  for (const precipRateMM of [0, null]) {
+   expect(currentFrom(raw({ weatherPrimaryCoded: `${coverage}::T`, precipRateMM, pop: 0 }))).toMatchObject({ code: 3, conditionLabel: 'Overcast' });
+  }
+ });
+ it('keeps active storms and unavailable clouds distinct from dry cloud conditions', () => {
+  expect(currentFrom(raw({weatherPrimaryCoded:'C::T',precipRateMM:1}))).toMatchObject({code:95,conditionLabel:'Thunderstorms'});
+  expect(currentFrom(raw({weatherPrimaryCoded:'VC::T',precipRateMM:1}))).toMatchObject({code:3,conditionLabel:'Overcast'});
+  expect(currentFrom(raw({weatherPrimaryCoded:'C::T',sky:null,cloudsCoded:null}))).toMatchObject({code:null,conditionLabel:'Conditions unavailable'});
  });
  it.each([[':L:S',71],[':H:ZR',67],[':L:ZL',56],['::T',95],['::WM',100],['::IP',101],['::UP',null]])('preserves %s', (code,wmo)=>expect(currentFrom(raw({weatherPrimaryCoded:code})).code).toBe(wmo));
  it('retains day/night and maps unknown codes safely',()=> {
