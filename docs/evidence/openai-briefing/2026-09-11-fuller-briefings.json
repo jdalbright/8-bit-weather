@@ -1,0 +1,307 @@
+{
+  "now": 1789174371000,
+  "forecast": {
+    "timezone": "America/New_York",
+    "fetchedAt": 1789174163531,
+    "observationTime": 1789174140,
+    "units": "imperial",
+    "hourly": [
+      {
+        "time": 1789171200,
+        "temperature": 30.79,
+        "precipitation": null,
+        "code": 95,
+        "isDay": false
+      },
+      {
+        "time": 1789174800,
+        "temperature": 27.2,
+        "precipitation": null,
+        "code": 95,
+        "isDay": false
+      },
+      {
+        "time": 1789178400,
+        "temperature": 26.2,
+        "precipitation": 100,
+        "code": 2,
+        "isDay": false
+      },
+      {
+        "time": 1789182000,
+        "temperature": 25.6,
+        "precipitation": 0,
+        "code": 80,
+        "isDay": false
+      },
+      {
+        "time": 1789185600,
+        "temperature": 25,
+        "precipitation": 19,
+        "code": 80,
+        "isDay": false
+      },
+      {
+        "time": 1789189200,
+        "temperature": 24.5,
+        "precipitation": 19,
+        "code": 80,
+        "isDay": false
+      },
+      {
+        "time": 1789192800,
+        "temperature": 23.8,
+        "precipitation": 17,
+        "code": 80,
+        "isDay": false
+      },
+      {
+        "time": 1789196400,
+        "temperature": 23.8,
+        "precipitation": 11,
+        "code": 80,
+        "isDay": false
+      },
+      {
+        "time": 1789200000,
+        "temperature": 23.5,
+        "precipitation": 10,
+        "code": 80,
+        "isDay": false
+      },
+      {
+        "time": 1789203600,
+        "temperature": 23.4,
+        "precipitation": 10,
+        "code": 80,
+        "isDay": false
+      },
+      {
+        "time": 1789207200,
+        "temperature": 23,
+        "precipitation": 10,
+        "code": 80,
+        "isDay": false
+      },
+      {
+        "time": 1789210800,
+        "temperature": 23,
+        "precipitation": 10,
+        "code": 80,
+        "isDay": true
+      },
+      {
+        "time": 1789214400,
+        "temperature": 23.4,
+        "precipitation": 10,
+        "code": 80,
+        "isDay": true
+      },
+      {
+        "time": 1789218000,
+        "temperature": 24.6,
+        "precipitation": 16,
+        "code": 80,
+        "isDay": true
+      },
+      {
+        "time": 1789221600,
+        "temperature": 26.5,
+        "precipitation": 21,
+        "code": 80,
+        "isDay": true
+      },
+      {
+        "time": 1789225200,
+        "temperature": 27.9,
+        "precipitation": 26,
+        "code": 80,
+        "isDay": true
+      },
+      {
+        "time": 1789228800,
+        "temperature": 29.2,
+        "precipitation": 32,
+        "code": 95,
+        "isDay": true
+      },
+      {
+        "time": 1789232400,
+        "temperature": 30,
+        "precipitation": 37,
+        "code": 95,
+        "isDay": true
+      },
+      {
+        "time": 1789236000,
+        "temperature": 30.6,
+        "precipitation": 43,
+        "code": 95,
+        "isDay": true
+      },
+      {
+        "time": 1789239600,
+        "temperature": 30.5,
+        "precipitation": 49,
+        "code": 95,
+        "isDay": true
+      },
+      {
+        "time": 1789243200,
+        "temperature": 30.1,
+        "precipitation": 59,
+        "code": 95,
+        "isDay": true
+      },
+      {
+        "time": 1789246800,
+        "temperature": 28.8,
+        "precipitation": 50,
+        "code": 95,
+        "isDay": true
+      },
+      {
+        "time": 1789250400,
+        "temperature": 28.4,
+        "precipitation": 48,
+        "code": 95,
+        "isDay": true
+      },
+      {
+        "time": 1789254000,
+        "temperature": 27.6,
+        "precipitation": 61,
+        "code": 95,
+        "isDay": true
+      },
+      {
+        "time": 1789257600,
+        "temperature": 25.6,
+        "precipitation": 78,
+        "code": 95,
+        "isDay": false
+      },
+      {
+        "time": 1789261200,
+        "temperature": 25,
+        "precipitation": 63,
+        "code": 95,
+        "isDay": false
+      }
+    ]
+  },
+  "facts": {
+    "from": "Fri, Sep 11, 8:52 PM EDT",
+    "until": "Sat, Sep 12, 8:52 PM EDT",
+    "temperatureUnit": "Fahrenheit",
+    "lead": "snow-or-thunderstorms",
+    "coverage": {
+      "temperature": {
+        "status": "complete",
+        "missingIntervals": 0
+      },
+      "precipitation": {
+        "status": "partial",
+        "missingIntervals": 1
+      },
+      "conditions": {
+        "status": "complete",
+        "missingIntervals": 0
+      }
+    },
+    "temperature": {
+      "pattern": "changing",
+      "steadyAt": null,
+      "timeline": [
+        {
+          "temperature": "87\u00b0F",
+          "period": "this evening"
+        },
+        {
+          "temperature": "73\u00b0F",
+          "period": "tomorrow morning"
+        },
+        {
+          "temperature": "78\u00b0F",
+          "period": "tomorrow evening"
+        }
+      ]
+    },
+    "precipitation": {
+      "peakChancePercent": 100,
+      "pattern": "highlight-peak-periods",
+      "peakPeriods": [
+        "this evening"
+      ],
+      "periods": [
+        {
+          "period": "this evening",
+          "peakChancePercent": 100,
+          "missingIntervals": 1
+        },
+        {
+          "period": "overnight",
+          "peakChancePercent": 19,
+          "missingIntervals": 0
+        },
+        {
+          "period": "tomorrow morning",
+          "peakChancePercent": 32,
+          "missingIntervals": 0
+        },
+        {
+          "period": "tomorrow afternoon",
+          "peakChancePercent": 59,
+          "missingIntervals": 0
+        },
+        {
+          "period": "tomorrow evening",
+          "peakChancePercent": 78,
+          "missingIntervals": 0
+        }
+      ],
+      "missingPeriods": [
+        "this evening"
+      ]
+    },
+    "conditions": [
+      {
+        "condition": "Thunderstorms",
+        "kind": "storm",
+        "from": "this evening",
+        "through": "this evening"
+      },
+      {
+        "condition": "Partly cloudy",
+        "kind": "partly-cloudy",
+        "from": "this evening",
+        "through": "this evening"
+      },
+      {
+        "condition": "Light showers",
+        "kind": "rain",
+        "from": "this evening",
+        "through": "tomorrow morning"
+      },
+      {
+        "condition": "Thunderstorms",
+        "kind": "storm",
+        "from": "tomorrow afternoon",
+        "through": "tomorrow evening"
+      }
+    ],
+    "thunderstormTakeaway": "If you hear thunder, move into a substantial building or an enclosed hard-topped vehicle."
+  },
+  "samples": [
+    {
+      "status": "completed",
+      "text": "Thunderstorms are possible this evening, with precipitation data incomplete; the available reading reaches 100%. Light showers continue through tomorrow morning, while thunderstorms become possible again from tomorrow afternoon through tomorrow evening, when chances reach 78%. If you hear thunder, move into a substantial building or an enclosed hard-topped vehicle.\n\nTemperatures fall from 87\u00b0F this evening to 73\u00b0F tomorrow morning, then rise to 78\u00b0F tomorrow evening. Partly cloudy skies are possible this evening before showers develop, with another round of thunderstorms later tomorrow.",
+      "valid": true
+    },
+    {
+      "status": "completed",
+      "text": "Thunderstorms are possible this evening, with precipitation chances reaching 100%, although precipitation data is incomplete for part of that period. Light showers may continue through tomorrow morning, while thunderstorms become more likely again tomorrow afternoon and evening, with chances reaching 78% tomorrow evening. If you hear thunder, move into a substantial building or an enclosed hard-topped vehicle.\n\nTemperatures fall from 87\u00b0F this evening to 73\u00b0F tomorrow morning, then rise to 78\u00b0F tomorrow evening.",
+      "valid": true
+    }
+  ]
+}

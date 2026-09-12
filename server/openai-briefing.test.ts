@@ -198,6 +198,31 @@ it('does not apply storm advice restrictions to storms outside the forecast wind
 const recorded = JSON.parse(readFileSync(new URL('../docs/evidence/openai-briefing/2026-09-11-comparison.json', import.meta.url), 'utf8')) as {
   comparisonTime: number; samples: { scenario: string; forecast: BriefingForecast; outputs: { candidate: { text: string } } }[];
 };
+
+const rejected = JSON.parse(readFileSync(new URL('../docs/evidence/openai-briefing/2026-09-11-xweather-rejection.json', import.meta.url), 'utf8')) as {
+  now: number; forecast: BriefingForecast; samples: { text: string }[];
+};
+it('accepts the complete observed four-sentence Xweather summary with its recommendation', () => {
+  const text = rejected.samples[0].text;
+  expect(text).toContain(THUNDERSTORM_TAKEAWAY);
+  expect(validOpenAISummary(text, rejected.forecast, rejected.now)).toBe(true);
+  expect(validOpenAISummary(text.replace('100%', '99%'), rejected.forecast, rejected.now)).toBe(false);
+  expect(validOpenAISummary(text.replace('though the data is incomplete', 'dry weather is expected'), rejected.forecast, rejected.now)).toBe(false);
+});
+it('keeps comma-separated missing-data claims scoped to their own measurement', () => {
+  const forecast = comparisonForecast('steady');
+  forecast.hourly[1].precipitation = null;
+  expect(validOpenAISummary('Temperatures stay near 72°F. Available precipitation data shows 0%, though the data is incomplete.', forecast, comparisonTime)).toBe(true);
+  expect(validOpenAISummary('Rain chances reach 0%, but temperature data is incomplete. Temperatures stay near 72°F.', forecast, comparisonTime)).toBe(false);
+  expect(validOpenAISummary('Precipitation data shows 0%. The data is incomplete, with temperatures near 72°F.', forecast, comparisonTime)).toBe(false);
+});
+it('allows recommendations while retaining storm advice checks', () => {
+  const forecast = comparisonForecast('thunderstorms');
+  const weather = 'Thunderstorms are possible this evening, with precipitation chances reaching 80%. Temperatures fall from 77°F to 66°F by tomorrow afternoon.';
+  const valid = `${weather} ${THUNDERSTORM_TAKEAWAY}`;
+  expect(validOpenAISummary(valid, forecast, comparisonTime)).toBe(true);
+  expect(validOpenAISummary(`${weather} Carry an umbrella. Seek shelter.`, forecast, comparisonTime)).toBe(false);
+});
 it.each(recorded.samples)('replays the recorded $scenario output through the revised validator', sample => {
   expect(validOpenAISummary(sample.outputs.candidate.text, sample.forecast, recorded.comparisonTime)).toBe(sample.scenario !== 'thunderstorms');
   if (sample.scenario === 'low-chances') {

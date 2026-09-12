@@ -1,5 +1,6 @@
+import { MAX_BRIEFING_TEXT_LENGTH } from './briefing-prompt';
 import { describe, expect, it } from 'vitest';
-import { briefingFacts, briefingForecast, forecastUsable, parseBriefingForecast } from './briefing';
+import { briefingFacts, briefingForecast, forecastUsable, parseBriefingForecast, isWeatherBriefing, BRIEFING_VERSION, BRIEFING_TTL } from './briefing';
 import { normalizeWeather } from './weather';
 import { asheville, fixtureTime, forecastFixture } from '../test/fixtures';
 
@@ -65,4 +66,12 @@ it('rejects malformed times, units, measurements, timezone and oversized arrays'
     { ...f, hourly: f.hourly.map((h, i) => ({ ...h, time: i === 4 ? h.time + 1 : h.time })) }]) {
     expect(parseBriefingForecast(invalid)).toBeNull();
   }
+});
+
+it('accepts longer saved OpenAI briefings in web and native clients', () => {
+  const briefing = { text: 'A fuller weather explanation. '.repeat(65), provider: 'openai', version: BRIEFING_VERSION,
+    generatedAt: fixtureTime, windowStart: fixtureTime, windowEnd: fixtureTime + 86400000, expiresAt: fixtureTime + BRIEFING_TTL };
+  expect(briefing.text.length).toBeGreaterThan(1600);
+  expect(isWeatherBriefing(briefing)).toBe(true);
+  expect(isWeatherBriefing({ ...briefing, text: 'x'.repeat(MAX_BRIEFING_TEXT_LENGTH + 1) })).toBe(false);
 });

@@ -152,3 +152,21 @@ test('offline OpenAI offers Apple only as an explicit switch when cached weather
   await expect(page.locator('.briefing-badge')).toHaveText('Apple Intelligence');
   expect(calls).toHaveLength(1);
 });
+
+test('long OpenAI explanations survive native storage and offline reload without clipping', async ({ page }) => {
+  const bridge = await installBridge(page);
+  await weather(page);
+  const text = 'A fuller weather explanation with a practical recommendation for outdoor plans. '.repeat(24) + '\n\nKeep an indoor option available if storms develop.';
+  await page.route('https://weather.example/api/weather-briefing', route => {
+    const now = Date.now();
+    return route.fulfill({ json: { text, provider: 'openai', generatedAt: now, windowStart: now, windowEnd: now + 86400000, expiresAt: now + 900000, version: BRIEFING_VERSION } });
+  });
+  await page.goto('/');
+  await expect(page.locator('.briefing-copy')).toHaveText(text);
+  await expect.poll(() => bridge.store.has(`${storageKey}:briefings`)).toBe(true);
+  await page.addInitScript(() => Object.defineProperty(navigator, 'onLine', { get: () => false }));
+  await page.reload();
+  const copy = page.locator('.briefing-copy');
+  await expect(copy).toHaveText(text);
+  expect(await copy.evaluate(element => ({ whitespace: getComputedStyle(element).whiteSpace, fits: element.scrollHeight <= element.clientHeight + 1 }))).toEqual({ whitespace: 'pre-line', fits: true });
+});

@@ -57,3 +57,19 @@ test('shows a saved briefing offline and never routes API navigation to the app 
   });
   expect(shellReturned).toBe(false);
 });
+
+test('shows a full longer briefing without clipping and retains paragraphs offline', async ({ page, context }) => {
+  const text = 'A detailed outlook with a useful recommendation for outdoor plans. '.repeat(27) + '\n\nKeep an indoor option available if storms develop.';
+  await page.route('**/api/weather-briefing', route => {
+    const now = Date.now();
+    return route.fulfill({ json: { text, provider: 'openai', generatedAt: now, windowStart: now, windowEnd: now + 86400000, expiresAt: now + BRIEFING_TTL, version: BRIEFING_VERSION } });
+  });
+  await page.goto('/');
+  const copy = page.locator('.briefing-copy');
+  await expect(copy).toHaveText(text);
+  expect(await copy.evaluate(element => ({ whitespace: getComputedStyle(element).whiteSpace, fits: element.scrollHeight <= element.clientHeight + 1 }))).toEqual({ whitespace: 'pre-line', fits: true });
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await context.setOffline(true);
+  await expect(page.getByRole('region', { name: 'Weather briefing' })).toContainText('Saved briefing');
+  await expect(copy).toHaveText(text);
+});

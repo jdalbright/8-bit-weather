@@ -579,7 +579,7 @@
   .briefing-disclosure-content { min-height: 0; overflow: hidden; }
   .briefing-body { padding-top: 10px; }
   .motion-reduced .briefing-disclosure, .motion-reduced .briefing-toggle > .pixel-icon { transition: none; }
-  .briefing-copy { font-size: 12px; line-height: 1.85; margin: 0; overflow-wrap: anywhere; }
+  .briefing-copy { font-size: 12px; line-height: 1.85; margin: 0; overflow-wrap: anywhere; white-space: pre-line; }
   .briefing-meta { color: var(--muted); font-size: 10px; line-height: 1.6; margin: 12px 0 0; }
   .briefing-placeholder { color: var(--muted); }
   .briefing-retry { min-height: 44px; margin-top: 6px; }

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { MAX_BRIEFING_TEXT_LENGTH } from '../src/lib/briefing-prompt';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { handleBriefing } from './briefing';
 import { briefingForecast, BRIEFING_TTL } from '../src/lib/briefing';
@@ -27,7 +29,7 @@ it('calls only the server-selected model with bounded instructions and no person
   expect(response.status).toBe(200);
   expect(await response.json()).toMatchObject({ text: summary, windowStart: fixtureTime, windowEnd: fixtureTime + 86400000, expiresAt: fixtureTime + BRIEFING_TTL });
   expect(construct).toHaveBeenCalledWith({ apiKey: 'test-server-only-key', timeout: 12000, maxRetries: 0 });
-  expect(create.mock.calls[0][0]).toMatchObject({ model: 'gpt-5.6-luna', reasoning: { effort: 'none' }, store: false, max_output_tokens: 250 });
+  expect(create.mock.calls[0][0]).toMatchObject({ model: 'gpt-5.6-luna', reasoning: { effort: 'none' }, store: false, max_output_tokens: 1000 });
   expect(create.mock.calls[0][0].input).not.toMatch(/Private place|latitude|ignore all weather/);
   expect(JSON.parse(create.mock.calls[0][0].input)).toEqual(openAIBriefingFacts(payload(), fixtureTime));
   expect(console.info).toHaveBeenCalledWith('weather_briefing', expect.objectContaining({ promptRevision: OPENAI_BRIEFING_REVISION }));
@@ -87,20 +89,26 @@ it.each(['/api/weather-briefing/', '/api/weather-briefing.ts', '/api//weather-br
 it.each([{ status: 'incomplete', output_text: 'A cut off sentence' }, { status: 'completed', output_text: '' }])('withholds unusable model output', async result => {
   create.mockResolvedValue(result); expect((await handleBriefing(request())).status).toBe(502);
 });
-it.each([
-  'Warm throughout the day.',
-  'Warm today. Cooler tonight. Rain tomorrow. Bring a coat.',
-  `${'warm '.repeat(73)}today. Cooler tomorrow.`,
-])('withholds output outside the sentence or word limits: %s', async output_text => {
+it('preserves a complete longer briefing, including paragraph breaks and recommendations', async () => {
+  const replay = JSON.parse(readFileSync(new URL('../docs/evidence/openai-briefing/2026-09-11-xweather-rejection.json', import.meta.url), 'utf8'));
+  vi.setSystemTime(replay.now);
+  const output_text = `${replay.samples[0].text}\n\nPlan outdoor activities around the forecast storms, and keep an indoor option available if conditions deteriorate. The incomplete precipitation data leaves some uncertainty about the quieter gaps between showers, so check the forecast again before heading out.`;
+  expect(output_text.split(/\s+/).length).toBeGreaterThan(75);
   create.mockResolvedValue({ status: 'completed', output_text });
-  expect((await handleBriefing(request())).status).toBe(502);
+  const response = await handleBriefing(request(replay.forecast));
+  expect(response.status).toBe(200);
+  expect(await response.json()).toMatchObject({ text: output_text });
   expect(create).toHaveBeenCalledTimes(1);
+});
+it('rejects abnormally oversized output without truncating it', async () => {
+  create.mockResolvedValue({ status: 'completed', output_text: 'x'.repeat(MAX_BRIEFING_TEXT_LENGTH + 1) });
+  expect((await handleBriefing(request())).status).toBe(502);
 });
 it.each([
   'Warm through 3 p.m. with temperatures near 75°. Cooler tonight, with a 20% chance of rain.',
   'Warm today. Cooler tonight. Bring a light layer.',
   `${'warm '.repeat(72)}today. Cooler tomorrow.`,
-])('accepts concise summaries within the limits: %s', async output_text => {
+])('also accepts concise summaries: %s', async output_text => {
   create.mockResolvedValue({ status: 'completed', output_text });
   expect((await handleBriefing(request())).status).toBe(200);
 });

@@ -20,7 +20,7 @@ describe.skipIf(process.env.RUN_LIVE_BRIEFING !== 'true')('live OpenAI briefing 
     expect(response.status, JSON.stringify(result)).toBe(200); expect(isWeatherBriefing(result)).toBe(true);
     if (isWeatherBriefing(result)) {
       await writeFile(`/tmp/8bit-weather-briefing-${name}.json`, JSON.stringify({ ...result, telemetry: telemetry.mock.calls.find(call => call[0] === 'weather_briefing')?.[1] }, null, 2));
-      expect(result.text.split(/\s+/).length).toBeLessThanOrEqual(75);
+      expect(result.text.length).toBeLessThanOrEqual(6000);
       console.info(`Live ${name} sample: ${result.text}`);
     }
   }, 20000);

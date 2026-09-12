@@ -4,13 +4,16 @@ The [September 11 live comparison](evidence/openai-briefing/2026-09-11-review.md
 completed all 16 calls. The candidate was preferred in six of eight pairs and used fewer
 tokens, but failed the full quality gate because its thunderstorm advice offered an
 umbrella as an alternative to safe shelter. Low-chance wording also remained repetitive.
-The failed evaluation is preserved. Revision `3:focused-chances-safe-advice` addresses
-these findings locally; it has not been deployed or evaluated with new paid calls.
+The failed evaluation is preserved. Revision `4:fuller-explanations-coverage` retains
+the storm-advice checks and removes rigid OpenAI length constraints.
 
 The prompt uses server-calculated chronological temperature points,
 daypart precipitation peaks, condition transitions, and separate measurement coverage.
-It targets 40–60 words in 2–3 sentences, allows shorter quiet-weather summaries, and
-retains the 75-word hard limit. Advice is optional and must follow from a forecast event.
+It suggests 80–160 words as a guide, allows longer explanations and useful recommendations,
+and imposes no fixed sentence count or hard word limit. The provider has a 1,000-token
+output budget and the server/client reject abnormally oversized output above 6,000
+characters. Neither layer truncates the text. Paragraph breaks are preserved. Apple
+Intelligence retains its separate concise prompt and validation.
 
 For precipitation peaks of 20% or less, the model receives the peak once and empty
 `peakPeriods`/`periods` lists. Missing coverage retains a separate `missingPeriods` list;
@@ -31,8 +34,15 @@ Offline regressions replay all eight saved candidate responses. The recorded sto
 advice is now rejected, while the other seven remain valid. Tests also cover the 20/21%
 boundary, missing-data timing, storm codes with low precipitation chances, safe optional
 advice, ordinary showers, and storms outside the 24-hour window. The original live
-comparison remains failed; a new authorized evaluation is needed to assess revision 3's
-actual generated wording.
+comparison remains failed; it is historical evidence, not an evaluation of revision 4.
+The saved Xweather rejection additionally replays a valid four-sentence explanation
+with storm advice and a comma-linked missing-precipitation qualifier. Both now pass
+without removing any prose or issuing another model request.
+
+Two bounded live requests with revision 4 replayed that partial Xweather forecast.
+Both completed and passed validation with recommendations and paragraph breaks intact;
+[their outputs are saved](evidence/openai-briefing/2026-09-11-fuller-briefings.json).
+This verifies the observed failure case, not every possible model response.
 
 The OpenAI fact builder is separate from Apple Intelligence. The API wire format and
 `BRIEFING_VERSION` remain unchanged for existing native clients. Previously cached

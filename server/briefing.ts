@@ -104,7 +104,7 @@ async function generateBriefing(request: Request): Promise<Response> {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 12000, maxRetries: 0 });
     const result = await client.responses.create({
       model, instructions: briefingInstructions, input: JSON.stringify(openAIBriefingFacts(forecast, now)),
-      reasoning: { effort: 'none' }, max_output_tokens: 250, store: false,
+      reasoning: { effort: 'none' }, max_output_tokens: 1000, store: false,
     }, { signal: request.signal });
     const text = result.output_text?.trim();
     if (result.status !== 'completed' || !text || !validOpenAISummary(text, forecast, now)) {

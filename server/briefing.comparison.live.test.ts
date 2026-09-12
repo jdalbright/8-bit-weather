@@ -30,7 +30,7 @@ describe.skipIf(process.env.RUN_LIVE_BRIEFING_COMPARISON !== 'true')('OpenAI bri
         requests++;
         try {
           const response = await client.responses.create({ model, instructions, input: JSON.stringify(input),
-            reasoning: { effort: 'none' }, max_output_tokens: 250, store: false });
+            reasoning: { effort: 'none' }, max_output_tokens: candidate ? 1000 : 250, store: false });
           const text = response.output_text?.trim() ?? '';
           outputs[variant] = {
             status: response.status, text, durationMs: Date.now() - started,

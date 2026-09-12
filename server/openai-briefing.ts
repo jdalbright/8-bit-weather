@@ -1,8 +1,8 @@
 import { briefingFacts, HOUR, type BriefingForecast } from '../src/lib/briefing.js';
-import { THUNDERSTORM_TAKEAWAY, validSummary } from '../src/lib/briefing-prompt.js';
+import { THUNDERSTORM_TAKEAWAY, MAX_BRIEFING_TEXT_LENGTH } from '../src/lib/briefing-prompt.js';
 import { localDate, localTime, temperature, weatherInfo } from '../src/lib/weather.js';
 
-export const OPENAI_BRIEFING_REVISION = '3:focused-chances-safe-advice';
+export const OPENAI_BRIEFING_REVISION = '4:fuller-explanations-coverage';
 
 /** Server-only interpretation of the existing wire format. Probabilities still
  * describe individual intervals, never a whole-day or whole-daypart probability. */
@@ -84,7 +84,7 @@ export function openAIBriefingFacts(forecast: BriefingForecast, now: number) {
 /** Bounded checks for explicit numeric and coverage claims, not a semantic proof.
  * Timing, spelled-out numbers and practical advice also need model evaluation. */
 export function validOpenAISummary(text: string, forecast: BriefingForecast, now: number): boolean {
-  if (!validSummary(text)) return false;
+  if (!text.trim() || text.length > MAX_BRIEFING_TEXT_LENGTH) return false;
   const hasThunderstorms = forecast.hourly.some(hour => hour.time < now / 1000 + 24 * HOUR && hour.time + HOUR > now / 1000
     && weatherInfo(hour.code).kind === 'storm');
   // Rain gear is never an allowed takeaway in a briefing containing thunderstorm
@@ -108,7 +108,9 @@ export function validOpenAISummary(text: string, forecast: BriefingForecast, now
   // an unsupported claim about rain, or vice versa.
   const missingClaim = (topic: string, otherTopic: string) => {
     const missing = '(?:missing|unknown|incomplete|unavailable|limited|partial)';
-    const sameTopic = `(?:(?!\\b(?:${otherTopic})\\b)[^.!?;,]){0,45}`;
+    // A comma can connect "precipitation data ..., though the data is incomplete".
+    // Another measurement or sentence boundary still ends that topic's scope.
+    const sameTopic = `(?:(?!\\b(?:${otherTopic})\\b)[^.!?;]){0,45}`;
     return new RegExp(`(?:${topic})${sameTopic}\\b${missing}\\b|\\b${missing}(?:\\s+(?:data|readings|information|coverage|for|on|about|the)){0,4}\\s+(?:${topic})|\\bno (?:available )?(?:${topic})(?: data| readings?| information)?`, 'i');
   };
   const temperatureMissingClaim = missingClaim('temperatures?', 'rain|precipitation');

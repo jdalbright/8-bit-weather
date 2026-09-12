@@ -1,3 +1,4 @@
+import { MAX_BRIEFING_TEXT_LENGTH } from './briefing-prompt.js';
 import type { HourWeather, Units, WeatherSnapshot } from '../types';
 import { localTime, STALE_AFTER, temperature, weatherInfo } from './weather.js';
 
@@ -90,7 +91,7 @@ export function briefingFacts(forecast: BriefingForecast, now: number) {
 export function isWeatherBriefing(value: unknown): value is WeatherBriefing {
   if (!value || typeof value !== 'object') return false;
   const b = value as WeatherBriefing;
-  return (b.provider === undefined || b.provider === 'apple' || b.provider === 'openai') && b.version === BRIEFING_VERSION && typeof b.text === 'string' && b.text.trim().length > 0 && b.text.length <= 1600
+  return (b.provider === undefined || b.provider === 'apple' || b.provider === 'openai') && b.version === BRIEFING_VERSION && typeof b.text === 'string' && b.text.trim().length > 0 && b.text.length <= MAX_BRIEFING_TEXT_LENGTH
     && (b.appleModelOSMajor === undefined || Number.isInteger(b.appleModelOSMajor) && b.appleModelOSMajor >= 1)
     && [b.generatedAt, b.windowStart, b.windowEnd, b.expiresAt].every(n => typeof n === 'number' && Number.isFinite(n))
     && b.windowEnd - b.windowStart === 24 * HOUR * 1000 && b.generatedAt >= b.windowStart
