@@ -1,0 +1,49 @@
+{
+  "name": "Weather and briefing rate limit",
+  "description": "Share the free Hobby rate limit: 10 weather GET or briefing POST requests per minute per IP.",
+  "active": true,
+  "conditionGroup": [
+    {
+      "conditions": [
+        {
+          "type": "path",
+          "op": "eq",
+          "value": "/api/weather"
+        },
+        {
+          "type": "method",
+          "op": "eq",
+          "value": "GET"
+        }
+      ]
+    },
+    {
+      "conditions": [
+        {
+          "type": "path",
+          "op": "eq",
+          "value": "/api/weather-briefing"
+        },
+        {
+          "type": "method",
+          "op": "eq",
+          "value": "POST"
+        }
+      ]
+    }
+  ],
+  "action": {
+    "mitigate": {
+      "action": "rate_limit",
+      "rateLimit": {
+        "keys": [
+          "ip"
+        ],
+        "algo": "fixed_window",
+        "limit": 10,
+        "window": 60,
+        "action": "rate_limit"
+      }
+    }
+  }
+}

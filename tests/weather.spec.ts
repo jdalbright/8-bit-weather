@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { asheville, forecastFixture, tokyo } from '../src/test/fixtures';
@@ -11,7 +12,7 @@ async function seed(page: Page) {
 }
 async function mockForecast(page: Page, code = 1, isDay = 1) {
   // Explicit provider day/night fixtures; solar-clock behavior has its own fixed-time suite.
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ headers, body: JSON.stringify({ ...forecastFixture(Date.now(), code, isDay), daily: { ...forecastFixture(Date.now()).daily, sunrise:[], sunset:[] } }) }));
+  await page.route('**/api/weather?**', route => route.fulfill({ headers, body: JSON.stringify(apiFixture({ ...forecastFixture(Date.now(), code, isDay), daily: { ...forecastFixture(Date.now()).daily, sunrise:[], sunset:[] } }, route.request().url())) }));
 }
 async function mockCities(page: Page) {
   await page.route('https://geocoding-api.open-meteo.com/**', route => {
@@ -33,16 +34,16 @@ test('starts with location selection and never invents a forecast', async ({ pag
 
 test('searches, saves, switches places, changes units, and persists choices', async ({ page }) => {
   let requests = 0;
-  await mockCities(page); await page.route('https://api.open-meteo.com/**', route => { requests++; return route.fulfill({ headers, body: JSON.stringify(forecastFixture(Date.now())) }); });
+  await mockCities(page); await page.route('**/api/weather?**', route => { requests++; return route.fulfill({ headers, body: JSON.stringify(apiFixture(forecastFixture(Date.now()), route.request().url())) }); });
   await page.goto('/'); await page.getByRole('button', { name: 'Search for a city' }).click();
   await page.getByRole('searchbox', { name: 'Find a city' }).fill('Asheville');
   await page.getByRole('button', { name: 'Asheville North Carolina, United States', exact: true }).click();
-  await loaded(page); expect(requests).toBe(1); await expect(page.locator('.day-row')).toHaveCount(7); await expect(page.locator('.hour')).toHaveCount(24);
+  await loaded(page); expect(requests).toBe(4); await expect(page.locator('.day-row')).toHaveCount(7); await expect(page.locator('.hour')).toHaveCount(24);
   await expect(page.getByRole('heading', {name:'72° Fahrenheit'})).toBeVisible();
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await page.getByRole('button', { name: '°C / km/h', exact: true }).click();
   await page.getByRole('button', { name: 'Today', exact: true }).click();
-  await expect(page.getByRole('heading', {name:'22° Celsius'})).toBeVisible(); expect(requests).toBe(1);
+  await expect(page.getByRole('heading', {name:'22° Celsius'})).toBeVisible(); expect(requests).toBe(4);
   await page.getByRole('button', { name: 'Places', exact: true }).click();
   await expect(page.getByRole('button', {name:'Remove Asheville from saved places'})).toBeVisible();
   await page.getByRole('searchbox', {name:'Find a city'}).fill('Tokyo');
@@ -72,12 +73,12 @@ test('location denial and timeout keep manual search available', async ({ page }
 
 test('retains cached weather on refresh failure, shows offline state, and reconnects', async ({ page, context }) => {
   await seed(page); await mockForecast(page); await page.goto('/'); await loaded(page);
-  await page.unroute('https://api.open-meteo.com/**');
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({status:503,headers,body:'unavailable'}));
+  await page.unroute('**/api/weather?**');
+  await page.route('**/api/weather?**', route => route.fulfill({status:503,headers,body:'unavailable'}));
   await page.getByRole('button', {name:'Refresh',exact:true}).click();
-  await expect(page.getByRole('alert')).toContainText('taking a break'); await expect(page.getByRole('heading', {name:'72° Fahrenheit'})).toBeVisible();
+  await expect(page.getByRole('alert')).toContainText('temporarily unavailable'); await expect(page.getByRole('heading', {name:'72° Fahrenheit'})).toBeVisible();
   await context.setOffline(true); await expect(page.getByText('You’re offline. Showing your saved forecast.', {exact:true})).toBeVisible();
-  await page.unroute('https://api.open-meteo.com/**'); await mockForecast(page); await context.setOffline(false);
+  await page.unroute('**/api/weather?**'); await mockForecast(page); await context.setOffline(false);
   await page.getByRole('button', {name:'Refresh',exact:true}).click(); await expect(page.getByRole('alert')).toHaveCount(0);
 });
 

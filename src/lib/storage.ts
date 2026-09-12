@@ -1,6 +1,7 @@
 import type { Place, Preferences, WeatherSnapshot } from '../types';
 import { readStoredValue, writeStoredValue, removeStoredValue } from './persistence';
 import { cacheMatches } from './weather';
+import { clearWeatherParts } from './api';
 import { clearBriefingCache } from './briefing-client';
 
 export const STORAGE_KEY = '8bit-weather:v1';
@@ -31,23 +32,29 @@ export function loadState(): StoredState {
   return { preferences: prefs, places: Array.isArray(state.places) ? state.places.filter(isPlace) : [], selected: isPlace(state.selected) ? state.selected : null };
 }
 export function saveState(state: StoredState): boolean { return write(STORAGE_KEY, state); }
-function validSnapshot(value: unknown): value is WeatherSnapshot {
+export function validSnapshot(value: unknown): value is WeatherSnapshot {
   if (!value || typeof value !== 'object') return false;
   const s = value as WeatherSnapshot;
   if (s.version !== 1 || typeof s.placeId !== 'string' || !Number.isFinite(s.fetchedAt) || !Number.isFinite(s.latitude) || !Number.isFinite(s.longitude)
     || typeof s.timezone !== 'string' || !s.current || !Number.isFinite(s.current.time) || !Array.isArray(s.hourly) || !Array.isArray(s.daily)) return false;
+  if (s.provider !== undefined && !['xweather', 'open-meteo'].includes(s.provider)) return false;
+  if (s.provider === 'xweather' && (!s.sectionTimes || ![s.sectionTimes.current,s.sectionTimes.forecast,s.refreshAfter].every(Number.isFinite))) return false;
+  if (s.current.conditionLabel !== undefined && (typeof s.current.conditionLabel !== 'string' || s.current.conditionLabel.length > 120)) return false;
   try { new Intl.DateTimeFormat('en', { timeZone: s.timezone }); } catch { return false; }
   const measurement = (n: unknown) => n === null || typeof n === 'number' && Number.isFinite(n);
+  const label = (s: unknown) => s === undefined || typeof s === 'string' && s.length <= 120;
   const uv = (n: unknown) => n === undefined || n === null || typeof n === 'number' && Number.isFinite(n) && n >= 0;
   if (!uv(s.current.uv) || !s.hourly.every(h => h && uv(h.uv)) || !s.daily.every(d => d && uv(d.uvMax))) return false;
+  if (![s.current.rain, s.current.showers, s.current.cloudCover, s.current.precipitationRate].every(uv)
+    || (s.current.cloudCover != null && s.current.cloudCover > 100)) return false;
   if (![s.current.temperature, s.current.feelsLike, s.current.humidity, s.current.wind, s.current.code].every(measurement) || typeof s.current.isDay !== 'boolean') return false;
-  if (s.minutely !== undefined && (!Array.isArray(s.minutely) || !s.minutely.every(r => r && Number.isFinite(r.time) && measurement(r.amount) && (r.amount === null || r.amount >= 0)))) return false;
-  return s.hourly.every(h => h && Number.isFinite(h.time) && [h.temperature, h.precipitation, h.code].every(measurement) && uv(h.wind) && typeof h.isDay === 'boolean')
-    && s.daily.every(d => d && Number.isFinite(d.time) && typeof d.date === 'string' && [d.high, d.low, d.precipitation, d.code, d.sunrise, d.sunset].every(measurement));
+  if (s.minutely !== undefined && (!Array.isArray(s.minutely) || !s.minutely.every(r => r && Number.isFinite(r.time) && (r.interval === undefined || r.interval === 60 || r.interval === 900) && measurement(r.amount) && (r.amount === null || r.amount >= 0)))) return false;
+  return s.hourly.every(h => h && label(h.conditionLabel) && Number.isFinite(h.time) && [h.temperature, h.precipitation, h.code].every(measurement) && uv(h.wind) && typeof h.isDay === 'boolean')
+    && s.daily.every(d => d && label(d.conditionLabel) && Number.isFinite(d.time) && typeof d.date === 'string' && [d.high, d.low, d.precipitation, d.code, d.sunrise, d.sunset].every(measurement));
 }
 function readCache(): WeatherSnapshot[] { const data = read(`${STORAGE_KEY}:forecasts`); return Array.isArray(data) ? data.filter(validSnapshot) : []; }
 export function cachedWeather(place: Place): WeatherSnapshot | null { return readCache().find(s => cacheMatches(s, place)) ?? null; }
 export function cacheWeather(snapshot: WeatherSnapshot): void {
   write(`${STORAGE_KEY}:forecasts`, [snapshot, ...readCache().filter(s => s.placeId !== snapshot.placeId)].slice(0, 12));
 }
-export function clearSavedData(): void { clearBriefingCache(); try { removeStoredValue(STORAGE_KEY); removeStoredValue(`${STORAGE_KEY}:forecasts`); } catch { /* The app remains usable without persistent storage. */ } }
+export function clearSavedData(): void { clearWeatherParts(); clearBriefingCache(); try { removeStoredValue(STORAGE_KEY); removeStoredValue(`${STORAGE_KEY}:forecasts`); } catch { /* The app remains usable without persistent storage. */ } }

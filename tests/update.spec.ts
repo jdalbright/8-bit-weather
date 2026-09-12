@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { test, expect } from '@playwright/test';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -25,7 +26,7 @@ test('a new service worker prompts for an update and retains saved choices', asy
   if (!address || typeof address === 'string') throw new Error('Test server did not start');
   try {
     await page.addInitScript(place => { if (!localStorage.getItem('8bit-weather:v1')) localStorage.setItem('8bit-weather:v1', JSON.stringify({preferences:{units:'imperial'},places:[place],selected:place})); },asheville);
-    await page.route('https://api.open-meteo.com/**', route => route.fulfill({contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(forecastFixture(Date.now()))}));
+    await page.route('**/api/weather?**', route => route.fulfill({contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(apiFixture(forecastFixture(Date.now()), route.request().url()))}));
     await page.goto(`http://127.0.0.1:${address.port}/`);
     await expect(page.getByRole('heading',{name:'72° Fahrenheit'})).toBeVisible();
     await page.getByRole('button',{name:'Settings',exact:true}).click();

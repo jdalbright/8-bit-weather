@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import { tokyo, forecastFixture } from '../src/test/fixtures';
 
@@ -6,8 +7,8 @@ for (const [name, code, isDay] of [['day', 0, 1], ['overcast', 3, 1], ['night', 
     await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({
       selected: place, places: [place], preferences: { units: 'imperial', reducedMotion: false },
     })), tokyo);
-    await page.route('https://api.open-meteo.com/**', route => route.fulfill({
-      contentType: 'application/json', body: JSON.stringify({ ...forecastFixture(Date.now(), code, isDay), daily: { ...forecastFixture(Date.now()).daily, sunrise:[], sunset:[] } }),
+    await page.route('**/api/weather?**', route => route.fulfill({
+      contentType: 'application/json', body: JSON.stringify(apiFixture({ ...forecastFixture(Date.now(), code, isDay), daily: { ...forecastFixture(Date.now()).daily, sunrise:[], sunset:[] } }, route.request().url())),
     }));
     await page.goto('/');
     await expect(page.getByRole('heading', { name: '7-day forecast' })).toBeVisible();

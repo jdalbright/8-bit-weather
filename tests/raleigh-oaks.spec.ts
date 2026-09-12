@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import sharp from 'sharp';
@@ -12,7 +13,7 @@ async function open(page: Page, code = 0, night = false) {
     const place = { id: 'raleigh', name: 'Raleigh', region: 'North Carolina', country: 'United States', latitude: 35.7796, longitude: -78.6382, source: 'search' };
     localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected: place, places: [place], preferences: { units: 'imperial', reducedMotion: false } }));
   });
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture(now, code, night ? 0 : 1) }));
+  await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecastFixture(now, code, night ? 0 : 1), route.request().url()) }));
   await page.route('**/api/weather-briefing', route => route.fulfill({ status: 503, json: { code: 'unavailable' } }));
   await page.goto('/');
   await expect(page.locator('.scenery')).toHaveAttribute('data-landscape', 'raleigh');

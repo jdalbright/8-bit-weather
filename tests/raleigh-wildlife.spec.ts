@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import sharp from 'sharp';
@@ -15,7 +16,7 @@ async function openRaleigh(page: Page, { code = 0, night = false, wind = 8, plac
   }, place);
   const forecast = forecastFixture(now, code, night ? 0 : 1);
   forecast.current.wind_speed_10m = wind;
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecast }));
+  await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecast, route.request().url()) }));
   await page.route('**/api/weather-briefing', route => route.fulfill({ status: 503, json: { code: 'unavailable' } }));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: '7-day forecast' })).toBeVisible();
@@ -157,7 +158,7 @@ test('Raleigh wildlife and notices are precached and load after an offline reloa
   await openRaleigh(page);
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await expect.poll(() => page.evaluate(async urls => (await Promise.all(urls.map(url => caches.match(url, { ignoreSearch: true })))).every(Boolean), assets)).toBe(true);
-  await page.unroute('https://api.open-meteo.com/**');
+  await page.unroute('**/api/weather?**');
   await context.setOffline(true); await page.reload();
   await expect(page.locator('.scenery')).toHaveAttribute('data-landscape', 'raleigh');
   expect(await page.evaluate(async urls => (await Promise.all(urls.map(async url => (await fetch(url)).ok))).every(Boolean), assets)).toBe(true);

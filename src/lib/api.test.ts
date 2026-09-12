@@ -1,20 +1,18 @@
-import { describe, expect, it, vi } from 'vitest';
-import { fetchWeather, locate, searchPlaces, WeatherRequestError } from './api';
-import { asheville, forecastFixture } from '../test/fixtures';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { clearWeatherParts, fetchWeather, locate, searchPlaces, WeatherRequestError } from './api';
+import { apiFixture, asheville, forecastFixture } from '../test/fixtures';
 describe('keyless service access and location', () => {
-  it('uses the public forecast API and normalizes real response fields', async () => {
-    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify(forecastFixture()))); vi.stubGlobal('fetch', fetcher);
+  beforeEach(() => clearWeatherParts());
+  it('uses normalized server sections without exposing credentials', async () => {
+    const fetcher = vi.fn(async (url: string) => Response.json(apiFixture(forecastFixture(Date.now()), new URL(url, 'https://example.com').href)));
+    vi.stubGlobal('fetch', fetcher);
     const result = await fetchWeather(asheville, new AbortController().signal);
-    const url = new URL(fetcher.mock.calls[0][0]); expect(url.hostname).toBe('api.open-meteo.com'); expect(url.searchParams.has('apikey')).toBe(false); expect(result.hourly).toHaveLength(48); expect(result.daily).toHaveLength(7);
-    expect(url.searchParams.get('minutely_15')).toBe('rain,showers');
-    expect(url.searchParams.get('forecast_minutely_15')).toBe('16');
-    expect(url.searchParams.get('precipitation_unit')).toBe('mm');
-    expect(result.minutely).toHaveLength(16);
-    expect(url.searchParams.get('current')).toContain('uv_index');
-    expect(url.searchParams.get('hourly')).toContain('uv_index');
-    expect(url.searchParams.get('daily')).toContain('uv_index_max');
-    expect(url.searchParams.get('past_hours')).toBe('24');
-    expect(result.current.uv).toBe(4.1);
+    expect(result.provider).toBe('xweather'); expect(result.daily).toHaveLength(7); expect(result.hourly).toHaveLength(48);
+    expect(result.minutely).toHaveLength(60);
+    expect(fetcher).toHaveBeenCalledTimes(4);
+    expect(fetcher.mock.calls.every(([url]) => url.startsWith('/api/weather?') && !url.includes('secret'))).toBe(true);
+    await fetchWeather(asheville, new AbortController().signal);
+    expect(fetcher).toHaveBeenCalledTimes(4);
   });
   it('rejects rate limits with the provider’s requested cooldown', async () => { vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 429, headers: { 'Retry-After': '120' } }))); await expect(fetchWeather(asheville, new AbortController().signal)).rejects.toMatchObject({ name: 'WeatherRequestError', retryAfterMs: 120000 }); });
   it('does not turn canceled searches into user-facing errors', async () => {

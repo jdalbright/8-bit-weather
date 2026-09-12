@@ -1,3 +1,4 @@
+import { apiFixture } from '../src/test/fixtures';
 import { expect, test, type Page } from '@playwright/test';
 import { installBridge, savedState, storageKey } from './bridge';
 import { forecastFixture } from '../src/test/fixtures';
@@ -6,7 +7,7 @@ import { BRIEFING_VERSION } from '../src/lib/briefing';
 const installApple = (page: Page) => installBridge(page, { [storageKey]: JSON.stringify({ ...savedState, preferences: { ...savedState.preferences, briefingProvider: 'apple' } }) });
 
 async function weather(page: Page) {
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture(Date.now()) }));
+  await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecastFixture(Date.now()), route.request().url()) }));
 }
 async function cloud(page: Page, status = 200) {
   const calls: string[] = [];
@@ -75,7 +76,7 @@ test('fresh cached weather can generate locally offline without a saved briefing
   await expect(page.locator('.briefing-badge')).toHaveText('Apple Intelligence');
   bridge.store.delete(`${storageKey}:briefings`);
   await page.addInitScript(() => { localStorage.clear(); Object.defineProperty(navigator, 'onLine', { get: () => false }); });
-  await page.route('https://api.open-meteo.com/**', route => route.abort('internetdisconnected'));
+  await page.route('**/api/weather?**', route => route.abort('internetdisconnected'));
   await page.reload(); await expect(page.locator('.briefing-badge')).toHaveText('Apple Intelligence');
   expect(bridge.calls.filter(c => c.plugin === 'AppleBriefing' && c.method === 'generate')).toHaveLength(2);
   expect(calls).toHaveLength(0);

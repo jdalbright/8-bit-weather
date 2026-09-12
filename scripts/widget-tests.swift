@@ -31,8 +31,15 @@ struct WidgetTests {
         defer { try? FileManager.default.removeItem(at: directory) }
         let now = Date(timeIntervalSince1970: 1_789_060_000)
         let place = WidgetPlace(id: "gps:35.77,-78.63&name=Raleigh + town/é", name: "Raleigh", latitude: 35.7796, longitude: -78.6382)
-        let raw = Data(#"{"timezone":"America/New_York","utc_offset_seconds":-14400,"current":{"time":1789060000,"temperature_2m":24,"weather_code":2,"is_day":1},"daily":{"time":[1789012800,1789099200],"temperature_2m_max":[27,28],"temperature_2m_min":[18,19]}}"#.utf8)
+        let raw = Data(#"{"provider":"xweather","latitude":35.7796,"longitude":-78.6382,"timezone":"America/New_York","updatedAt":1789060000000,"current":{"time":1789060000,"temperature":24,"code":2,"isDay":true},"daily":[{"date":"2026-09-10","high":27,"low":18},{"date":"2026-09-11","high":28,"low":19}]}"#.utf8)
         let forecast = try WidgetWeatherClient.parse(raw, for: place, now: now)
+        for (code, label) in [(3,"Overcast"),(61,"Light rain possible"),(100,"Wintry mix possible"),(101,"Sleet possible")] {
+            let modified = String(data: raw, encoding: .utf8)!
+                .replacingOccurrences(of: #""code":2,"#, with: "\"code\":\(code),\"conditionLabel\":\"\(label)\",")
+            let checked = try WidgetWeatherClient.parse(Data(modified.utf8), for: place, now: now)
+            check(checked.current.code == code && checked.current.conditionLabel == label, "Widget preserves server interpretation")
+        }
+
         var payload = WidgetPayload(version: 1, place: place, units: "imperial", weather: forecast, landscape: "raleigh", updatedAt: now.timeIntervalSince1970 * 1000)
         check(forecast.current.temperature == 24, "Provider storage remains Celsius")
         check(payload.temperature(24) == "75°", "Convert canonical temperature to Fahrenheit")
@@ -63,7 +70,7 @@ struct WidgetTests {
         check(corrupt.isStale(at: now), "Future observation does not appear current")
         check(payload.artworkName == "raleigh-day", "Regional daytime artwork")
         payload.weather?.current.code = 61
-        check(payload.artworkName == "raleigh-overcast" && payload.condition == "Light rain", "WMO rain label and artwork")
+        check(payload.artworkName == "raleigh-overcast" && payload.condition == "Light rain possible", "WMO rain label and artwork")
         payload.weather?.current.isDay = false
         check(payload.artworkName == "raleigh-night", "Night overrides precipitation artwork")
         payload.weather = forecast
@@ -84,8 +91,8 @@ struct WidgetTests {
         check(deepLink.scheme == "eightbitweather" && deepLink.host == "place", "Deep link routes to place")
         check(deepLink.queryItems?.first?.value == place.id, "Deep link safely round-trips reserved characters")
         let request = URLComponents(url: try WidgetWeatherClient.url(for: place), resolvingAgainstBaseURL: false)!
-        check(request.host == "api.open-meteo.com" && request.scheme == "https", "Refresh uses fixed HTTPS provider")
-        check(request.queryItems?.contains(where: { $0.name == "temperature_unit" && $0.value == "celsius" }) == true, "Refresh requests canonical Celsius")
+        check(request.host == "8-bit-weather.vercel.app" && request.scheme == "https", "Refresh uses fixed HTTPS provider")
+        check(request.queryItems?.contains(where: { $0.name == "section" && $0.value == "current" }) == true, "Refresh requests normalized current conditions")
         try WidgetWeatherStore.write(payloadData: JSONEncoder().encode(payload), directory: directory)
         check(WidgetWeatherStore.read(directory: directory)?.place == place, "Durable selection survives a new read")
         var refresh = forecast

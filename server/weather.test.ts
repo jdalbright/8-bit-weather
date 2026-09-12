@@ -1,0 +1,85 @@
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import { handleWeather, resetWeatherCache } from './weather';
+import { codedWeather, currentFrom, daysFrom, hoursFrom, rainFrom } from '../src/lib/xweather';
+const now = Date.parse('2026-09-11T14:00:00Z');
+function raw(overrides: Record<string,unknown> = {}) { return {success:true,response:[{profile:{tz:'America/New_York'},periods:[{timestamp:now/1000,tempC:24,feelslikeC:25,humidity:60,pop:0,windSpeedKPH:5,isDay:true,sky:90,cloudsCoded:'BK',weatherPrimaryCoded:':L:R',precipRateMM:0,precipMM:0,uvi:4,...overrides}]}]}; }
+function request(section='current',extra='') { return new Request(`https://example.com/api/weather?latitude=35.78&longitude=-78.64&section=${section}${extra}`); }
+beforeEach(()=> {resetWeatherCache();vi.useFakeTimers();vi.setSystemTime(now);vi.stubEnv('XWEATHER_CLIENT_ID','test-id');vi.stubEnv('XWEATHER_CLIENT_SECRET','test-secret');});
+afterEach(()=> {vi.useRealTimers();vi.unstubAllEnvs();vi.unstubAllGlobals();});
+describe('Xweather condition interpretation',()=> {
+ it('resolves explicit dry rain and preserves active or missing-rate rain',()=> {
+  expect(currentFrom(raw()).code).toBe(3);
+  expect(currentFrom(raw({precipRateMM:0.3})).code).toBe(61);
+  expect(currentFrom(raw({precipRateMM:null})).code).toBe(61);
+ });
+ it.each(['C','S','L','VC','IS','SC'])('does not animate %s precipitation without local evidence',coverage=> {
+  const result=currentFrom(raw({weatherPrimaryCoded:`${coverage}:L:R`,precipRateMM:null}));
+  expect(result.code).toBe(3);expect(result.conditionLabel).toContain(coverage==='VC'?'nearby':'possible');
+ });
+ it.each([[':L:S',71],[':H:ZR',67],[':L:ZL',56],['::T',95],['::WM',100],['::IP',101],['::UP',null]])('preserves %s', (code,wmo)=>expect(currentFrom(raw({weatherPrimaryCoded:code})).code).toBe(wmo));
+ it('retains day/night and maps unknown codes safely',()=> {
+  expect(currentFrom(raw({weatherPrimaryCoded:'::CL',isDay:false})).conditionLabel).toBe('Clear night');
+  expect(codedWeather('::invalid').code).toBeNull();
+ });
+ it('normalizes hourly POP intervals and solar days without shifting temperatures',()=> {
+  const data=raw({pop:70,sunrise:now/1000-3600,sunset:false,maxTempC:28,minTempC:17});
+  data.response[0].periods.push({...data.response[0].periods[0],timestamp:now/1000+3600,pop:10});
+  expect(hoursFrom(data)[1]).toMatchObject({time:now/1000+3600,precipitation:70,temperature:24});
+  expect(daysFrom(data)[0]).toMatchObject({date:'2026-09-11',sunset:null,high:28,low:17});
+ });
+ it('keeps one-minute amounts and excludes frozen precipitation',()=> {
+  expect(rainFrom(raw({precipMM:0.02}))[0]).toMatchObject({time:now/1000+60,amount:0.02,interval:60});
+  expect(rainFrom(raw({weatherPrimaryCoded:'::S',precipMM:0.2}))[0].amount).toBeNull();
+ });
+});
+describe('weather endpoint',()=> {
+ it('keeps credentials upstream and shares cached requests across callers',async()=> {
+  const fetcher=vi.fn(async(...args: unknown[])=> { void args; return Response.json(raw()); });vi.stubGlobal('fetch',fetcher);
+  const [a,b]=await Promise.all([handleWeather(request()),handleWeather(request())]);
+  expect(a.status).toBe(200);expect(b.status).toBe(200);expect(fetcher).toHaveBeenCalledTimes(1);
+  const body=await a.text();expect(body).not.toContain('test-secret');expect(body).not.toContain('client_id');
+  expect(new URL(String(fetcher.mock.calls[0][0])).searchParams.get('client_secret')).toBe('test-secret');
+  await handleWeather(request());expect(fetcher).toHaveBeenCalledTimes(1);
+  vi.setSystemTime(now+600001);await handleWeather(request());expect(fetcher).toHaveBeenCalledTimes(2);
+ });
+ it('reuses an hourly forecast while current conditions refresh',async()=> {
+  const fetcher=vi.fn(async(...args: unknown[])=> { void args; return Response.json(raw()); });vi.stubGlobal('fetch',fetcher);
+  await handleWeather(request('forecast'));expect(fetcher).toHaveBeenCalledTimes(2);
+  vi.setSystemTime(now+600001);await handleWeather(request('forecast'));expect(fetcher).toHaveBeenCalledTimes(2);
+  await handleWeather(request());expect(fetcher).toHaveBeenCalledTimes(3);
+ });
+ it('backs off account-wide after provider quota exhaustion',async()=> {
+  const fetcher=vi.fn(async()=>new Response('',{status:429,headers:{'Retry-After':'120'}}));vi.stubGlobal('fetch',fetcher);
+  const response=await handleWeather(request());expect(response.status).toBe(429);expect(response.headers.get('Retry-After')).toBe('120');
+  await handleWeather(request('rain'));expect(fetcher).toHaveBeenCalledTimes(1);
+ });
+ it('validates coordinates, origins, configuration and canonical routing',async()=> {
+  expect((await handleWeather(new Request('https://example.com/api/weather?latitude=999&longitude=0&section=current'))).status).toBe(400);
+  expect((await handleWeather(new Request(request(),{headers:{Origin:'https://evil.example'}}))).status).toBe(403);
+  expect((await handleWeather(new Request('https://example.com/api/weather.ts'))).status).toBe(404);
+  vi.stubEnv('XWEATHER_CLIENT_SECRET','');expect((await handleWeather(request())).status).toBe(503);
+ });
+ it('allows native origins and rejects incomplete upstream responses',async()=> {
+  vi.stubEnv('WEATHER_NATIVE_ORIGINS','capacitor://localhost');vi.stubGlobal('fetch',vi.fn(async()=>Response.json({success:true,response:[]})));
+  const response=await handleWeather(new Request(request(),{headers:{Origin:'capacitor://localhost'}}));
+  expect(response.status).toBe(503);expect(response.headers.get('Access-Control-Allow-Origin')).toBe('capacitor://localhost');
+ });
+ it('bounds per-IP requests even on cache hits',async()=> {
+  vi.stubGlobal('fetch',vi.fn(async()=>Response.json(raw())));
+  for(let i=0;i<60;i++) await handleWeather(request());
+  expect((await handleWeather(request())).status).toBe(429);
+ });
+});
+
+it.each([
+  ['2026-11-01T16:00:00Z','America/New_York','2026-11-01T04:00:00Z'],
+  ['2026-03-08T16:00:00Z','America/New_York','2026-03-08T05:00:00Z'],
+  ['2026-09-11T14:00:00Z','Asia/Kathmandu','2026-09-10T18:15:00Z'],
+])('starts history at the true local midnight for %s %s',async(instant,zone,start)=> {
+  vi.setSystemTime(Date.parse(instant));
+  const urls: URL[]=[];
+  vi.stubGlobal('fetch',vi.fn(async(url:URL)=> {urls.push(url);return Response.json(raw());}));
+  const response=await handleWeather(request('history',`&timezone=${encodeURIComponent(zone)}`));
+  expect(response.status).toBe(200);
+  expect(Number(urls[0].searchParams.get('from'))).toBe(Date.parse(start)/1000);
+});

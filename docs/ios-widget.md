@@ -25,7 +25,7 @@ A place with no weather renders its name and a refresh message. Invalid payload 
 
 ## Refresh and stale/offline behavior
 
-`WeatherProvider` requests a new timeline no earlier than 30 minutes later. When cached data is older than 15 minutes (or absent), it requests current conditions and two daily highs/lows directly from the existing keyless Open-Meteo HTTPS service, with a 12-second timeout. The app reloads this widget kind after publishing new data or changing selection/preferences.
+`WeatherProvider` requests a new timeline no earlier than 30 minutes later. When cached Xweather data is older than ten minutes (or absent/legacy), it requests normalized current conditions and daily forecasts through the Xweather backend, with a 12-second timeout per request. Provider credentials remain server-only. See [Xweather configuration](xweather.md). The app reloads this widget kind after publishing new data or changing selection/preferences.
 
 iOS controls actual refresh timing and applies a system budget; a 30-minute policy is not a guaranteed interval. See Apple's [Keeping a widget up to date](https://developer.apple.com/documentation/widgetkit/keeping-a-widget-up-to-date) and [TimelineProvider](https://developer.apple.com/documentation/widgetkit/timelineprovider).
 

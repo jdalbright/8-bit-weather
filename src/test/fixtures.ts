@@ -1,3 +1,4 @@
+import { normalizeWeather, currentWeatherCode } from '../lib/weather';
 import type { Place } from '../types';
 
 export const asheville: Place = { id: '4453066', name: 'Asheville', region: 'North Carolina', country: 'United States', latitude: 35.5951, longitude: -82.5515, source: 'search' };
@@ -8,13 +9,13 @@ export function forecastFixture(now = fixtureTime, code = 1, isDay = 1) {
   const date = new Date(now).toISOString().slice(0, 10);
   const midnight = Date.parse(`${date}T04:00:00Z`) / 1000;
   return {
-    timezone: 'America/New_York', utc_offset_seconds: -14400,
+    fetchedAt: now, timezone: 'America/New_York', utc_offset_seconds: -14400,
     minutely_15: {
       time: Array.from({ length: 16 }, (_, i) => Math.floor(now / 900000) * 900 + i * 900),
       rain: Array.from({ length: 16 }, () => 0),
       showers: Array.from({ length: 16 }, () => 0),
     },
-    current: { time: hour, temperature_2m: 22.2, apparent_temperature: 23.3, relative_humidity_2m: 64, wind_speed_10m: 8.05, weather_code: code, is_day: isDay, uv_index: isDay ? 4.1 : 0 },
+    current: { time: Math.floor(now / 900000) * 900, temperature_2m: 22.2, apparent_temperature: 23.3, relative_humidity_2m: 64, wind_speed_10m: 8.05, weather_code: code, is_day: isDay, uv_index: isDay ? 4.1 : 0 },
     hourly: {
       time: Array.from({ length: 48 }, (_, i) => hour + i * 3600),
       temperature_2m: Array.from({ length: 48 }, (_, i) => 22.2 + Math.sin(i / 4) * 3),
@@ -42,4 +43,27 @@ export function uvFixture() {
   const hours = Array.from({ length: 48 }, (_, i) => midnight + i * 3600);
   return { ...raw, hourly: { ...raw.hourly, time: hours,
     uv_index: hours.map((_, i) => Math.max(0, 7 - Math.abs(i % 24 - 13) * 1.4)) } };
+}
+
+/** Adapt legacy weather scenarios to the normalized section endpoint. */
+export function apiFixture(raw: ReturnType<typeof forecastFixture>, requestUrl: string) {
+  const url = new URL(requestUrl);
+  const snapshot = normalizeWeather(raw, asheville, raw.fetchedAt);
+  const section = url.searchParams.get('section');
+  const base = { provider: 'xweather', latitude: Number(url.searchParams.get('latitude')), longitude: Number(url.searchParams.get('longitude')),
+    timezone: snapshot.timezone, updatedAt: raw.fetchedAt, expiresAt: raw.fetchedAt + (section === 'forecast' || section === 'history' ? 3600000 : 600000) };
+  if (section === 'current') return { ...base, current: { ...snapshot.current, code: currentWeatherCode(snapshot.current) } };
+  if (section === 'forecast') return { ...base, hourly:snapshot.hourly, daily:snapshot.daily };
+  if (section === 'history') return { ...base, hourly: [] };
+  return { ...base, minutely: Array.from({length:60},(_,i)=> {
+    const time = Math.floor(raw.fetchedAt/60000)*60+(i+1)*60;
+    const amount = snapshot.minutely?.find(r=>r.time >= time && r.time-900 < time)?.amount;
+    return {time,interval:60,amount:amount == null ? null : amount/15};
+  }) };
+}
+
+// Interaction suites replace upstream scenarios during manual refresh. Make those
+// mock sections expire immediately; real TTL behavior has dedicated API tests.
+export function browserApiFixture(raw: ReturnType<typeof forecastFixture>, requestUrl: string) {
+  return {...apiFixture(raw,requestUrl),updatedAt:raw.fetchedAt-1,expiresAt:raw.fetchedAt};
 }

@@ -13,7 +13,7 @@ function rainySnapshot() {
 describe('conditional rain outlook', () => {
   it('adds rain and showers and uses interval starts for upcoming timing', () => {
     const outlook = upcomingRain(rainySnapshot(), fixtureTime, true)!;
-    expect(outlook.periods).toHaveLength(8);
+    expect(outlook.periods).toHaveLength(4);
     expect(outlook.firstRainIndex).toBe(2);
     expect(outlook.periods[2].time).toBe(fixtureTime / 1000 + 45 * 60);
     expect(outlook.periods[2].amount).toBeCloseTo(0.6);
@@ -33,12 +33,12 @@ describe('conditional rain outlook', () => {
     expect(upcomingRain(snapshot, fixtureTime + 14 * 60000, true)?.firstRainIndex).toBe(0);
     expect(upcomingRain(snapshot, fixtureTime + 15 * 60000, true)).toBeNull();
   });
-  it('includes the last overlapping interval but excludes rain starting at or beyond two hours', () => {
-    const raw = forecastFixture(); raw.minutely_15.rain[9] = 0.5;
+  it('includes the last overlapping interval but excludes rain starting at or beyond one hour', () => {
+    const raw = forecastFixture(); raw.minutely_15.rain[5] = 0.5;
     const snapshot = normalizeWeather(raw, asheville, fixtureTime);
     expect(upcomingRain(snapshot, fixtureTime, true)).toBeNull();
-    expect(upcomingRain(snapshot, fixtureTime + 5 * 60000, true)?.periods).toHaveLength(9);
-    raw.minutely_15.rain[9] = 0; raw.minutely_15.rain[10] = 0.5;
+    expect(upcomingRain(snapshot, fixtureTime + 5 * 60000, true)?.periods).toHaveLength(5);
+    raw.minutely_15.rain[5] = 0; raw.minutely_15.rain[6] = 0.5;
     expect(upcomingRain(normalizeWeather(raw, asheville, fixtureTime), fixtureTime + 5 * 60000, true)).toBeNull();
   });
   it('hides offline, old, future-dated, and stale-observation forecasts', () => {
@@ -52,7 +52,7 @@ describe('conditional rain outlook', () => {
     const snapshot = rainySnapshot();
     expect(upcomingRain({ ...snapshot, minutely: undefined }, fixtureTime, true)).toBeNull();
     expect(upcomingRain({ ...snapshot, minutely: [] }, fixtureTime, true)).toBeNull();
-    expect(upcomingRain({ ...snapshot, minutely: snapshot.minutely!.filter((_, i) => i !== 5) }, fixtureTime, true)).toBeNull();
+    expect(upcomingRain({ ...snapshot, minutely: snapshot.minutely!.filter((_, i) => i !== 3) }, fixtureTime, true)).toBeNull();
     expect(upcomingRain({ ...snapshot, minutely: snapshot.minutely!.map((r, i) => i === 4 ? { ...r, amount: null } : r) }, fixtureTime, true)).toBeNull();
     expect(upcomingRain({ ...snapshot, minutely: snapshot.minutely!.map(r => ({ ...r, time: r.time - 86400 })) }, fixtureTime, true)).toBeNull();
   });
@@ -69,5 +69,26 @@ describe('conditional rain outlook', () => {
     expect(rainAmount(0.05, 'metric')).toBe('<0.1 mm');
     expect(rainAmount(0.6, 'metric')).toBe('0.6 mm');
     expect(rainAmount(0, 'metric')).toBe('0 mm');
+  });
+});
+
+describe('Xweather next-hour coverage', () => {
+  function snapshot() {
+    const s = normalizeWeather(forecastFixture(),asheville,fixtureTime);
+    return {...s,provider:'xweather' as const,sectionTimes:{current:fixtureTime,forecast:fixtureTime,rain:fixtureTime},
+      minutely:Array.from({length:60},(_,i)=>({time:fixtureTime/1000+(i+1)*60,interval:60,amount:0.01}))};
+  }
+  it('uses equivalent rate sensitivity and retains only unelapsed minutes',()=> {
+    expect(upcomingRain(snapshot(),fixtureTime,true)?.periods).toHaveLength(60);
+    expect(upcomingRain(snapshot(),fixtureTime+5*60000,true)?.periods).toHaveLength(55);
+    const trace=snapshot();trace.minutely.forEach(p=>p.amount=0.001);
+    expect(upcomingRain(trace,fixtureTime,true)).toBeNull();
+  });
+  it('never extrapolates a missing minute, final minute, or expired prediction',()=> {
+    for(const i of [0,25,59]) {
+      const s=snapshot();s.minutely.splice(i,1);
+      expect(upcomingRain(s,fixtureTime,true)).toBeNull();
+    }
+    expect(upcomingRain(snapshot(),fixtureTime+600000,true)).toBeNull();
   });
 });

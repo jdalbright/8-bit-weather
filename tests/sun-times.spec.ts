@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import { asheville, fixtureTime, forecastFixture } from '../src/test/fixtures';
 
@@ -8,7 +9,7 @@ test('sunrise and sunset stay readable across screen sizes, enlarged text, UV de
   await page.addInitScript(place => {
     localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected: place, places: [place], preferences: { reducedMotion: true } }));
   }, asheville);
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture() }));
+  await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecastFixture(), route.request().url()) }));
   await page.route('**/api/weather-briefing', route => route.fulfill({ status: 503, json: { error: 'unavailable' } }));
   await page.goto('/');
   const row = page.getByLabel("Today's sunrise and sunset");

@@ -32,8 +32,15 @@ export interface CurrentWeather {
   code: number | null;
   isDay: boolean;
   uv?: number | null;
+  conditionLabel?: string;
+  precipitationRate?: number | null;
+  /** Current model amounts in mm; optional for older saved forecasts. */
+  rain?: number | null;
+  showers?: number | null;
+  cloudCover?: number | null;
 }
 export interface HourWeather {
+  conditionLabel?: string;
   time: number;
   temperature: number | null;
   precipitation: number | null;
@@ -43,6 +50,7 @@ export interface HourWeather {
   wind?: number | null;
 }
 export interface DayWeather {
+  conditionLabel?: string;
   date: string;
   time: number;
   high: number | null;
@@ -54,13 +62,17 @@ export interface DayWeather {
   uvMax?: number | null;
 }
 export interface RainWeather {
-  /** End of the preceding 15-minute interval, in Unix seconds. */
+  /** End of the accumulation interval, in Unix seconds. */
   time: number;
   /** Rain plus convective showers, in millimeters; excludes snow. */
   amount: number | null;
+  interval?: number;
 }
 export interface WeatherSnapshot {
   version: 1;
+  provider?: 'xweather' | 'open-meteo';
+  sectionTimes?: { current: number; forecast: number; rain?: number; history?: number };
+  refreshAfter?: number;
   placeId: string;
   latitude: number;
   longitude: number;

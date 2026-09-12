@@ -1,12 +1,13 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test, type Page } from '@playwright/test';
 import { asheville, forecastFixture, tokyo } from '../src/test/fixtures';
 import { installBridge, savedState, storageKey } from './bridge';
 
 async function forecast(page: Page) {
   const requests: string[] = [];
-  await page.route('https://api.open-meteo.com/**', route => {
+  await page.route('**/api/weather?**', route => {
     requests.push(route.request().url());
-    return route.fulfill({ contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(forecastFixture(Date.now())) });
+    return route.fulfill({ contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(apiFixture(forecastFixture(Date.now()), route.request().url())) });
   });
   return requests;
 }
@@ -47,8 +48,8 @@ test('unit changes and cached forecasts survive a fresh offline JS context using
   await expect.poll(() => store.has(`${storageKey}:forecasts`)).toBe(true);
   // Keep localhost reachable as the stand-in for bundled capacitor:// assets.
   // All weather networking fails and WebKit localStorage is explicitly empty.
-  await page.unroute('https://api.open-meteo.com/**');
-  await page.route('https://api.open-meteo.com/**', route => route.abort('internetdisconnected'));
+  await page.unroute('**/api/weather?**');
+  await page.route('**/api/weather?**', route => route.abort('internetdisconnected'));
   await page.addInitScript(() => {
     localStorage.clear();
     Object.defineProperty(navigator, 'onLine', { configurable: true, get: () => false });
@@ -117,7 +118,7 @@ test('native background pauses user-started audio and stale weather refreshes on
   await page.clock.fastForward(16 * 60 * 1000);
   expect(requests.length).toBe(requestsBeforeBackground);
   await page.evaluate(() => window.__emitNative('appStateChange', { isActive: true }));
-  await expect.poll(() => requests.length).toBe(requestsBeforeBackground + 1);
+  await expect.poll(() => requests.length).toBe(requestsBeforeBackground + 4);
   await expect.poll(() => page.evaluate(() => window.__nativeAudioContexts[0]?.state)).toBe('running');
   await page.reload(); await loaded(page);
   expect(await page.evaluate(() => window.__nativeAudioContexts.length)).toBe(0);

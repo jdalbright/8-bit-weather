@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import { asheville, tokyo, fixtureTime, forecastFixture } from '../src/test/fixtures';
 import { mockRadar } from './support/radar';
@@ -9,7 +10,7 @@ test.use({ serviceWorkers: 'block' });
 test.beforeEach(async ({ page }) => {
   await page.clock.setFixedTime(fixtureTime);
   await page.addInitScript(places => localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected: places[0], places, preferences: { reducedMotion: false } })), [asheville, tokyo]);
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture() }));
+  await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecastFixture(), route.request().url()) }));
   await page.route('**/api/weather-briefing', route => route.fulfill({ status: 503, json: { error: 'unavailable' } }));
 });
 
@@ -18,7 +19,7 @@ test('radar loads on demand, renders frames, plays, switches layers, and respect
   const loaded: string[] = []; page.on('request', request => loaded.push(request.url()));
   const radar = await mockRadar(page, fixtureTime);
   const rainyForecast = forecastFixture(); rainyForecast.minutely_15.rain[3] = 0.8;
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: rainyForecast }));
+  await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(rainyForecast, route.request().url()) }));
   await page.goto('/'); await expect(page.locator('.current-temperature')).toBeVisible();
   expect(radar.requests).toHaveLength(0);
   expect(loaded.some(url => /radar-(map|vendor|worker)-/.test(url))).toBe(false);
@@ -150,7 +151,7 @@ test('image errors, delayed observations and offline state never look like dry w
 });
 
 test('scrubbing keeps the shown timestamp until the replacement image loads and falls back to UTC without a forecast', async ({ page }) => {
-  await page.route('https://api.open-meteo.com/**', route => route.abort());
+  await page.route('**/api/weather?**', route => route.abort());
   const radar = await mockRadar(page, fixtureTime);
   await page.goto('/'); await page.getByRole('button', { name: 'Radar', exact: true }).click();
   await expect(page.getByText('Slide through recent observations, or play the loop.')).toBeVisible();

@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import { asheville, forecastFixture } from '../src/test/fixtures';
 import { BRIEFING_TTL, BRIEFING_VERSION } from '../src/lib/briefing';
@@ -6,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(place => {
     localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected: place, places: [place], preferences: { units: 'imperial', reducedMotion: true } }));
   }, asheville);
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture(Date.now()) }));
+  await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecastFixture(Date.now()), route.request().url()) }));
 });
 test('automatically shows a concise briefing, reuses it across navigation and respects units', async ({ page }) => {
   const payloads: Record<string, unknown>[] = [];

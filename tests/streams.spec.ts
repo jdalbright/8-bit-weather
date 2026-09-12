@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import sharp from 'sharp';
@@ -15,7 +16,7 @@ async function openStream(page: Page, place: Place, light: 'day' | 'overcast' | 
   }, { selected: place, places: [tokyo, raleigh] });
   const data = forecastFixture(now, light === 'overcast' ? 63 : 0, light === 'night' ? 0 : 1);
   data.current.time = now / 1000;
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify(data) }));
+  await page.route('**/api/weather?**', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify(apiFixture(data, route.request().url())) }));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: '7-day forecast' })).toBeVisible();
   await expect.poll(() => page.locator('.art-layer').evaluateAll(images => images.every(image => (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth > 0))).toBe(true);

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PullToRefresh } from './PullToRefresh';
 import { useWeather } from '../hooks/useWeather';
 import { fetchWeather, WeatherRequestError } from '../lib/api';
-import { normalizeWeather } from '../lib/weather';
+import { normalizeWeather as normalizeLegacyWeather } from '../lib/weather';
 import { cacheWeather } from '../lib/storage';
 import { asheville, forecastFixture } from '../test/fixtures';
 import type { WeatherSnapshot } from '../types';
@@ -197,3 +197,9 @@ describe('pull to refresh', () => {
     expect(onRefresh).not.toHaveBeenCalled();
   });
 });
+
+function normalizeWeather(...args: Parameters<typeof normalizeLegacyWeather>) {
+  const s = normalizeLegacyWeather(...args);
+  return { ...s, provider: 'xweather' as const, sectionTimes: { current: s.fetchedAt, forecast: s.fetchedAt },
+    refreshAfter: Math.min(s.fetchedAt+600000,Math.max(s.current.time*1000+900000,s.fetchedAt+60000)) };
+}

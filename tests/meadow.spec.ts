@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { tokyo, forecastFixture } from '../src/test/fixtures';
@@ -9,7 +10,7 @@ async function meadow(page: Page, phase = 'day', code = 0, wind = 12) {
   await page.addInitScript(place => localStorage.setItem('8bit-weather:v1',JSON.stringify({ selected:place,places:[place],preferences:{units:'imperial'} })), tokyo);
   const data = forecastFixture(now,code,phase === 'day' ? 1 : 0);
   data.current.time = now / 1000; data.current.wind_speed_10m=wind;
-  await page.route('https://api.open-meteo.com/**', route=>route.fulfill({ contentType:'application/json', headers:{'access-control-allow-origin':'*'}, body:JSON.stringify(data) }));
+  await page.route('**/api/weather?**', route=>route.fulfill({ contentType:'application/json', headers:{'access-control-allow-origin':'*'}, body:JSON.stringify(apiFixture(data, route.request().url())) }));
   await page.goto('/');
   await expect(page.getByRole('heading',{name:'7-day forecast'})).toBeVisible();
   await expect(page.locator('.scenery')).toHaveAttribute('data-phase',phase);
@@ -25,8 +26,8 @@ for (const phase of ['dawn','day','dusk','night']) {
     for (const [kind,code] of [['clear',0],['partly-cloudy',2],['cloudy',3],['fog',45],['rain',63],['snow',73],['storm',95],['unknown',123]] as const) {
       const now=await page.evaluate(()=>Date.now());
       const data=forecastFixture(now,code,phase==='day'?1:0);data.current.time=now/1000;
-      await page.unroute('https://api.open-meteo.com/**');
-      await page.route('https://api.open-meteo.com/**',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(data)}));
+      await page.unroute('**/api/weather?**');
+      await page.route('**/api/weather?**',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(apiFixture(data, route.request().url()))}));
       await page.getByRole('button',{name:'Refresh',exact:true}).click();
       await expect(page.locator('.scenery')).toHaveAttribute('data-scene',`${kind}-${phase==='day'?'day':'night'}`);
       await expect(page.locator('.current-temperature')).toBeVisible();
@@ -101,8 +102,8 @@ test('weather changes adjust wind and precipitation while keeping wildlife out o
   const calm=await page.locator('.scene-cloud').first().evaluate(node=>getComputedStyle(node).animationDuration);
   for(const code of [65,75,95]) {
     const data=forecastFixture(Date.parse('2026-09-07T14:00:00Z'),code,1); data.current.wind_speed_10m=40;
-    await page.unroute('https://api.open-meteo.com/**');
-    await page.route('https://api.open-meteo.com/**',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(data)}));
+    await page.unroute('**/api/weather?**');
+    await page.route('**/api/weather?**',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(apiFixture(data, route.request().url()))}));
     await page.getByRole('button',{name:'Refresh',exact:true}).click();
     await expect(page.locator('.scenery')).toHaveAttribute('data-calm','false');
     await expect(page.locator('.scenery')).toHaveAttribute('data-scene',`${code===65?'rain':code===75?'snow':'storm'}-day`);
@@ -128,8 +129,8 @@ test('the Now icon follows sunset even before the next provider day/night update
   await meadow(page,'dusk');
   const now=Date.parse('2026-09-07T23:15:00Z');
   const data=forecastFixture(now,0,1);data.current.time=now/1000-15*60;
-  await page.unroute('https://api.open-meteo.com/**');
-  await page.route('https://api.open-meteo.com/**',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(data)}));
+  await page.unroute('**/api/weather?**');
+  await page.route('**/api/weather?**',route=>route.fulfill({contentType:'application/json',body:JSON.stringify(apiFixture(data, route.request().url()))}));
   await page.getByRole('button',{name:'Refresh',exact:true}).click();
   await expect(page.locator('.scenery')).toHaveAttribute('data-scene','clear-night');
   const moon=await page.locator('.celestial').innerHTML();

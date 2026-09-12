@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useWeather } from './useWeather';
 import { fetchWeather, WeatherRequestError } from '../lib/api';
-import { normalizeWeather } from '../lib/weather';
+import { normalizeWeather as normalizeLegacyWeather } from '../lib/weather';
 import { cacheWeather } from '../lib/storage';
 import { asheville, forecastFixture, tokyo } from '../test/fixtures';
 import type { WeatherSnapshot } from '../types';
@@ -109,4 +109,42 @@ it.each(['resolve', 'reject'] as const)('returns cancelled for a superseded manu
     expect(await pending).toBe('cancelled');
   });
   expect(result.current.snapshot?.placeId).toBe(tokyo.id);
+});
+
+
+it('rechecks an open app at the next provider interval and replaces cached rain with dry weather', async () => {
+  vi.useFakeTimers();
+  const start = Date.parse('2026-09-11T18:14:00Z');
+  vi.setSystemTime(start);
+  const wet = normalizeWeather(forecastFixture(start, 61), asheville, start);
+  const dry = normalizeWeather(forecastFixture(start + 60000, 3), asheville, start + 60000);
+  cacheWeather(wet);
+  mockedFetch.mockResolvedValue(dry);
+  vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+  const { result } = renderHook(() => useWeather(asheville));
+  expect(result.current.snapshot?.current.code).toBe(61);
+  expect(mockedFetch).not.toHaveBeenCalled();
+  await act(async () => { await vi.advanceTimersByTimeAsync(60000); });
+  expect(mockedFetch).toHaveBeenCalledOnce();
+  expect(result.current.snapshot?.current.code).toBe(3);
+  await act(async () => { await vi.advanceTimersByTimeAsync(60000); });
+  expect(mockedFetch).toHaveBeenCalledOnce();
+});
+
+function normalizeWeather(...args: Parameters<typeof normalizeLegacyWeather>) {
+  const s = normalizeLegacyWeather(...args);
+  return { ...s, provider: 'xweather' as const, sectionTimes: { current: s.fetchedAt, forecast: s.fetchedAt },
+    refreshAfter: Math.min(s.fetchedAt+600000,Math.max(s.current.time*1000+900000,s.fetchedAt+60000)) };
+}
+
+it('keeps a legacy saved forecast visible while requesting Xweather on first online use',async()=> {
+  const old=normalizeLegacyWeather(forecastFixture(Date.now()),asheville);
+  cacheWeather(old);
+  let complete!: (s:WeatherSnapshot)=>void;
+  mockedFetch.mockImplementation(()=>new Promise(resolve=>complete=resolve));
+  const {result}=renderHook(()=>useWeather(asheville));
+  expect(result.current.snapshot?.provider).toBeUndefined();
+  expect(mockedFetch).toHaveBeenCalledOnce();
+  await act(async()=>complete(normalizeWeather(forecastFixture(Date.now()),asheville)));
+  expect(result.current.snapshot?.provider).toBe('xweather');
 });

@@ -16,5 +16,5 @@ export default defineConfig({
     { name: 'native-webkit', use: { ...devices['iPhone 13'], browserName: 'webkit' } },
   ],
   // The fake cloud URL belongs only to this isolated browser-test build, never ios:sync.
-  webServer: { command: 'VITE_NATIVE_BRIEFING_URL=https://weather.example/api/weather-briefing npx vite build --mode native --emptyOutDir --outDir /tmp/8bit-weather-native-browser-bundle && npx vite preview --host 127.0.0.1 --mode native --outDir /tmp/8bit-weather-native-browser-bundle --port 4178 --strictPort', url: 'http://127.0.0.1:4178', reuseExistingServer: false, timeout: 60000 },
+  webServer: { command: 'VITE_NATIVE_WEATHER_URL=https://weather.example/api/weather VITE_NATIVE_BRIEFING_URL=https://weather.example/api/weather-briefing npx vite build --mode native --emptyOutDir --outDir /tmp/8bit-weather-native-browser-bundle && npx vite preview --host 127.0.0.1 --mode native --outDir /tmp/8bit-weather-native-browser-bundle --port 4178 --strictPort', url: 'http://127.0.0.1:4178', reuseExistingServer: false, timeout: 60000 },
 });

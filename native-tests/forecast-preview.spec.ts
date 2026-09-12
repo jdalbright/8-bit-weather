@@ -1,3 +1,4 @@
+import { apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import { fixtureTime, forecastFixture } from '../src/test/fixtures';
 import { installBridge } from './bridge';
@@ -5,9 +6,9 @@ import { installBridge } from './bridge';
 test('native preview preserves widget observations and works through refresh and navigation', async ({ page }) => {
   const bridge = await installBridge(page);
   await page.clock.setFixedTime(fixtureTime + 1800000);
-  await page.route('https://api.open-meteo.com/**', route => {
+  await page.route('**/api/weather?**', route => {
     const data = forecastFixture(); data.hourly.weather_code[1] = 71;
-    return route.fulfill({ json: data, headers: { 'access-control-allow-origin': '*' } });
+    return route.fulfill({ json: apiFixture(data, route.request().url()), headers: { 'access-control-allow-origin': '*' } });
   });
   await page.goto('/');
   const slider = page.getByRole('slider', { name: 'Forecast preview time' });
@@ -32,7 +33,7 @@ test('native preview preserves widget observations and works through refresh and
 
 test('hourly haptics follow selection and scrolling and respect the haptics setting', async ({ page }) => {
   const bridge = await installBridge(page);
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture(Date.now()), headers: { 'access-control-allow-origin': '*' } }));
+  await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecastFixture(Date.now()), route.request().url()), headers: { 'access-control-allow-origin': '*' } }));
   await page.goto('/');
   const tiles = page.locator('.hour');
   await expect(tiles).toHaveCount(24);

@@ -33,6 +33,7 @@ struct WidgetCurrent: Codable, Sendable {
     var temperature: Double?
     var code: Int?
     var isDay: Bool
+    var conditionLabel: String? = nil
 }
 
 struct WidgetDay: Codable, Sendable {
@@ -50,6 +51,7 @@ struct WidgetForecast: Codable, Sendable {
     var fetchedAt: Double
     var current: WidgetCurrent
     var daily: [WidgetDay]
+    var provider: String? = nil
 
     func matches(_ place: WidgetPlace) -> Bool {
         version == 1 && place.valid && placeId == place.id && latitude.isFinite && longitude.isFinite
@@ -143,13 +145,15 @@ struct WidgetPayload: Codable, Sendable {
         case 2, 3: return "cloud"
         case 45, 48: return "fog"
         case 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82: return "rain"
-        case 71, 73, 75, 77, 85, 86: return "snow"
+        case 71, 73, 75, 77, 85, 86, 100, 101: return "snow"
+        case 102: return "rain"
         case 95, 96, 99: return "storm"
         default: return "unknown"
         }
     }
 
     var condition: String {
+        if let label = weather?.current.conditionLabel { return label }
         guard let code = weather?.current.code else { return "Conditions unavailable" }
         switch code {
         case 0: return weather?.current.isDay == false ? "Clear night" : "Clear skies"
@@ -158,24 +162,24 @@ struct WidgetPayload: Codable, Sendable {
         case 3: return "Overcast"
         case 45: return "Foggy"
         case 48: return "Freezing fog"
-        case 51: return "Light drizzle"
-        case 53: return "Drizzle"
-        case 55: return "Heavy drizzle"
-        case 56, 57: return "Freezing drizzle"
-        case 61: return "Light rain"
-        case 63: return "Rainy"
-        case 65: return "Heavy rain"
-        case 66, 67: return "Freezing rain"
-        case 71: return "Light snow"
-        case 73: return "Snowy"
-        case 75: return "Heavy snow"
-        case 77: return "Snow grains"
-        case 80: return "Light showers"
-        case 81: return "Rain showers"
-        case 82: return "Heavy showers"
-        case 85, 86: return "Snow showers"
-        case 95: return "Thunderstorms"
-        case 96, 99: return "Storms & hail"
+        case 51: return "Light drizzle possible"
+        case 53: return "Drizzle possible"
+        case 55: return "Heavy drizzle possible"
+        case 56, 57: return "Freezing drizzle possible"
+        case 61: return "Light rain possible"
+        case 63: return "Rain possible"
+        case 65: return "Heavy rain possible"
+        case 66, 67: return "Freezing rain possible"
+        case 71: return "Light snow possible"
+        case 73: return "Snow possible"
+        case 75: return "Heavy snow possible"
+        case 77: return "Snow grains possible"
+        case 80: return "Light showers possible"
+        case 81: return "Rain showers possible"
+        case 82: return "Heavy showers possible"
+        case 85, 86: return "Snow showers possible"
+        case 95: return "Thunderstorms possible"
+        case 96, 99: return "Storms & hail possible"
         default: return "Conditions unavailable"
         }
     }

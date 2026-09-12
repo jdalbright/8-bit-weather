@@ -40,7 +40,7 @@ struct WeatherProvider: TimelineProvider {
             if let selected = payload?.place {
                 let fetchedAt = payload?.weather?.fetchedAt ?? 0
                 let age = Date().timeIntervalSince1970 - fetchedAt / 1000
-                if payload?.weather == nil || age < 0 || age >= 15 * 60 {
+                if payload?.weather?.provider != "xweather" || age < 0 || age >= 10 * 60 {
                     do {
                         let forecast = try await WidgetWeatherClient.fetch(for: selected)
                         try WidgetWeatherStore.writeRefresh(forecast, for: selected)
@@ -112,6 +112,8 @@ struct WeatherWidgetView: View {
                 }
                 .font(.system(size: 9, weight: .medium, design: .monospaced))
                 .opacity(0.9)
+                Text(weather.provider == "xweather" ? "Powered by Vaisala Xweather" : "Saved Open-Meteo forecast")
+                    .font(.system(size: 8, weight: .medium)).lineLimit(1).minimumScaleFactor(0.7)
             } else {
                 Spacer(minLength: 0)
                 Text("Weather on its way")

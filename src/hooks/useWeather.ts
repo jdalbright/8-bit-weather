@@ -2,7 +2,7 @@ import { isAppActive, NATIVE_ACTIVITY_EVENT } from '../lib/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchWeather, WeatherRequestError } from '../lib/api';
 import { cachedWeather, cacheWeather } from '../lib/storage';
-import { cacheMatches, FRESH_FOR, isFresh } from '../lib/weather';
+import { cacheMatches, isFresh, WEATHER_CHECK_INTERVAL } from '../lib/weather';
 import type { Place, WeatherSnapshot } from '../types';
 
 export type RefreshOutcome = 'success' | 'failure' | 'skipped' | 'cancelled';
@@ -25,7 +25,7 @@ export function useWeather(place: Place | null) {
     const cache = memory && (!stored || memory.fetchedAt >= stored.fetchedAt) ? memory : stored;
     latest.current = cache;
     if (!navigator.onLine) { setState({ snapshot: cache, loading: false, error: cache ? null : 'You’re offline. Connect to load weather for this place.', placeId: place.id }); return 'skipped'; }
-    if ((!force && cache && isFresh(cache)) || Date.now() < cooldown.current) {
+    if ((!force && cache && cache.provider === 'xweather' && isFresh(cache)) || Date.now() < cooldown.current) {
       setState(previous => ({ snapshot: cache, loading: false, error: Date.now() < cooldown.current ? previous.error : null, placeId: place.id }));
       return 'skipped';
     }
@@ -55,7 +55,7 @@ export function useWeather(place: Place | null) {
   useEffect(() => {
     const onlineChanged = () => { setOnline(navigator.onLine); if (navigator.onLine) void refresh(); };
     const visible = () => { if (isAppActive()) { setNow(Date.now()); void refresh(); } };
-    const interval = window.setInterval(() => { if (isAppActive()) void refresh(); }, FRESH_FOR);
+    const interval = window.setInterval(() => { if (isAppActive()) void refresh(); }, WEATHER_CHECK_INTERVAL);
     const clock = window.setInterval(() => { if (isAppActive()) setNow(Date.now()); }, 30000);
     window.addEventListener(NATIVE_ACTIVITY_EVENT, visible); window.addEventListener('online', onlineChanged); window.addEventListener('offline', onlineChanged); document.addEventListener('visibilitychange', visible);
     return () => { window.removeEventListener(NATIVE_ACTIVITY_EVENT, visible); clearInterval(interval); clearInterval(clock); window.removeEventListener('online', onlineChanged); window.removeEventListener('offline', onlineChanged); document.removeEventListener('visibilitychange', visible); };

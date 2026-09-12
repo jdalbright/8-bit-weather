@@ -1,7 +1,9 @@
-import type { DayWeather, Place, Units, WeatherKind, WeatherSnapshot } from '../types';
+import type { CurrentWeather, DayWeather, Place, Units, WeatherKind, WeatherSnapshot } from '../types';
 
 export const FRESH_FOR = 15 * 60 * 1000;
 export const STALE_AFTER = 45 * 60 * 1000;
+export const CURRENT_INTERVAL = 15 * 60 * 1000;
+export const WEATHER_CHECK_INTERVAL = 60 * 1000;
 const names: Record<number, [WeatherKind, string]> = {
   0: ['clear', 'Clear skies'], 1: ['clear', 'Mostly sunny'], 2: ['partly-cloudy', 'Partly cloudy'],
   3: ['cloudy', 'Overcast'], 45: ['fog', 'Foggy'], 48: ['fog', 'Freezing fog'],
@@ -12,11 +14,35 @@ const names: Record<number, [WeatherKind, string]> = {
   71: ['snow', 'Light snow'], 73: ['snow', 'Snowy'], 75: ['snow', 'Heavy snow'], 77: ['snow', 'Snow grains'],
   80: ['rain', 'Light showers'], 81: ['rain', 'Rain showers'], 82: ['rain', 'Heavy showers'],
   85: ['snow', 'Snow showers'], 86: ['snow', 'Heavy snow showers'],
+  100: ['snow', 'Wintry mix'], 101: ['snow', 'Sleet'], 102: ['rain', 'Hail'],
   95: ['storm', 'Thunderstorms'], 96: ['storm', 'Thunderstorms & hail'], 99: ['storm', 'Thunderstorms & hail'],
 };
 export function weatherInfo(code: number | null, isDay = true): { kind: WeatherKind; label: string } {
   const [kind, label] = (code === null ? undefined : names[code]) ?? ['unknown', 'Conditions unavailable'];
   return { kind, label: !isDay && code === 1 ? 'Mostly clear' : !isDay && code === 0 ? 'Clear night' : label };
+}
+/** Resolve contradictory dry readings without treating missing amounts as zero.
+ * Freezing precipitation, snow, fog and storms retain the provider code.
+ * Future rain/probabilities describe other intervals and cannot confirm rain now.
+ */
+export function currentWeatherCode(current: CurrentWeather): number | null {
+  const { code, rain, showers, cloudCover } = current;
+  if (code !== null && [51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)
+    && rain === 0 && showers === 0 && cloudCover != null && Number.isFinite(cloudCover) && cloudCover >= 0 && cloudCover <= 100) {
+    return cloudCover < 20 ? 0 : cloudCover < 50 ? 1 : cloudCover < 80 ? 2 : 3;
+  }
+  return code;
+}
+export function forecastWeatherInfo(period: {code:number|null;conditionLabel?:string}, isDay=true) {
+  const info = weatherInfo(period.code,isDay);
+  return {...info,label:period.conditionLabel ?? info.label};
+}
+export function currentWeatherInfo(current: CurrentWeather, isDay = current.isDay) {
+  const info = weatherInfo(currentWeatherCode(current), isDay);
+  if (current.conditionLabel && ![0,1].includes(currentWeatherCode(current) ?? -1)) return { ...info, label: current.conditionLabel };
+  // Model estimate, not an observation at the user's exact location.
+  const label = info.label === 'Rainy' ? 'Rain' : info.label === 'Snowy' ? 'Snow' : info.label;
+  return { ...info, label: ['rain', 'snow', 'storm'].includes(info.kind) ? `${label} possible` : label };
 }
 export function temperature(value: number | null | undefined, units: Units): string {
   if (value == null || !Number.isFinite(value)) return '—';
@@ -63,7 +89,11 @@ export function cacheMatches(snapshot: WeatherSnapshot, place: Place): boolean {
   return snapshot.placeId === place.id && Math.abs(snapshot.latitude - place.latitude) < 0.001 && Math.abs(snapshot.longitude - place.longitude) < 0.001;
 }
 export function isFresh(snapshot: WeatherSnapshot, now = Date.now()): boolean {
-  return now >= snapshot.fetchedAt && now - snapshot.fetchedAt < FRESH_FOR;
+  if (snapshot.provider === 'xweather') return now >= snapshot.fetchedAt && now < (snapshot.refreshAfter ?? snapshot.fetchedAt + 600000);
+  // Don't retain the previous provider interval for 15 minutes after fetching.
+  // Wait at least a minute between retries if the provider hasn't updated yet.
+  const nextUpdate = Math.max(snapshot.current.time * 1000 + CURRENT_INTERVAL, snapshot.fetchedAt + WEATHER_CHECK_INTERVAL);
+  return now >= snapshot.fetchedAt && now - snapshot.fetchedAt < FRESH_FOR && now < nextUpdate;
 }
 
 type JsonObject = Record<string, unknown>;
@@ -94,6 +124,8 @@ export function normalizeWeather(raw: unknown, place: Place, now = Date.now()): 
       time: current.time as number, temperature: numeric(current.temperature_2m), feelsLike: numeric(current.apparent_temperature),
       humidity: numeric(current.relative_humidity_2m), wind: numeric(current.wind_speed_10m), code: numeric(current.weather_code), isDay: current.is_day !== 0,
       uv: nonnegative(current.uv_index),
+      rain: nonnegative(current.rain), showers: nonnegative(current.showers),
+      cloudCover: nonnegative(current.cloud_cover) !== null && (current.cloud_cover as number) <= 100 ? current.cloud_cover as number : null,
     },
     hourly: hourly.time.flatMap((time, index) => numeric(time) === null ? [] : [{
       time: time as number, temperature: series(hourly, 'temperature_2m', index), precipitation: series(hourly, 'precipitation_probability', index),

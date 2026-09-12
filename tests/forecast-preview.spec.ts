@@ -1,15 +1,16 @@
+import { apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import { asheville, fixtureTime, forecastFixture } from '../src/test/fixtures';
 
 test.beforeEach(async ({ page }) => {
   await page.clock.setFixedTime(fixtureTime + 1800000);
   await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected: place, places: [place], preferences: { reducedMotion: true } })), asheville);
-  await page.route('https://api.open-meteo.com/**', route => {
-    const forecast = forecastFixture();
+  await page.route('**/api/weather?**', route => {
+    const forecast = forecastFixture(); forecast.fetchedAt = fixtureTime + 1800000;
     forecast.hourly.weather_code[1] = 65;
     forecast.hourly.temperature_2m[1] = 10;
     forecast.hourly.precipitation_probability[2] = 85;
-    return route.fulfill({ json: { ...forecast, hourly: { ...forecast.hourly, wind_speed_10m: forecast.hourly.time.map(() => 30) } } });
+    return route.fulfill({ json: apiFixture({ ...forecast, hourly: { ...forecast.hourly, wind_speed_10m: forecast.hourly.time.map(() => 30) } }, route.request().url()) });
   });
 });
 

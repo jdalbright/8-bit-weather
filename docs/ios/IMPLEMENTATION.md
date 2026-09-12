@@ -46,7 +46,7 @@ Reproduce builds using [native build/install instructions](../ios-native.md), [w
 
 | Requirement | Implementation | Verification gate |
 | --- | --- | --- |
-| Shared screens, forecasts, rain/UV details | Same React product code and Open-Meteo normalization | Existing Chromium/WebKit suites + native bridge suite |
+| Shared screens, forecasts, rain/UV details | Same React product code and normalized Xweather backend | Existing Chromium/WebKit suites + native bridge suite |
 | Saved places, selected place, preferences | Preferences hydration before mount, ordered durable writes | Unit + native bridge + simulator relaunch |
 | Automatic regional scenes, art and animations | Shared coordinate selection; 18 bundled art variants | Regional web tests, native asset checks, simulator screenshot |
 | AI briefings and offline summaries | Apple Intelligence first, OpenAI fallback; shared cache and offline local generation | See [September 11 AI verification](../ios-apple-briefing.md); production cloud fallback still depends on deployment |
@@ -56,7 +56,7 @@ Reproduce builds using [native build/install instructions](../ios-native.md), [w
 | Native location | When-in-use permission and denial fallback | Unit/bridge grant/denial tests + actual simulator prompt/denial; final manual grant awaits unlocked Mac |
 | Lifecycle | App state listeners update weather freshness and suspend audio/motion | Native bridge + simulator background/resume |
 | Small/medium widgets | Native WidgetKit views, local shared App Group, regional PNG artwork | Swift tests + extension build + simulator widget rendering |
-| Widget refresh and stale/offline | Open-Meteo URLSession refresh; scheduled timeline and stale entries | Swift refresh/cache tests; actual schedule remains controlled by iOS |
+| Widget refresh and stale/offline | Xweather backend URLSession refresh; scheduled timeline and stale entries | Swift refresh/cache tests; actual schedule remains controlled by iOS |
 | Widget tap routing | Validated custom scheme selects matching local place | Native bridge deep links + simulator openurl |
 
 Physical-device and production dependencies are not counted as passed. Detailed evidence follows.

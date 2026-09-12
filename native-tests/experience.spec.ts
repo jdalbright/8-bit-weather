@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import { forecastFixture } from '../src/test/fixtures';
 import { installBridge, savedState, storageKey } from './bridge';
@@ -5,7 +6,7 @@ import { installBridge, savedState, storageKey } from './bridge';
 async function setup(page: import('@playwright/test').Page) {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   const bridge = await installBridge(page, { [storageKey]: JSON.stringify({ ...savedState, preferences: { ...savedState.preferences, reducedMotion: false } }) });
-  await page.route('https://api.open-meteo.com/**', route => { const forecast = forecastFixture(Date.now()); forecast.minutely_15.rain.fill(0.2); return route.fulfill({ json: forecast, headers: { 'access-control-allow-origin': '*' } }); });
+  await page.route('**/api/weather?**', route => { const forecast = forecastFixture(Date.now()); forecast.minutely_15.rain.fill(0.2); return route.fulfill({ json: apiFixture(forecast, route.request().url()), headers: { 'access-control-allow-origin': '*' } }); });
   return bridge;
 }
 
@@ -125,7 +126,7 @@ test('manual failures signal error once while background refreshes stay silent',
   const bridge = await setup(page); await page.goto('/');
   await expect(page.getByRole('heading', { name: '7-day forecast' })).toBeVisible();
   const pulses = () => bridge.calls.filter(call => call.method === 'triggerHaptic').map(call => call.options);
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ status: 500, body: 'Unavailable', headers: { 'access-control-allow-origin': '*' } }));
+  await page.route('**/api/weather?**', route => route.fulfill({ status: 500, body: 'Unavailable', headers: { 'access-control-allow-origin': '*' } }));
   await page.getByRole('button', { name: 'Refresh', exact: true }).click();
   await expect.poll(pulses).toEqual([{ kind: 'impact' }, { kind: 'notification', type: 'error' }]);
   await page.evaluate(() => window.__emitNative('refresh', { requestId: 43 }));
@@ -142,9 +143,9 @@ test('late refresh completion does not buzz after navigation or backgrounding', 
   let release!: () => void;
   const held = new Promise<void>(resolve => { release = resolve; });
   let started = false;
-  await page.route('https://api.open-meteo.com/**', async route => {
+  await page.route('**/api/weather?**', async route => {
     started = true; await held;
-    await route.fulfill({ json: forecastFixture(Date.now()), headers: { 'access-control-allow-origin': '*' } });
+    await route.fulfill({ json: apiFixture(forecastFixture(Date.now()), route.request().url()), headers: { 'access-control-allow-origin': '*' } });
   });
   await page.getByRole('button', { name: 'Refresh', exact: true }).click();
   await expect.poll(() => started).toBe(true);

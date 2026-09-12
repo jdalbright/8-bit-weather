@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import { installBridge, preferences, savedState, storageKey } from './bridge';
 import { fixtureTime, forecastFixture } from '../src/test/fixtures';
@@ -7,7 +8,7 @@ test('native radar pauses for app lifecycle and power changes while retaining ma
   await page.clock.setFixedTime(fixtureTime);
   const bridge = await installBridge(page, { [storageKey]: JSON.stringify({ ...savedState, preferences: { ...preferences, reducedMotion: false } }) });
   const radar = await mockRadar(page, fixtureTime);
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture() }));
+  await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecastFixture(), route.request().url()) }));
   await page.goto('/'); await expect(page.locator('.current-temperature')).toBeVisible();
   expect(radar.requests).toHaveLength(0);
   await page.getByRole('button', { name: 'Radar', exact: true }).click();

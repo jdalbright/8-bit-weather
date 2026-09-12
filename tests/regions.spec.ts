@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import sharp from 'sharp';
@@ -23,7 +24,7 @@ async function openScene(page: Page, id: Landscape, light: LandscapeLight = 'day
   }, { selected: places[id], places: Object.values(places) });
   const data = forecastFixture(now, light === 'overcast' ? 63 : 0, light === 'night' ? 0 : 1);
   data.current.time = now / 1000;
-  await page.route('https://api.open-meteo.com/**', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify(data) }));
+  await page.route('**/api/weather?**', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify(apiFixture(data, route.request().url())) }));
   await page.goto('/');
   await expect(page.locator('.scenery')).toHaveAttribute('data-landscape', id);
   await expect(page.getByRole('heading', { name: '7-day forecast' })).toBeVisible();
@@ -143,7 +144,7 @@ test('all regional art is precached and saved places switch after an offline rel
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   const urls = ids.flatMap(id => (['day', 'overcast', 'night'] as const).map(light => landscapeSource(id, light)));
   await expect.poll(() => page.evaluate(async urls => (await Promise.all(urls.map(url => caches.match(url, { ignoreSearch: true })))).every(Boolean), urls)).toBe(true);
-  await page.unroute('https://api.open-meteo.com/**');
+  await page.unroute('**/api/weather?**');
   await context.setOffline(true);
   await page.reload();
   await expect(page.locator('.scenery')).toHaveAttribute('data-landscape', 'blue-ridge');

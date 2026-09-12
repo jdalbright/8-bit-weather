@@ -1,3 +1,4 @@
+import { browserApiFixture as apiFixture } from '../src/test/fixtures';
 import { expect, test } from '@playwright/test';
 import { asheville, forecastFixture } from '../src/test/fixtures';
 
@@ -7,7 +8,7 @@ for (const width of [320, 390, 480]) {
     await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({
       preferences: { units: 'imperial', reducedMotion: true }, places: [place], selected: place,
     })), asheville);
-    await page.route('https://api.open-meteo.com/**', route => route.fulfill({ json: forecastFixture(Date.now()) }));
+    await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecastFixture(Date.now()), route.request().url()) }));
     await page.goto('/');
     const grid = page.locator('.current-stats');
     await expect(grid).toBeVisible();
@@ -78,12 +79,12 @@ for (const scenario of [{ name: 'very-high', uv: 9, label: 'Very high' }, { name
     await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({
       preferences: { units: 'metric', reducedMotion: true }, places: [place], selected: place,
     })), asheville);
-    await page.route('https://api.open-meteo.com/**', route => {
+    await page.route('**/api/weather?**', route => {
       const raw = forecastFixture(Date.now());
-      return route.fulfill({ json: { ...raw,
+      return route.fulfill({ json: apiFixture({ ...raw,
         current: { ...raw.current, uv_index: scenario.uv, wind_speed_10m: scenario.uv === null ? null : 160, relative_humidity_2m: scenario.uv === null ? null : 100 },
         hourly: { ...raw.hourly, uv_index: raw.hourly.time.map(() => scenario.uv) },
-      } });
+      }, route.request().url()) });
     });
     await page.goto('/');
     const grid = page.locator('.current-stats');
@@ -96,5 +97,38 @@ for (const scenario of [{ name: 'very-high', uv: 9, label: 'Very high' }, { name
     else await uv.click();
     await expect(uv).toHaveAttribute('aria-expanded', 'true');
     await grid.screenshot({ path: testInfo.outputPath('conditions-expanded.png') });
+  });
+}
+
+
+for (const source of ['search', 'gps'] as const) {
+  test(`dry Raleigh ${source} conditions do not show rain in the headline or scenery`, async ({ page }, testInfo) => {
+    const place = { id: source === 'gps' ? 'current-location' : 'raleigh', name: source === 'gps' ? 'Current location' : 'Raleigh',
+      latitude: 35.7796, longitude: -78.6382, region: 'North Carolina', source };
+    await page.setViewportSize({ width: 320, height: 844 });
+    await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({
+      preferences: { reducedMotion: true }, places: [place], selected: place,
+    })), place);
+    let wet = false;
+    await page.route('**/api/weather?**', route => {
+      const raw = forecastFixture(Date.now(), 61);
+      return route.fulfill({ json: apiFixture({ ...raw, current: { ...raw.current, rain: wet ? 0.4 : 0, showers: 0, cloud_cover: 100 } }, route.request().url()) });
+    });
+    await page.goto('/');
+    await expect(page.locator('.condition')).toHaveText('Overcast');
+    await expect(page.locator('.current-weather .saved-observation')).toContainText('Estimated conditions');
+    await expect(page.locator('.forecast-scene .rainfall')).toHaveCount(0);
+    await expect(page.locator('.hour').first()).toHaveAccessibleName(/Now, Overcast/);
+    // Upcoming rain is still allowed in the forecast, without becoming rain now.
+    await expect(page.locator('.hour').nth(1)).toHaveAccessibleName(/Light rain/);
+    await page.screenshot({ path: testInfo.outputPath(`raleigh-${source}-dry.png`) });
+    wet = true;
+    await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+    await expect(page.locator('.condition')).toHaveText('Light rain possible');
+    await expect(page.locator('.forecast-scene .rainfall')).toHaveCount(1);
+    wet = false;
+    await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+    await expect(page.locator('.condition')).toHaveText('Overcast');
+    await expect(page.locator('.forecast-scene .rainfall')).toHaveCount(0);
   });
 }
