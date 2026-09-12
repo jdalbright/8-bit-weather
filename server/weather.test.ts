@@ -32,6 +32,21 @@ describe('Xweather condition interpretation',()=> {
   expect(rainFrom(raw({weatherPrimaryCoded:'::S',precipMM:0.2}))[0].amount).toBeNull();
  });
 });
+
+it('includes the current hour when the history range end is exclusive', async () => {
+  vi.setSystemTime(Date.parse('2026-09-12T00:50:00Z'));
+  vi.stubGlobal('fetch', vi.fn(async (url: URL) => {
+    const data = raw();
+    const start = Number(url.searchParams.get('from'));
+    const end = Number(url.searchParams.get('to'));
+    data.response[0].periods = Array.from({ length: Math.ceil((end-start)/3600) }, (_, i) => ({ ...data.response[0].periods[0], timestamp: start+i*3600 }));
+    return Response.json(data);
+  }));
+  const response = await handleWeather(request('history', '&timezone=America%2FNew_York'));
+  const data = await response.json();
+  expect(data.hourly).toHaveLength(21);
+  expect(data.hourly.at(-1).time).toBe(Date.parse('2026-09-12T00:00:00Z')/1000);
+});
 describe('weather endpoint',()=> {
  it('keeps credentials upstream and shares cached requests across callers',async()=> {
   const fetcher=vi.fn(async(...args: unknown[])=> { void args; return Response.json(raw()); });vi.stubGlobal('fetch',fetcher);

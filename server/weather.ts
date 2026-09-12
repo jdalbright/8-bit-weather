@@ -49,7 +49,8 @@ async function load(section: WeatherSection, lat: number, lon: number, tz?: stri
         const middle=Math.floor((low+start)/2);
         if (localDate(middle*1000,zone) === today) start=middle; else low=middle;
       }
-      const end=start+Math.floor((now/1000-start)/3600)*3600;
+      // Xweather's range end is exclusive; include the current hourly sample.
+      const end=start+Math.floor((now/1000-start)/3600)*3600+1;
       const raw = await provider(`conditions/${location}`, { from:String(start), to:String(end) });
       part = { hourly: hoursFrom(raw) };
     } else {
