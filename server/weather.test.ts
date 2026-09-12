@@ -105,6 +105,44 @@ describe('weather endpoint',()=> {
   const response=await handleWeather(request());expect(response.status).toBe(429);expect(response.headers.get('Retry-After')).toBe('120');
   await handleWeather(request('rain'));expect(fetcher).toHaveBeenCalledTimes(1);
  });
+ it.each([
+  { first: 'http', firstSeconds: 3600, second: 'http', secondSeconds: 60 },
+  { first: 'body', firstSeconds: 3600, second: 'http', secondSeconds: 60 },
+  { first: 'http', firstSeconds: 7200, second: 'body', secondSeconds: 3600 },
+ ])('preserves a longer $first cooldown when a later $second response arrives', async scenario => {
+  let resolveFirst!: (response: Response) => void;
+  let resolveSecond!: (response: Response) => void;
+  const fetcher = vi.fn()
+    .mockImplementationOnce(() => new Promise<Response>(resolve => { resolveFirst = resolve; }))
+    .mockImplementationOnce(() => new Promise<Response>(resolve => { resolveSecond = resolve; }))
+    .mockImplementation(async () => Response.json(raw()));
+  vi.stubGlobal('fetch', fetcher);
+  const quota = (kind: string, seconds: number) => kind === 'body'
+    ? Response.json({ success: false, error: { code: 'maxhits_day' } })
+    : new Response('', { status: 429, headers: { 'Retry-After': String(seconds) } });
+  const first = handleWeather(request('current'));
+  const second = handleWeather(request('rain'));
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  resolveFirst(quota(scenario.first, scenario.firstSeconds));
+  expect((await first).headers.get('Retry-After')).toBe(String(scenario.firstSeconds));
+
+  vi.setSystemTime(now + 5000);
+  resolveSecond(quota(scenario.second, scenario.secondSeconds));
+  const later = await second;
+  expect(later.status).toBe(429);
+  expect(later.headers.get('Retry-After')).toBe(String(scenario.firstSeconds - 5));
+
+  // The shorter provider limit has expired, but the account's longer one has not.
+  vi.setSystemTime(now + (scenario.secondSeconds + 6) * 1000);
+  const blocked = await handleWeather(request('current'));
+  expect(blocked.status).toBe(429);
+  expect(blocked.headers.get('Retry-After')).toBe(String(scenario.firstSeconds - scenario.secondSeconds - 6));
+  expect(fetcher).toHaveBeenCalledTimes(2);
+
+  vi.setSystemTime(now + scenario.firstSeconds * 1000 + 1);
+  expect((await handleWeather(request('current'))).status).toBe(200);
+  expect(fetcher).toHaveBeenCalledTimes(3);
+ });
  it('validates coordinates, origins, configuration and canonical routing',async()=> {
   expect((await handleWeather(new Request('https://example.com/api/weather?latitude=999&longitude=0&section=current'))).status).toBe(400);
   expect((await handleWeather(new Request(request(),{headers:{Origin:'https://evil.example'}}))).status).toBe(403);

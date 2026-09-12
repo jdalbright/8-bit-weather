@@ -43,3 +43,12 @@ hourly zero. Older saved snapshots remain readable and refresh once online to ob
 the current probability; the same backend cache and quota rules still apply. Existing
 snapshots that do not yet contain the field retain their explicitly labelled hourly
 percentage until that refresh succeeds. See the [conditions response documentation](https://www.xweather.com/docs/weather-api/endpoints/conditions).
+
+## September 12: forecast refresh review loop
+
+The second review batch covers provider normalization, web/iOS refresh and offline recovery, location changes, backend caching/backoff, and widget handoff. The Apple briefing accuracy batch is recorded separately in `ios-apple-briefing.md`.
+
+Two reproduced races were corrected and independently re-reviewed. Concurrent upstream quota responses must keep the longest active cooldown and return its remaining duration; a later short limit must not reopen access during a longer limit. Widget current conditions and daily forecasts have independent section timestamps. Merging app and widget caches must preserve the newer value for each section, retain the app value on ties, and keep saved location and unit selection intact. Older widget caches without section timestamps use their existing fetch timestamp for both sections.
+
+
+Validation: 409 client tests and 153 server tests passed (four optional live tests skipped), along with 73 checks against the actual shared Swift widget code, 16 Chromium/WebKit native integration cases, lint, typechecking, web build, and signed iOS app/widget compilation. Three quota race regressions and ten widget checks were added; the original failures were demonstrated before the fixes. Independent provider and React passes found no additional confirmed defects. The reviewers cleared both fixes after challenge. Live provider quotas and physical WidgetKit scheduling were not exercised; this batch did not deploy backend changes or install the new widget build on the phone. Changes remain local and uncommitted.

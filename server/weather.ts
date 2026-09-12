@@ -8,6 +8,11 @@ const limits = new Map<string, { count: number; until: number }>();
 let retryAt = 0;
 class ProviderError extends Error { constructor(public status: number, public retry = 60) { super('weather_unavailable'); } }
 export function resetWeatherCache() { cache.clear(); pending.clear(); limits.clear(); retryAt = 0; }
+function quotaError(retrySeconds: number): ProviderError {
+  const now = Date.now();
+  retryAt = Math.max(retryAt, now + retrySeconds * 1000);
+  return new ProviderError(429, Math.ceil((retryAt - now) / 1000));
+}
 async function provider(path: string, params: Record<string,string>): Promise<unknown> {
   if (Date.now() < retryAt) throw new ProviderError(429, Math.ceil((retryAt-Date.now())/1000));
   const url = new URL(`https://data.api.xweather.com/${path}`);
@@ -17,12 +22,12 @@ async function provider(path: string, params: Record<string,string>): Promise<un
     const header = response.headers.get('retry-after');
     const seconds = Number(header);
     const retry = Math.max(60, header && Number.isFinite(seconds) ? seconds : header && Number.isFinite(Date.parse(header)) ? (Date.parse(header)-Date.now())/1000 : 3600);
-    retryAt = Date.now()+retry*1000; throw new ProviderError(429,Math.ceil(retry));
+    throw quotaError(retry);
   }
   if (!response.ok) throw new ProviderError(503);
   const raw = await response.json();
   if (!raw?.success) {
-    if (['maxhits','maxhits_day','maxhits_month','rate_limit'].includes(raw?.error?.code)) { retryAt = Date.now()+3600000; throw new ProviderError(429,3600); }
+    if (['maxhits','maxhits_day','maxhits_month','rate_limit'].includes(raw?.error?.code)) throw quotaError(3600);
     throw new ProviderError(502);
   }
   return raw;
