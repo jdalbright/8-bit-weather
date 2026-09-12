@@ -133,7 +133,7 @@ it('rechecks an open app at the next provider interval and replaces cached rain 
 
 function normalizeWeather(...args: Parameters<typeof normalizeLegacyWeather>) {
   const s = normalizeLegacyWeather(...args);
-  return { ...s, provider: 'xweather' as const, sectionTimes: { current: s.fetchedAt, forecast: s.fetchedAt },
+  return { ...s, current: { ...s.current, precipitationProbability: null }, provider: 'xweather' as const, sectionTimes: { current: s.fetchedAt, forecast: s.fetchedAt },
     refreshAfter: Math.min(s.fetchedAt+600000,Math.max(s.current.time*1000+900000,s.fetchedAt+60000)) };
 }
 
@@ -147,4 +147,17 @@ it('keeps a legacy saved forecast visible while requesting Xweather on first onl
   expect(mockedFetch).toHaveBeenCalledOnce();
   await act(async()=>complete(normalizeWeather(forecastFixture(Date.now()),asheville)));
   expect(result.current.snapshot?.provider).toBe('xweather');
+});
+
+it('refreshes older Xweather snapshots missing current probability once, preserving saved data until success', async () => {
+  const old: WeatherSnapshot = normalizeWeather(forecastFixture(Date.now(), 95), asheville);
+  delete old.current.precipitationProbability;
+  cacheWeather(old);
+  const fresh = { ...old, current: { ...old.current, code: 2, precipitationProbability: 0 } };
+  mockedFetch.mockResolvedValue(fresh);
+  const { result } = renderHook(() => useWeather(asheville));
+  await waitFor(() => expect(result.current.snapshot?.current.precipitationProbability).toBe(0));
+  expect(result.current.snapshot?.current.code).toBe(2);
+  await act(async () => result.current.refresh());
+  expect(mockedFetch).toHaveBeenCalledTimes(1);
 });

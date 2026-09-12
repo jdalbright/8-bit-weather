@@ -25,7 +25,7 @@ export function useWeather(place: Place | null) {
     const cache = memory && (!stored || memory.fetchedAt >= stored.fetchedAt) ? memory : stored;
     latest.current = cache;
     if (!navigator.onLine) { setState({ snapshot: cache, loading: false, error: cache ? null : 'You’re offline. Connect to load weather for this place.', placeId: place.id }); return 'skipped'; }
-    if ((!force && cache && cache.provider === 'xweather' && isFresh(cache)) || Date.now() < cooldown.current) {
+    if ((!force && cache && cache.provider === 'xweather' && cache.current.precipitationProbability !== undefined && isFresh(cache)) || Date.now() < cooldown.current) {
       setState(previous => ({ snapshot: cache, loading: false, error: Date.now() < cooldown.current ? previous.error : null, placeId: place.id }));
       return 'skipped';
     }

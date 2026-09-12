@@ -200,6 +200,6 @@ describe('pull to refresh', () => {
 
 function normalizeWeather(...args: Parameters<typeof normalizeLegacyWeather>) {
   const s = normalizeLegacyWeather(...args);
-  return { ...s, provider: 'xweather' as const, sectionTimes: { current: s.fetchedAt, forecast: s.fetchedAt },
+  return { ...s, current: { ...s.current, precipitationProbability: null }, provider: 'xweather' as const, sectionTimes: { current: s.fetchedAt, forecast: s.fetchedAt },
     refreshAfter: Math.min(s.fetchedAt+600000,Math.max(s.current.time*1000+900000,s.fetchedAt+60000)) };
 }

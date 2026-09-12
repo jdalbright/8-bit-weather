@@ -35,3 +35,22 @@ test('zero-percent forecast and resolved clouds do not inherit a cached possible
   await expect(page.locator('.current-weather')).not.toContainText(/possible|Estimated conditions/);
   await expect(page.locator('.current-weather .saved-observation')).toContainText('As of');
 });
+
+for (const probability of [0, 76, null]) {
+  test(`current percentage uses its own conditions reading (${probability}), not the hourly forecast`, async ({ page }) => {
+    await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected: place, places: [place], preferences: { reducedMotion: true } })), asheville);
+    await page.route('**/api/weather?**', route => {
+      const raw = forecastFixture(Date.now(), probability === 0 ? 3 : 95);
+      raw.hourly.precipitation_probability = raw.hourly.time.map(() => 0);
+      const data = apiFixture(raw, route.request().url());
+      if (data.current) data.current.precipitationProbability = probability;
+      return route.fulfill({ json: data });
+    });
+    await page.goto('/');
+    const expected = probability === null ? '—' : `${probability}%`;
+    const stat = page.getByText('Current precipitation chance', { exact: true }).locator('..').locator('..');
+    await expect(stat).toContainText(`${expected}Now`);
+    await expect(page.locator('.hour').first()).toHaveAccessibleName(new RegExp(`Chance of precipitation: ${expected}`));
+    await expect(page.locator('.hour').nth(1)).toHaveAccessibleName(/Chance of precipitation: 0%/);
+  });
+}

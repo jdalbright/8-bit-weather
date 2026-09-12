@@ -34,3 +34,12 @@ Sources: https://www.xweather.com/docs/weather-api/endpoints/conditions, https:/
 - Full browser run: 228 passed, 13 intentional skips, one animation sampling failure. Both browser animation cases passed in an isolated single-worker rerun (229 distinct passing cases overall).
 - Full native-web run: 58 passed and two animation sampling failures. All four native interaction cases passed in an isolated single-worker rerun (60 distinct passing cases overall). No animation assertions were weakened.
 - No Xweather credentials are present in the local environment or local environment files. Live provider/Raleigh checks, deployed cache/firewall behavior, signed native-device installation, and production activation remain unverified. No deployment or paid service activation was performed.
+
+
+The current precipitation percentage comes from `conditions.periods[].pop`, paired
+with the current headline and its timestamp. Future tiles keep their hourly forecast
+percentages. A missing current probability displays unavailable, never a substituted
+hourly zero. Older saved snapshots remain readable and refresh once online to obtain
+the current probability; the same backend cache and quota rules still apply. Existing
+snapshots that do not yet contain the field retain their explicitly labelled hourly
+percentage until that refresh succeeds. See the [conditions response documentation](https://www.xweather.com/docs/weather-api/endpoints/conditions).
