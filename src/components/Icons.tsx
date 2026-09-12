@@ -30,7 +30,7 @@ export function Icon({ name, size = 20, className = '' }: { name: IconName; size
   return <svg className={`pixel-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" shapeRendering="crispEdges"><path d={paths[name]} fillRule="evenodd" /></svg>;
 }
 function Sun() {
-  return <><path fill="#ef941f" d="M10 0h4v4h3V2h3v3h-2v3h3V7h3v4h-4v3h4v3h-4v3h-3v-2h-3v6h-4v-5H7v3H4v-4H1v-4h3v-3H0V7h4V4h3v2h3z" /><path fill="#8b531e" d="M8 4h8v2h3v3h2v7h-2v3h-3v2H8v-2H5v-3H3V9h2V6h3z"/><path fill="#ffdb4d" d="M8 5h8v2h3v3h1v5h-2v3h-3v2H9v-2H6v-3H4v-5h2V7h2z"/><path fill="#fff19a" d="M8 7h7v2H8v3H6v-2h2z"/><path fill="#ffb531" d="M18 10h2v5h-2v3h-3v2H9v-2h6v-2h3z"/><path fill="#a56424" d="M8 11h2v3H8zm6 0h2v3h-2zm-4 5h4v1h-4z"/></>;
+  return <><path fill="#ef941f" d="M10 0h4v4h3V2h3v3h-2v3h3V7h3v4h-4v3h4v3h-4v3h-3v-2h-3v6h-4v-5H7v3H4v-4H1v-4h3v-3H0V7h4V4h3v2h3z" /><path fill="#8b531e" d="M8 4h8v2h3v3h2v7h-2v3h-3v2H8v-2H5v-3H3V9h2V6h3z"/><path fill="#ffdb4d" d="M8 5h8v2h3v3h1v5h-2v3h-3v2H9v-2H6v-3H4v-5h2V7h2z"/><path fill="#fff19a" d="M8 7h7v2H8v3H6v-2h2z"/><path fill="#ffb531" d="M18 10h2v5h-2v3h-3v2H9v-2h6v-2h3z"/><path className="sun-eyes" fill="#a56424" d="M8 11h2v3H8zm6 0h2v3h-2z"/><path fill="#a56424" d="M10 16h4v1h-4z"/></>;
 }
 function Moon() { return <><path fill="#9187b0" d="M8 2h8v2h-4v4h2v3h3v2h5v5h-3v3H8v-2H5v-3H3V8h2V5h3z"/><path fill="#fff1b4" d="M8 3h5v2h-3v5h2v3h3v2h6v3h-3v2H8v-2H6v-3H4V9h2V6h2z"/><path fill="#d2c591" d="M6 9h3v3H6zm4 6h3v3h-3z"/></>; }
 export function Cloud({ dark = false }: { dark?: boolean }) {
