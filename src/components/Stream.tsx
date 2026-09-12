@@ -4,6 +4,7 @@ import type { SceneState } from '../types';
 import type { Landscape } from '../lib/landscapes';
 import { landscapes } from '../lib/landscapes';
 import { WaterRipples } from './WaterRipples';
+import { RaleighRiverSurface } from './RaleighRiverSurface';
 
 export function Stream({ scene, landscape, discoveryId }: {
   scene: SceneState; landscape: Landscape; discoveryId?: number;
@@ -23,6 +24,7 @@ export function Stream({ scene, landscape, discoveryId }: {
   return <g className="stream" data-landscape={landscape} data-water-kind="stream" style={style}>
     <defs><clipPath id={clipId}><path className="stream-waterline" d={layout.mask}/></clipPath></defs>
     <g className="stream-water" clipPath={`url(#${clipId})`}>
+      {landscape === 'raleigh' ? <RaleighRiverSurface scene={scene} /> : <>
       <g className="stream-depth">{currents.map((d, i) => <path key={i} className="stream-current stream-undercurrent" d={d}
         style={{ animationDelay: `${-i * .73}s` }} />)}</g>
       <g className="stream-reflections">{currents.map((d, i) => <path key={i} className="stream-current stream-highlight" d={d}
@@ -30,7 +32,8 @@ export function Stream({ scene, landscape, discoveryId }: {
       <g className="stream-eddies">{eddies.map(([x, y, scale], i) => <g key={i} transform={`translate(${x} ${y}) scale(${scale})`}>
         <path className="stream-eddy" d="M-15-2h12v-2h11v2h8v3h-5m-23 3h16v2h9" style={{ animationDelay: `${-i * .51}s` }}/>
       </g>)}</g>
-      <WaterRipples scene={scene} layout={layout} discoveryId={discoveryId}/>
+      </>}
+      <WaterRipples scene={scene} layout={layout} discoveryId={discoveryId} flowingRain={landscape === 'raleigh'}/>
     </g>
   </g>;
 }

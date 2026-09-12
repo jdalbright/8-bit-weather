@@ -171,6 +171,9 @@
   .cloud-4 { top: 2%; right: 30%; width: 26%; animation-delay: -16s; opacity: .65; }
   .nighttime .scene-cloud { opacity: .55; }
   .stars i { position: absolute; width: 4px; height: 4px; background: #fff1bd; box-shadow: 0 0 0 1px #b9b3d688; animation: star-twinkle 5s steps(3) infinite; }
+  .raleigh-water-flow { animation: raleigh-water-flow var(--river-flow-duration) steps(32, end) infinite; }
+  .raleigh-water-light { transition: opacity 1.8s ease; }
+  .raleigh-water-texture { image-rendering: pixelated; }
   .stream-current { fill: none; stroke-linecap: butt; animation: stream-flow var(--stream-duration) linear infinite; }
   .stream-undercurrent { stroke: var(--stream-blue); stroke-width: 10; stroke-dasharray: 32 23 14 24; opacity: .18; }
   .stream-highlight { stroke: var(--stream-light); stroke-dasharray: 10 31 5 47; opacity: var(--stream-opacity); }
@@ -192,6 +195,7 @@
   .nighttime .meadow-grass { opacity: .5; }
   .river-ring { fill: none; stroke: var(--stream-light); stroke-width: 3; }
   .ambient-ripple { animation: river-ripple 2.8s steps(8, end) infinite; transform-origin: 0 0; opacity: .65; }
+  .raleigh-rain-streak { fill: none; stroke: var(--stream-light); stroke-width: 2; opacity: 0; animation: raleigh-rain-streak 2.8s steps(8, end) infinite; }
   .river-discovery { animation: discovery-ripple 1.6s steps(10, end) forwards; transform-origin: 0 0; }
   .river-discovery .inner-ring { opacity: .7; }
   .meadow-bird { opacity: 0; animation: bird-visit 42s steps(36, end) infinite; }
@@ -455,6 +459,7 @@
   @keyframes cloud-drift { from { transform: translateX(-32px); } to { transform: translateX(76px); } }
   @keyframes sun-bob { 50% { transform: translateY(-4px); } }
   @keyframes star-twinkle { 50% { opacity: .2; } }
+  @keyframes raleigh-water-flow { to { transform: translate(var(--flow-x), var(--flow-y)); } }
   @keyframes stream-flow { to { stroke-dashoffset: -93; } }
   @keyframes surf-roll { 0% { transform: translate(10px, -5px); opacity: 0; } 25% { opacity: .52; } 75% { opacity: .4; } 100% { transform: translate(-20px, 14px); opacity: 0; } }
   @keyframes stream-eddy { 0% { transform: translate(0, 0) scale(.65); opacity: 0; } 20% { opacity: .55; } 100% { transform: translate(15px, 5px) scale(1.3); opacity: 0; } }
@@ -463,6 +468,7 @@
   @keyframes snow-fall { from { transform: translate(0, -30px); } 50% { transform: translate(32px, 410px); } to { transform: translate(-20px, 850px); } }
   @keyframes grass-sway { from { transform: skewX(-1deg); } to { transform: skewX(var(--grass-lean)); } }
   @keyframes river-ripple { 0% { transform: scale(.45); opacity: 0; } 25% { opacity: .65; } 100% { transform: scale(1.4); opacity: 0; } }
+  @keyframes raleigh-rain-streak { 0% { transform: translate(0, 0); opacity: 0; } 25% { opacity: .35; } 100% { transform: translate(var(--rain-drift-x), var(--rain-drift-y)); opacity: 0; } }
   @keyframes discovery-ripple { 0% { transform: scale(.4); opacity: .9; } 100% { transform: translate(22px, 8px) scale(1.9); opacity: 0; } }
   @keyframes station-blink { 0%, 40%, 80% { opacity: 1; } 20%, 60% { opacity: .25; } }
   @keyframes bird-visit { 0%, 72% { opacity: 0; transform: translate(-24px, 3px); } 76% { opacity: .85; } 88% { transform: translate(60px, -18px); } 96%, 100% { opacity: 0; transform: translate(160px, -25px); } }
@@ -489,7 +495,7 @@
   [data-animate='false'] .art-layer, [data-animate='false'] .twilight-light { transition: none; }
   [data-animate='false'] .raleigh-bird-flight, [data-animate='false'] .raleigh-leaves { display: none; }
   [data-animate='false'] .raleigh-resting-bird { display: block; }
-  [data-animate='false'] .oak-light { transition: none; }
+  [data-animate='false'] .oak-light, [data-animate='false'] .raleigh-water-light { transition: none; }
   [data-animate='false'] .oak-frames, [data-calm='true'] .oak-frames { animation: none; background-position: 0 0; }
   [data-animate='false'] .river-discovery { transform: scale(1); opacity: .8; animation: none; }
   [data-animate='false'] .indicator-active { opacity: 1; animation: none; }

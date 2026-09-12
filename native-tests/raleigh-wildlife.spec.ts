@@ -15,20 +15,27 @@ test('Raleigh sprites use the native power and lifecycle signals and bundled art
   await expect(page.locator('.raleigh-resting-bird')).toBeVisible();
   await expect(page.locator('.raleigh-leaves')).toBeHidden();
   await expect(page.locator('.oak-frames')).toHaveCount(6);
+  await expect(page.locator('.raleigh-water-flow')).toHaveCount(9);
+  const waterMoving = () => page.locator('.raleigh-river-surface').evaluate(n => n.getAnimations({ subtree: true }).some(a => a.playState === 'running'));
+  await expect.poll(waterMoving).toBe(false);
   expect(await page.locator('.raleigh-oaks').evaluate(n => n.getAnimations({ subtree: true }).some(a => a.playState === 'running'))).toBe(false);
   expect(await page.locator('.raleigh-wildlife').evaluate(n => n.getAnimations({ subtree: true }).some(a => a.playState === 'running'))).toBe(false);
   expect(await page.evaluate(async () => {
-    await Promise.all(['cardinal.png', 'blue-jay.png', 'leaves.png'].map(name => { const image = new Image(); image.src = `/art/raleigh-wildlife/${name}`; return image.decode(); }));
+    await Promise.all([...['cardinal.png', 'blue-jay.png', 'leaves.png'].map(name => `/art/raleigh-wildlife/${name}`), ...['day', 'overcast', 'night'].map(light => `/art/raleigh-water/water-${light}.png`), '/art/raleigh-water/coverage.png'].map(src => { const image = new Image(); image.src = src; return image.decode(); }));
     return true;
   })).toBe(true);
   bridge.control.lowPowerMode = false;
   await page.evaluate(() => window.__emitNative('powerStateChanged', { lowPowerMode: false, thermalState: 'nominal' }));
   const moving = () => page.locator('.raleigh-wildlife,.raleigh-oaks').evaluateAll(nodes => nodes.every(n => n.getAnimations({ subtree: true }).some(a => a.playState === 'running')));
   await expect.poll(moving).toBe(true);
+  await expect.poll(waterMoving).toBe(true);
   await page.evaluate(() => window.__emitNative('appStateChange', { isActive: false }));
   await expect.poll(moving).toBe(false);
+  await expect.poll(waterMoving).toBe(false);
   await page.evaluate(() => window.__emitNative('appStateChange', { isActive: true }));
   await expect.poll(moving).toBe(true);
+  await expect.poll(waterMoving).toBe(true);
   await page.evaluate(() => window.__emitNative('powerStateChanged', { lowPowerMode: false, thermalState: 'serious' }));
   await expect(page.locator('.raleigh-resting-bird')).toBeVisible(); await expect.poll(moving).toBe(false);
+  await expect.poll(waterMoving).toBe(false);
 });

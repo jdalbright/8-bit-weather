@@ -73,7 +73,7 @@ for (const id of ids) {
         await Promise.all(node.getAnimations({ subtree: true }).filter(a => a instanceof CSSTransition).map(a => a.finished.catch(() => {})));
       });
       await page.evaluate(() => document.querySelector('.landscape')!.getAnimations({ subtree: true }).forEach(animation => animation.pause()));
-      const phase = (time: number) => page.evaluate(time => document.querySelectorAll('.stream-current,.stream-eddy,.surf-wave,.surf-shimmer').forEach(node => node.getAnimations().forEach(animation => { animation.currentTime = time; })), time);
+      const phase = (time: number) => page.evaluate(time => document.querySelectorAll('.stream-current,.stream-eddy,.raleigh-water-flow,.surf-wave,.surf-shimmer').forEach(node => node.getAnimations().forEach(animation => { animation.currentTime = time; })), time);
       await phase(400);
       const first = await page.locator('.landscape').screenshot({ scale: 'css', animations: 'allow' });
       await phase(1900);

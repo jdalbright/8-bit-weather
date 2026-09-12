@@ -1,6 +1,6 @@
 import type { Place } from '../types';
 import { ncRegion, distanceToOceanKm } from './geography';
-import { creek, ocean, slowRiver, woodlandCreek } from './water-layouts';
+import { creek, ocean, raleighCreek, slowRiver, woodlandCreek } from './water-layouts';
 import type { WaterLayout } from './water-layouts';
 
 export type Landscape = 'meadow' | 'raleigh' | 'beach' | 'coastal-plain' | 'piedmont' | 'blue-ridge';
@@ -23,7 +23,7 @@ const fireflies = [[115, 664], [327, 699], [413, 661], [491, 709], [558, 639], [
 
 export const landscapes: Record<Landscape, LandscapeDefinition> = {
   meadow: { name: 'Meadow', artPrefix: 'scene', artVersion: 2, water: creek, vegetation: grass, birds, fireflies },
-  raleigh: { name: 'Raleigh', artPrefix: 'scene-raleigh', artVersion: 1, water: creek, vegetation: grass, birds, fireflies },
+  raleigh: { name: 'Raleigh', artPrefix: 'scene-raleigh', artVersion: 1, water: raleighCreek, vegetation: grass, birds, fireflies },
   beach: {
     name: 'Beach', artPrefix: 'scene-beach', artVersion: 1, water: ocean,
     vegetation: { kind: 'sea-oats', positions: [[52, 706], [139, 762], [311, 771], [456, 760]], colors: ['#667944', '#c1a250'] },

@@ -28,6 +28,13 @@ export const creek: WaterLayout = {
   anchor: { x: 701, y: 744 }, duration: 4.2, opacity: .5, label: 'Make a river ripple',
 };
 
+// Raleigh's painted creek is wider than the original shared center-current mask.
+// A pixel coverage mask in RaleighRiverSurface excludes rocks inside this outline.
+export const raleighCreek: WaterLayout = {
+  ...creek,
+  mask: 'M650 668L565 668L552 679L517 686L477 693L450 697L411 698L414 710L445 722L481 729L510 743L539 755L568 769L608 783L641 790L664 801H960L942 787L905 775L869 769L838 759L808 750L779 743L747 729L716 720L679 710L641 701L600 695L582 695L604 687L638 681L650 676Z',
+};
+
 export const woodlandCreek: WaterLayout = {
   ...creek,
   mask: 'M583 678L553 682L534 689L489 694L477 699L505 711L541 727L580 741L616 755L675 774L708 801H793L816 787L810 778L788 772L781 758L754 750L727 740L702 730L672 723L651 717L620 711L598 703L577 696L559 693L574 686L599 680Z',
