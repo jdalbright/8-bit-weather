@@ -134,7 +134,7 @@ export default function App() {
     finally { if (attempt === locationRequest.current) setLocating(false); }
   }
   async function manualRefresh(source: 'button' | 'pull' = 'button') {
-    if (manualPending.current || weather.loading || !weather.online || !place) return;
+    if (manualPending.current || weather.loading || weather.retryAfterMs > 0 || !weather.online || !place) return;
     manualPending.current = true;
     audio.effect();
     const current = captureHapticContext(), context = interactionContext.current;
@@ -157,7 +157,7 @@ export default function App() {
     {notice || audio.error ? <div className="app-notice" role="alert"><span>{notice ?? audio.error}</span>{notice ? <button className="icon-button" aria-label="Dismiss message" onClick={() => setNotice(null)}><Icon name="close" size={14}/></button> : null}</div> : null}
     {storageUnavailable ? <p className="offline-notice" role="status">Saved data is unavailable. Your choices will last for this session.</p> : null}
     <div className="view-transition">
-    {view === 'today' ? <PullToRefresh key={place?.id ?? 'welcome'} enabled={!!place} disabled={weather.loading || !weather.online} onRefresh={() => manualRefresh('pull')}>
+    {view === 'today' ? <PullToRefresh key={place?.id ?? 'welcome'} enabled={!!place} disabled={weather.loading || !weather.online || weather.retryAfterMs > 0} onRefresh={() => manualRefresh('pull')}>
       <Today previewHour={previewHour} previewScene={previewScene} onSelectForecast={selectForecast} briefingProvider={preferences.briefingProvider} onBriefingProviderChange={briefingProvider => { if (briefingProvider !== preferences.briefingProvider) { triggerHaptic('selection'); setPreferences(previous => ({ ...previous, briefingProvider })); } }} place={place} {...weather} scene={scene} units={preferences.units} animate={motion.animate} decorativeAnimate={motion.decorativeAnimate} locating={locating} onRadar={() => navigate('radar')} onDiscover={audio.effect} onLocate={() => void handleLocate()} onPlaces={() => navigate('places')} onRefresh={() => void manualRefresh()}/>
     </PullToRefresh>
       : view === 'radar' ? <Radar key={`${place?.id}:${place?.latitude}:${place?.longitude}`} place={place} timezone={weather.snapshot?.timezone} now={weather.now} online={weather.online} active={motion.visible} allowPlayback={motion.decorativeAnimate} onPlaces={() => navigate('places')}/>

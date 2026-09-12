@@ -84,7 +84,10 @@ export async function fetchWeather(place: Place, signal: AbortSignal): Promise<W
 export async function searchPlaces(query: string, signal: AbortSignal): Promise<Place[]> {
   if (query.trim().length < 3) return [];
   const params = new URLSearchParams({ name: query.trim(), count: '8', language: 'en', format: 'json' });
-  const data = await requestJson(`https://geocoding-api.open-meteo.com/v1/search?${params}`, signal);
+  const data = await requestJson(`https://geocoding-api.open-meteo.com/v1/search?${params}`, signal).catch(error => {
+    if (signal.aborted) throw error;
+    throw new WeatherRequestError('City search is temporarily unavailable. Please try again.', error instanceof WeatherRequestError ? error.retryAfterMs : 0);
+  });
   if (!data || typeof data !== 'object' || !('results' in data) || !Array.isArray(data.results)) return [];
   return data.results.flatMap((item: Record<string, unknown>) => {
     if (typeof item.name !== 'string' || typeof item.latitude !== 'number' || typeof item.longitude !== 'number' || !Number.isFinite(item.latitude) || !Number.isFinite(item.longitude)) return [];

@@ -161,3 +161,25 @@ it('refreshes older Xweather snapshots missing current probability once, preserv
   await act(async () => result.current.refresh());
   expect(mockedFetch).toHaveBeenCalledTimes(1);
 });
+
+
+it('exposes cooldown remaining and enables retry at its exact deadline between clock ticks', async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(Date.parse('2026-09-12T14:00:00Z'));
+  vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
+  mockedFetch.mockRejectedValueOnce(new WeatherRequestError('Service busy', 65000));
+  const { result } = renderHook(() => useWeather(asheville));
+  await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+  expect(result.current.retryAfterMs).toBe(65000);
+  await act(async () => { await vi.advanceTimersByTimeAsync(60000); });
+  expect(result.current.retryAfterMs).toBe(5000);
+  await act(async () => { expect(await result.current.refresh(true)).toBe('skipped'); });
+  expect(mockedFetch).toHaveBeenCalledOnce();
+  await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+  expect(result.current.retryAfterMs).toBe(0);
+  const fresh = normalizeWeather(forecastFixture(Date.now()), asheville);
+  mockedFetch.mockResolvedValueOnce(fresh);
+  await act(async () => { expect(await result.current.refresh(true)).toBe('success'); });
+  expect(result.current.snapshot).toEqual(fresh);
+  expect(mockedFetch).toHaveBeenCalledTimes(2);
+});

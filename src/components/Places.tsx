@@ -11,7 +11,9 @@ export default function Places({ places, selected, locating, onLocate, onSelect,
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
+  const [retry, setRetry] = useState(0);
   const input = useRef<HTMLInputElement>(null);
+  const savedButtons = useRef(new Map<string, HTMLButtonElement>());
   useEffect(() => {
     const controller = new AbortController();
     setResults([]); setError(null); setSearched(false);
@@ -24,7 +26,15 @@ export default function Places({ places, selected, locating, onLocate, onSelect,
         .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     }, 350);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [query]);
+  }, [query, retry]);
+  function removePlace(place: Place, button: HTMLButtonElement) {
+    if (document.activeElement === button) {
+      const index = places.findIndex(saved => saved.id === place.id);
+      const neighbor = places[index + 1] ?? places[index - 1];
+      (neighbor ? savedButtons.current.get(neighbor.id) : input.current)?.focus();
+    }
+    onRemove(place.id);
+  }
   return <main id="main-content" tabIndex={-1} className="utility-view places-view">
     <div className="view-title"><Icon name="places" size={26}/><h1>Places</h1></div>
     <p className="view-intro">A different place. A whole new sky.</p>
@@ -33,10 +43,10 @@ export default function Places({ places, selected, locating, onLocate, onSelect,
     <label className="field-label" htmlFor="city-search">Find a city</label>
     <div className="search-field"><Icon name="search" size={18}/><input ref={input} id="city-search" type="search" autoComplete="off" enterKeyHint="search" placeholder="City or postal code" value={query} onChange={event => setQuery(event.target.value)} />{query ? <button className="icon-button" onClick={() => { setQuery(''); input.current?.focus(); }} aria-label="Clear city search"><Icon name="close" size={15}/></button> : null}</div>
     <div className="search-status" role="status">{loading ? 'Looking for places…' : query.length > 0 && query.trim().length < 3 ? 'Enter at least 3 characters.' : searched && !results.length ? 'No places found. Try a city and country.' : results.length ? `${results.length} ${results.length === 1 ? 'place' : 'places'} found` : ''}</div>
-    {error ? <p className="notice error-notice" role="alert">{error}</p> : null}
+    {error ? <div className="notice error-notice" role="alert"><p>{error}</p><button className="text-button" onClick={() => { input.current?.focus(); setRetry(value => value + 1); }}>Retry search <Icon name="refresh" size={14}/></button></div> : null}
     {results.length ? <ul className="place-list search-results" aria-label="City search results">{results.map(place => <li key={place.id}><button className="place-select" onClick={() => onSelect(place)}><span><strong>{place.name}</strong><small>{[place.region, place.country].filter(Boolean).join(', ')}</small></span><Icon name="plus" size={16}/></button></li>)}</ul> : null}
     <section className="saved-places" aria-labelledby="saved-title"><div className="section-heading"><h2 id="saved-title">Your places</h2><span className="place-count">{places.length}</span></div>
-      {places.length ? <ul className="place-list">{places.map(place => <li key={place.id} className={selected?.id === place.id ? 'selected-place' : ''}><button className="place-select" aria-current={selected?.id === place.id ? 'location' : undefined} onClick={() => onSelect(place)}><Icon name={selected?.id === place.id ? 'check' : 'places'} size={20}/><span><strong>{place.name}</strong><small>{[place.region, place.country].filter(Boolean).join(', ')}</small></span></button><button className="icon-button remove-place" aria-label={`Remove ${place.name} from saved places`} onClick={() => onRemove(place.id)}><Icon name="trash" size={17}/></button></li>)}</ul> : <div className="places-empty"><WeatherIcon kind="partly-cloudy" size={48}/><p>Your favorite skies belong here.</p><span>Choose a city above to save it for next time.</span></div>}
+      {places.length ? <ul className="place-list">{places.map(place => <li key={place.id} className={selected?.id === place.id ? 'selected-place' : ''}><button ref={button => { if (button) savedButtons.current.set(place.id, button); else savedButtons.current.delete(place.id); }} className="place-select" aria-current={selected?.id === place.id ? 'location' : undefined} onClick={() => onSelect(place)}><Icon name={selected?.id === place.id ? 'check' : 'places'} size={20}/><span><strong>{place.name}</strong><small>{[place.region, place.country].filter(Boolean).join(', ')}</small></span></button><button className="icon-button remove-place" aria-label={`Remove ${place.name} from saved places`} onClick={event => removePlace(place, event.currentTarget)}><Icon name="trash" size={17}/></button></li>)}</ul> : <div className="places-empty"><WeatherIcon kind="partly-cloudy" size={48}/><p>Your favorite skies belong here.</p><span>Choose a city above to save it for next time.</span></div>}
     </section>
     <p className="fine-print">Saved on this device. Location search by <a href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noreferrer">Open-Meteo</a> and <a href="https://www.geonames.org/" target="_blank" rel="noreferrer">GeoNames</a>.</p>
   </main>;

@@ -13,7 +13,7 @@ const failures = new Map<string, BriefingError>();
 let limitedUntil = 0;
 export class BriefingError extends Error {
   constructor(public code = 'unavailable', public retryAt = Date.now() + 60000) {
-    super(code.startsWith('apple:') ? appleUnavailableMessage(code.slice(6)) : code === 'offline' ? 'Connect to generate a new OpenAI briefing, or switch to Apple Intelligence.' : code === 'rate_limited' ? 'Briefings are busy. Try again in a moment.' : 'The briefing is unavailable right now. Your forecast is still here.');
+    super(code.startsWith('apple:') ? appleUnavailableMessage(code.slice(6)) : code === 'offline' ? 'Connect to generate a new OpenAI briefing.' : code === 'rate_limited' ? 'Briefings are busy. Try again in a moment.' : 'The briefing is unavailable right now. Your forecast is still here.');
   }
 }
 

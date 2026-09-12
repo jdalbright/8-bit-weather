@@ -19,6 +19,12 @@ describe('keyless service access and location', () => {
     vi.stubGlobal('fetch', vi.fn().mockImplementation((_url, options) => new Promise((_resolve, reject) => { options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError'))); })));
     const controller = new AbortController(); const promise = searchPlaces('Asheville', controller.signal); controller.abort(); await expect(promise).rejects.toMatchObject({ name: 'AbortError' });
   });
+  it('identifies city search failures without changing the provider cooldown', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 429, headers: { 'Retry-After': '120' } })));
+    await expect(searchPlaces('Asheville', new AbortController().signal)).rejects.toMatchObject({
+      message: 'City search is temporarily unavailable. Please try again.', retryAfterMs: 120000,
+    });
+  });
   it('returns actionable timeout errors instead of hanging forever', async () => {
     vi.useFakeTimers(); vi.stubGlobal('fetch', vi.fn().mockImplementation((_url, options) => new Promise((_resolve, reject) => options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError'))))));
     const promise = fetchWeather(asheville, new AbortController().signal); const check = expect(promise).rejects.toBeInstanceOf(WeatherRequestError);

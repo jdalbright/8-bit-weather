@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useLayoutEffect, useRef, useState } from 'react';
 import type { Preferences } from '../types';
 import type { useAudio } from '../hooks/useAudio';
 import type { useInstall } from '../hooks/useInstall';
@@ -14,6 +14,15 @@ interface Props { preferences: Preferences; onChange: (preferences: Preferences)
 export default function Settings({ preferences, onChange, audio, install, systemReduced, power, onClear }: Props) {
   const apple = useAppleAvailability(install.native);
   const [confirmClear, setConfirmClear] = useState(false);
+  const clearButton = useRef<HTMLButtonElement>(null);
+  const keepButton = useRef<HTMLButtonElement>(null);
+  const wasConfirming = useRef(false);
+  const confirmationDescription = useId();
+  useLayoutEffect(() => {
+    if (confirmClear) keepButton.current?.focus();
+    else if (wasConfirming.current) clearButton.current?.focus();
+    wasConfirming.current = confirmClear;
+  }, [confirmClear]);
   const change = <K extends keyof Preferences>(key: K, value: Preferences[K]) => {
     if (preferences[key] === value) return;
     if (key === 'haptics') { if (!value) setHapticsEnabled(false); }
@@ -53,7 +62,7 @@ export default function Settings({ preferences, onChange, audio, install, system
       {install.error ? <p role="alert" className="error-text">{install.error}</p> : null}
     </section> : null}
     <section className="settings-section" aria-labelledby="data-title"><h2 id="data-title">Your device, your data</h2><p className="settings-description">Places, preferences, forecasts, and saved briefings stay {install.native ? 'on this device' : 'in this browser'}. Coordinates are sent through our weather server to Vaisala Xweather to get your forecast. City searches use Open-Meteo and GeoNames. Opening Radar requests imagery for the viewed map area from NOAA and OpenFreeMap. {install.native ? 'Only your selected provider generates new briefings. Apple Intelligence runs on this device. Choosing OpenAI sends forecast facts to OpenAI when online, without your coordinates or saved place names. Providers never switch automatically.' : 'Forecast data is sent to OpenAI to write your briefing, without your coordinates or saved place names.'} No account or analytics.</p>
-      {!confirmClear ? <button className="text-button danger-button" onClick={() => { triggerHaptic({ kind: 'notification', type: 'warning' }); setConfirmClear(true); }}><Icon name="trash" size={16}/>Clear saved data</button> : <div className="clear-confirmation"><p>Clear saved places, forecasts, briefings, and settings from this device?</p><div><button className="pixel-button small" onClick={() => setConfirmClear(false)}>Keep my data</button><button className="pixel-button small danger" onClick={onClear}>Clear everything</button></div></div>}
+      {!confirmClear ? <button ref={clearButton} className="text-button danger-button" onClick={() => { triggerHaptic({ kind: 'notification', type: 'warning' }); setConfirmClear(true); }}><Icon name="trash" size={16}/>Clear saved data</button> : <div className="clear-confirmation"><p id={confirmationDescription}>Clear saved places, forecasts, briefings, and settings from this device?</p><div><button ref={keepButton} className="pixel-button small" aria-describedby={confirmationDescription} onClick={() => setConfirmClear(false)}>Keep my data</button><button className="pixel-button small danger" aria-describedby={confirmationDescription} onClick={onClear}>Clear everything</button></div></div>}
     </section>
     <footer className="settings-footer"><strong>8-BIT WEATHER</strong><p>A little pixel world. Your real weather.</p><span>Version 1.1.0 · Free & noncommercial</span><p><a href="https://www.xweather.com/" target="_blank" rel="noreferrer">Powered by Vaisala Xweather</a> · <a href="https://www.xweather.com/privacy" target="_blank" rel="noreferrer">Data & privacy</a></p>
       <p>Raleigh birds by <a href="https://pop-shop-packs.itch.io/garden-birds-pixel-character-asset-pack" target="_blank" rel="noreferrer">Pop Shop Packs</a> · Leaves by <a href="https://rs-pixel-store.itch.io/falling-leaf-fx" target="_blank" rel="noreferrer">EdgeLoopRepeat</a> · <a href="/art/raleigh-wildlife/credits.txt" target="_blank" rel="noreferrer">Artwork licenses</a></p>

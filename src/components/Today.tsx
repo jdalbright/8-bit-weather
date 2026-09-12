@@ -19,11 +19,11 @@ interface Props {
   previewHour?: HourWeather | null; previewScene?: SceneState | null; onSelectForecast?: (time: number | null) => void;
   briefingProvider?: BriefingProvider; onBriefingProviderChange?: (provider: BriefingProvider) => void;
   place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean; decorativeAnimate?: boolean;
-  loading: boolean; error: string | null; online: boolean; now: number; locating: boolean;
+  loading: boolean; retryAfterMs?: number; error: string | null; online: boolean; now: number; locating: boolean;
   onRadar?: () => void; onLocate: () => void; onPlaces: () => void; onRefresh: () => void;
   onDiscover: (discovery: Discovery) => void;
 }
-export default function Today({ previewHour = null, previewScene = null, onSelectForecast, briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, decorativeAnimate = animate, loading, error, online, now, locating, onRadar, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
+export default function Today({ previewHour = null, previewScene = null, onSelectForecast, briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, decorativeAnimate = animate, loading, retryAfterMs = 0, error, online, now, locating, onRadar, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
   const displayScene = previewScene ?? scene;
   const hourlyRef = useRef<HTMLDivElement>(null);
   const [uvExpanded, setUvExpanded] = useState(false);
@@ -47,6 +47,8 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
   const rainOutlook = snapshot ? upcomingRain(snapshot, now, online) : null;
   const uv = snapshot ? uvForecast(snapshot, now, online) : null;
   const [currentWind, currentWindUnit] = windSpeed(snapshot?.current.wind ?? null, units).split(' ');
+  const waitLabel = `${Math.ceil(retryAfterMs / 60000)} ${retryAfterMs > 60000 ? 'minutes' : 'minute'}`;
+  const refreshDisabled = loading || !online || retryAfterMs > 0;
   return <main id="main-content" tabIndex={-1} className="today-view">
     <div className="forecast-scene" data-preview={!!previewHour}>
     <Scenery key={snapshot ? `${place?.id}:${place?.latitude}:${place?.longitude}` : 'loading'} scene={displayScene} landscape={landscapeForPlace(place)} animate={decorativeAnimate} onDiscover={onDiscover} className={!place ? 'welcome-scene' : ''}>
@@ -60,7 +62,7 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
         <div className="forecast-preview-status" aria-hidden={!previewHour}>
           <div><p className="forecast-preview-badge">{stale ? 'Saved forecast preview' : 'Forecast preview'}</p></div>
         </div>
-        <div className="weather-date">{previewHour && snapshot ? forecastTimeLabel(previewHour.time, snapshot.timezone) : snapshot ? localTime((stale ? snapshot.current.time : now / 1000), snapshot.timezone, { weekday: 'short', month: 'short', day: 'numeric' }) : 'YOUR FORECAST IS ON ITS WAY'}</div>
+        <div className="weather-date">{previewHour && snapshot ? forecastTimeLabel(previewHour.time, snapshot.timezone) : snapshot ? localTime((stale ? snapshot.current.time : now / 1000), snapshot.timezone, { weekday: 'short', month: 'short', day: 'numeric' }) : loading ? 'YOUR FORECAST IS ON ITS WAY' : retryAfterMs > 0 ? 'WAITING TO RETRY' : 'WEATHER UNAVAILABLE'}</div>
         <h1 className="current-temperature" aria-label={displayTemperature == null ? 'Temperature unavailable' : `${degree} ${units === 'imperial' ? 'Fahrenheit' : 'Celsius'}`}><span>{degree.replace('°', '')}</span>{degree.includes('°') ? <sup>°</sup> : null}</h1>
         <p className="condition">{snapshot ? displayInfo.label : loading ? 'Gathering the forecast…' : 'Forecast unavailable'}</p>
         {previewHour && snapshot ? <p className="feels-like">Chance of precipitation: {percent(precipitationForHour(snapshot.hourly, previewHour.time))}</p> : snapshot ? <p className="feels-like">Feels like {temperature(snapshot.current.feelsLike, units)}<span aria-hidden="true"> · </span>H {temperature(today?.high, units)} / L {temperature(today?.low, units)}</p> : null}
@@ -70,7 +72,7 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
     </Scenery>
     </div>
     {snapshot && futureHours.length > 0 && onSelectForecast ? <ForecastTimeTravel hours={futureHours} selected={previewHour} timezone={snapshot.timezone} onSelect={onSelectForecast}/> : null}
-    {error ? <div className="notice error-notice" role="alert"><p>{error}</p>{place ? <button className="text-button" onClick={onRefresh} disabled={loading || !online}>Try again <Icon name="refresh" size={14}/></button> : null}</div> : null}
+    {error ? <div className="notice error-notice" role="alert"><p>{error}</p>{place ? <button className="text-button" onClick={onRefresh} disabled={refreshDisabled}>{retryAfterMs > 0 ? `Try again in ${waitLabel}` : 'Try again'} <Icon name="refresh" size={14}/></button> : null}</div> : null}
     {snapshot ? <>
       {stale ? <div className="offline-notice" role="status">{!online ? 'You’re offline. Showing your saved forecast.' : 'This forecast is getting old. Refresh for the latest.'}</div> : null}
       <h2 className="current-conditions-title">Current conditions</h2>
@@ -120,7 +122,7 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
           </div>;
         })}</div> : <p className="empty-forecast">Your saved forecast has expired. Connect and refresh to see the week ahead.</p>}
       </section>
-      <footer className="forecast-footer"><div><span>{updatedLabel(snapshot.fetchedAt, now)}</span><span aria-hidden="true"> · </span><button className="text-button" onClick={onRefresh} disabled={loading || !online}>{loading ? 'Refreshing…' : 'Refresh'}</button></div>{snapshot.provider === 'xweather' ? <a href="https://www.xweather.com/" target="_blank" rel="noreferrer">Powered by Vaisala Xweather</a> : <span>Saved Open-Meteo forecast</span>}</footer>
+      <footer className="forecast-footer"><div><span>{updatedLabel(snapshot.fetchedAt, now)}</span><span aria-hidden="true"> · </span><button className="text-button" onClick={onRefresh} disabled={refreshDisabled}>{loading ? 'Refreshing…' : retryAfterMs > 0 ? `Refresh in ${waitLabel}` : 'Refresh'}</button></div>{snapshot.provider === 'xweather' ? <a href="https://www.xweather.com/" target="_blank" rel="noreferrer">Powered by Vaisala Xweather</a> : <span>Saved Open-Meteo forecast</span>}</footer>
     </> : !place ? <section className="welcome-footer"><WeatherIcon kind="partly-cloudy" size={32}/><p>A forecast worth slowing down for.</p><span>Free weather. Cozy sounds. A sky that’s yours.</span></section> : null}
   </main>;
 }

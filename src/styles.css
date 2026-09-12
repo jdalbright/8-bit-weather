@@ -586,6 +586,8 @@
 }
 
 /* Capacitor uses the same safe-area layout; keep wide iPhone landscape content clear of the sensor housing. */
+/* Keep scrolled content clear of status-bar text; header padding alone scrolls away. */
+.native-app::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top); z-index: 30; background: var(--paper); pointer-events: none; }
 .native-app .app-shell { margin-top: 0; min-height: 100dvh; box-shadow: none; }
 .native-app .app-header { padding-left: max(10px, env(safe-area-inset-left)); padding-right: max(10px, env(safe-area-inset-right)); }
 .native-app .bottom-nav { --nav-inset-left: max(13px, env(safe-area-inset-left)); --nav-inset-right: max(13px, env(safe-area-inset-right)); padding-left: var(--nav-inset-left); padding-right: var(--nav-inset-right); }

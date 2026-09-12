@@ -15,6 +15,7 @@ export function useWeather(place: Place | null) {
   const request = useRef<AbortController | null>(null);
   const generation = useRef(0);
   const cooldown = useRef(0);
+  const [retryAt, setRetryAt] = useState(0);
   const latest = useRef<WeatherSnapshot | null>(null);
   const refresh = useCallback(async (force = false, onRequestStarted?: () => void): Promise<RefreshOutcome> => {
     request.current?.abort();
@@ -43,7 +44,11 @@ export function useWeather(place: Place | null) {
       return 'success';
     } catch (error) {
       if (controller.signal.aborted || attempt !== generation.current) return 'cancelled';
-      if (error instanceof WeatherRequestError && error.retryAfterMs) cooldown.current = Date.now() + error.retryAfterMs;
+      if (error instanceof WeatherRequestError && error.retryAfterMs) {
+        cooldown.current = Date.now() + error.retryAfterMs;
+        setRetryAt(cooldown.current);
+        setNow(Date.now());
+      }
       setState({ snapshot: cache, loading: false, error: error instanceof Error ? error.message : 'Couldn’t load the forecast. Please try again.', placeId: place.id });
       return 'failure';
     }
@@ -60,6 +65,11 @@ export function useWeather(place: Place | null) {
     window.addEventListener(NATIVE_ACTIVITY_EVENT, visible); window.addEventListener('online', onlineChanged); window.addEventListener('offline', onlineChanged); document.addEventListener('visibilitychange', visible);
     return () => { window.removeEventListener(NATIVE_ACTIVITY_EVENT, visible); clearInterval(interval); clearInterval(clock); window.removeEventListener('online', onlineChanged); window.removeEventListener('offline', onlineChanged); document.removeEventListener('visibilitychange', visible); };
   }, [refresh]);
+  useEffect(() => {
+    if (retryAt <= Date.now()) return;
+    const timer = window.setTimeout(() => setNow(Date.now()), retryAt - Date.now());
+    return () => window.clearTimeout(timer);
+  }, [retryAt]);
   const snapshot = place && state.snapshot && cacheMatches(state.snapshot, place) ? state.snapshot : null;
-  return { snapshot, loading: state.loading || (!!place && state.placeId !== place.id), error: state.placeId === place?.id ? state.error : null, online, now, refresh };
+  return { snapshot, loading: state.loading || (!!place && state.placeId !== place.id), error: state.placeId === place?.id ? state.error : null, online, now, refresh, retryAfterMs: Math.max(0, retryAt - now) };
 }
