@@ -31,6 +31,9 @@ enum WidgetWeatherClient {
         }
         var current = try await load("current")
         let forecast = try await load("forecast")
+        guard let currentTime = current["updatedAt"] as? Double,
+              let forecastTime = forecast["updatedAt"] as? Double else { throw WidgetWeatherError.invalidResponse }
+        current["sectionTimes"] = ["current": currentTime, "forecast": forecastTime]
         current["daily"] = forecast["daily"]
         return try parse(JSONSerialization.data(withJSONObject: current), for: place, now: Date())
     }
@@ -41,13 +44,16 @@ enum WidgetWeatherClient {
             let latitude: Double; let longitude: Double
             let timezone: String; let updatedAt: Double
             let current: WidgetCurrent; let daily: [WidgetDay]
+            let sectionTimes: WidgetSectionTimes?
         }
         let response = try JSONDecoder().decode(Response.self, from: data)
         let result = WidgetForecast(version: 1, placeId: place.id, latitude: response.latitude, longitude: response.longitude,
                                     timezone: response.timezone, fetchedAt: response.updatedAt,
-                                    current: response.current, daily: response.daily, provider: "xweather")
+                                    current: response.current, daily: response.daily, provider: "xweather", sectionTimes: response.sectionTimes)
         guard response.provider == "xweather", result.matches(place), !result.daily.isEmpty,
-              response.updatedAt <= now.timeIntervalSince1970 * 1000 + 60_000 else { throw WidgetWeatherError.invalidResponse }
+              response.updatedAt <= now.timeIntervalSince1970 * 1000 + 60_000,
+              (response.sectionTimes?.forecast ?? response.updatedAt) <= now.timeIntervalSince1970 * 1000 + 60_000,
+              (response.sectionTimes?.current ?? response.updatedAt) <= now.timeIntervalSince1970 * 1000 + 60_000 else { throw WidgetWeatherError.invalidResponse }
         return result
     }
 }

@@ -36,8 +36,8 @@ enum WidgetWeatherStore {
         if let place = selection.place,
            let refreshedData = try? Data(contentsOf: directory.appendingPathComponent(refreshFilename)),
            let refreshed = try? JSONDecoder().decode(WidgetForecast.self, from: refreshedData),
-           refreshed.matches(place), refreshed.fetchedAt >= (selection.weather?.fetchedAt ?? 0) {
-            selection.weather = refreshed
+           refreshed.matches(place) {
+            selection.weather = selection.weather?.merging(refreshed) ?? refreshed
         }
         return selection
     }
@@ -52,9 +52,10 @@ enum WidgetWeatherStore {
             // Coordinate with app clear/write across processes so the check and write
             // cannot repopulate personal data after a simultaneous clear operation.
             guard let selection = read(directory: directory), let selectedPlace = selection.place,
-                  selectedPlace.matches(place), forecast.fetchedAt >= (selection.weather?.fetchedAt ?? 0) else { return }
+                  selectedPlace.matches(place) else { return }
             // This separate file cannot overwrite a simultaneous app place/unit change.
-            try writeData(JSONEncoder().encode(forecast), to: directory.appendingPathComponent(refreshFilename))
+            let merged = selection.weather?.merging(forecast) ?? forecast
+            try writeData(JSONEncoder().encode(merged), to: directory.appendingPathComponent(refreshFilename))
         }
     }
 

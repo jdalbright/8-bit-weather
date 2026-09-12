@@ -42,6 +42,14 @@ struct WidgetDay: Codable, Sendable {
     var low: Double?
 }
 
+struct WidgetSectionTimes: Codable, Sendable {
+    var current: Double
+    var forecast: Double
+    var valid: Bool {
+        [current, forecast].allSatisfy { $0.isFinite && (0...40_000_000_000_000).contains($0) }
+    }
+}
+
 struct WidgetForecast: Codable, Sendable {
     var version: Int
     var placeId: String
@@ -52,6 +60,29 @@ struct WidgetForecast: Codable, Sendable {
     var current: WidgetCurrent
     var daily: [WidgetDay]
     var provider: String? = nil
+    var sectionTimes: WidgetSectionTimes? = nil
+
+    /// Section versions come from the backend, not the time the app writes storage.
+    /// Legacy snapshots use their single fetch timestamp for both sections.
+    func merging(_ candidate: WidgetForecast) -> WidgetForecast {
+        let currentTime = sectionTimes?.current ?? fetchedAt
+        let forecastTime = sectionTimes?.forecast ?? fetchedAt
+        let candidateCurrent = candidate.sectionTimes?.current ?? candidate.fetchedAt
+        let candidateForecast = candidate.sectionTimes?.forecast ?? candidate.fetchedAt
+        var result = self
+        if candidateCurrent > currentTime {
+            result.current = candidate.current
+            result.fetchedAt = candidate.fetchedAt
+            result.timezone = candidate.timezone
+            result.provider = candidate.provider
+        }
+        if candidateForecast > forecastTime { result.daily = candidate.daily }
+        if sectionTimes != nil || candidate.sectionTimes != nil {
+            result.sectionTimes = WidgetSectionTimes(current: max(currentTime, candidateCurrent),
+                                                     forecast: max(forecastTime, candidateForecast))
+        }
+        return result
+    }
 
     func matches(_ place: WidgetPlace) -> Bool {
         version == 1 && place.valid && placeId == place.id && latitude.isFinite && longitude.isFinite
@@ -64,6 +95,7 @@ struct WidgetForecast: Codable, Sendable {
                 (day.high == nil || (day.high!.isFinite && abs(day.high!) < 1000))
                     && (day.low == nil || (day.low!.isFinite && abs(day.low!) < 1000))
             }
+            && (sectionTimes == nil || sectionTimes!.valid)
             && TimeZone(identifier: timezone) != nil
     }
 

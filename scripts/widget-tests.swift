@@ -18,6 +18,23 @@ private final class RateLimitedWeatherProtocol: URLProtocol, @unchecked Sendable
     override func stopLoading() { }
 }
 
+private final class SectionWeatherProtocol: URLProtocol, @unchecked Sendable {
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override func startLoading() {
+        let section = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!.queryItems!.first { $0.name == "section" }!.value!
+        var body: [String: Any] = ["provider": "xweather", "latitude": 35.7796, "longitude": -78.6382,
+            "timezone": "America/New_York", "updatedAt": section == "current" ? 1_789_060_000_000 : 1_789_059_900_000]
+        if section == "current" {
+            body["current"] = ["time": 1_789_060_000, "temperature": 24, "code": 2, "isDay": true] as [String: Any]
+        } else { body["daily"] = [["date": "2026-09-10", "high": 27, "low": 18]] }
+        client?.urlProtocol(self, didReceive: HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: try! JSONSerialization.data(withJSONObject: body))
+        client?.urlProtocolDidFinishLoading(self)
+    }
+    override func stopLoading() { }
+}
+
 @main
 struct WidgetTests {
     static func main() async throws {
@@ -137,6 +154,71 @@ struct WidgetTests {
         payload.weather = nil
         try WidgetWeatherStore.write(payloadData: JSONEncoder().encode(payload), directory: directory)
         check(WidgetWeatherStore.read(directory: directory)?.weather?.current.temperature == 26, "Returning to a place can use its matching cached refresh")
+        // Current and forecast have independent backend cache TTLs. A widget
+        // refresh must never overwrite a newer app daily section on a current tie.
+        try WidgetWeatherStore.clear(directory: directory)
+        var appDaily = forecast
+        appDaily.daily[0].high = 30
+        payload.weather = appDaily
+        try WidgetWeatherStore.write(payloadData: JSONEncoder().encode(payload), directory: directory)
+        var widgetDaily = forecast
+        widgetDaily.daily[0].high = 24
+        try WidgetWeatherStore.writeRefresh(widgetDaily, for: place, directory: directory)
+        check(WidgetWeatherStore.read(directory: directory)?.weather?.daily[0].high == 30,
+              "Equal section timestamps preserve the app selection")
+        var sectionedApp = appDaily
+        sectionedApp.sectionTimes = WidgetSectionTimes(current: forecast.fetchedAt, forecast: forecast.fetchedAt + 300_000)
+        payload.weather = sectionedApp
+        try WidgetWeatherStore.write(payloadData: JSONEncoder().encode(payload), directory: directory)
+        check(WidgetWeatherStore.read(directory: directory)?.weather?.daily[0].high == 30,
+              "An older widget daily section cannot replace newer app daily data")
+        var sectionedWidget = widgetDaily
+        sectionedWidget.sectionTimes = WidgetSectionTimes(current: forecast.fetchedAt, forecast: forecast.fetchedAt + 600_000)
+        sectionedWidget.daily[0].high = 32
+        try WidgetWeatherStore.writeRefresh(sectionedWidget, for: place, directory: directory)
+        check(WidgetWeatherStore.read(directory: directory)?.weather?.daily[0].high == 32,
+              "A newer widget forecast updates daily data even when current timestamps tie")
+        sectionedWidget.fetchedAt -= 60_000
+        sectionedWidget.sectionTimes = WidgetSectionTimes(current: sectionedWidget.fetchedAt, forecast: forecast.fetchedAt + 900_000)
+        sectionedWidget.current.temperature = 4
+        sectionedWidget.daily[0].high = 35
+        try WidgetWeatherStore.writeRefresh(sectionedWidget, for: place, directory: directory)
+        check(WidgetWeatherStore.read(directory: directory)?.weather?.current.temperature == 24
+              && WidgetWeatherStore.read(directory: directory)?.weather?.daily[0].high == 35,
+              "Older widget current does not discard a newer daily section")
+        sectionedWidget.fetchedAt = forecast.fetchedAt + 60_000
+        sectionedWidget.sectionTimes = WidgetSectionTimes(current: sectionedWidget.fetchedAt, forecast: forecast.fetchedAt)
+        sectionedWidget.current.temperature = 26
+        sectionedWidget.daily[0].high = 22
+        try WidgetWeatherStore.writeRefresh(sectionedWidget, for: place, directory: directory)
+        let independent = WidgetWeatherStore.read(directory: directory)!.weather!
+        check(independent.current.temperature == 26 && independent.daily[0].high == 35,
+              "Newer current retains the freshest existing daily section")
+        check(independent.fetchedAt == sectionedWidget.fetchedAt && independent.staleDate == sectionedWidget.staleDate,
+              "Daily versions do not reset current observation staleness")
+        payload.units = "imperial"
+        payload.weather = independent
+        payload.weather?.current.code = 3
+        try WidgetWeatherStore.write(payloadData: JSONEncoder().encode(payload), directory: directory)
+        check(WidgetWeatherStore.read(directory: directory)?.units == "imperial"
+              && WidgetWeatherStore.read(directory: directory)?.weather?.current.code == 3,
+              "App units and resolved current code win equal-version ties")
+        var invalidSection = forecast
+        invalidSection.sectionTimes = WidgetSectionTimes(current: .infinity, forecast: forecast.fetchedAt)
+        check(!invalidSection.matches(place), "Reject invalid section version metadata")
+        let sectionedRaw = String(data: raw, encoding: .utf8)!.replacingOccurrences(of: "\"provider\":\"xweather\",",
+            with: "\"provider\":\"xweather\",\"sectionTimes\":{\"current\":1789060000000,\"forecast\":1789059900000},")
+        let sectionedParsed = try WidgetWeatherClient.parse(Data(sectionedRaw.utf8), for: place, now: now)
+        check(sectionedParsed.sectionTimes?.forecast == 1_789_059_900_000,
+              "Client parsing retains independent forecast version")
+        let sectionConfig = URLSessionConfiguration.ephemeral
+        sectionConfig.protocolClasses = [SectionWeatherProtocol.self]
+        let sectionSession = URLSession(configuration: sectionConfig)
+        defer { sectionSession.invalidateAndCancel() }
+        let fetchedSections = try await WidgetWeatherClient.fetch(for: place, session: sectionSession)
+        check(fetchedSections.sectionTimes?.current == 1_789_060_000_000
+              && fetchedSections.sectionTimes?.forecast == 1_789_059_900_000,
+              "Network client combines current and forecast response versions independently")
         let invalid = Data(#"{"version":9,"place":null,"units":"metric","weather":null,"landscape":"meadow","updatedAt":0}"#.utf8)
         do { try WidgetWeatherStore.write(payloadData: invalid, directory: directory); preconditionFailure("Expected invalid schema rejection") }
         catch { checks += 1 }
