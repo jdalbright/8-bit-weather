@@ -8,6 +8,12 @@ function request(section='current',extra='') { return new Request(`https://examp
 beforeEach(()=> {resetWeatherCache();vi.useFakeTimers();vi.setSystemTime(now);vi.stubEnv('XWEATHER_CLIENT_ID','test-id');vi.stubEnv('XWEATHER_CLIENT_SECRET','test-secret');});
 afterEach(()=> {vi.useRealTimers();vi.unstubAllEnvs();vi.unstubAllGlobals();});
 describe('Xweather condition interpretation',()=> {
+ it.each([0,21,100,null])('retains the current conditions probability independently from hourly forecasts: %s', pop => {
+  expect(currentFrom(raw({pop})).precipitationProbability).toBe(pop);
+ });
+ it.each([-1,101,'0',undefined])('keeps invalid current probability unavailable: %s', pop => {
+  expect(currentFrom(raw({pop})).precipitationProbability).toBeNull();
+ });
  it('resolves explicit dry rain and preserves active or missing-rate rain',()=> {
   expect(currentFrom(raw()).code).toBe(3);
   expect(currentFrom(raw({precipRateMM:0.3})).code).toBe(61);

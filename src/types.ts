@@ -34,6 +34,8 @@ export interface CurrentWeather {
   uv?: number | null;
   conditionLabel?: string;
   precipitationRate?: number | null;
+  /** Probability supplied with current conditions, separate from hourly forecasts. */
+  precipitationProbability?: number | null;
   /** Current model amounts in mm; optional for older saved forecasts. */
   rain?: number | null;
   showers?: number | null;

@@ -45,6 +45,9 @@ export function validSnapshot(value: unknown): value is WeatherSnapshot {
   const label = (s: unknown) => s === undefined || typeof s === 'string' && s.length <= 120;
   const uv = (n: unknown) => n === undefined || n === null || typeof n === 'number' && Number.isFinite(n) && n >= 0;
   if (!uv(s.current.uv) || !s.hourly.every(h => h && uv(h.uv)) || !s.daily.every(d => d && uv(d.uvMax))) return false;
+  if (s.current.precipitationProbability !== undefined && s.current.precipitationProbability !== null
+    && (typeof s.current.precipitationProbability !== 'number' || !Number.isFinite(s.current.precipitationProbability)
+      || s.current.precipitationProbability < 0 || s.current.precipitationProbability > 100)) return false;
   if (![s.current.rain, s.current.showers, s.current.cloudCover, s.current.precipitationRate].every(uv)
     || (s.current.cloudCover != null && s.current.cloudCover > 100)) return false;
   if (![s.current.temperature, s.current.feelsLike, s.current.humidity, s.current.wind, s.current.code].every(measurement) || typeof s.current.isDay !== 'boolean') return false;

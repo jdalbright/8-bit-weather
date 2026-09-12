@@ -56,7 +56,7 @@ export function currentFrom(raw: unknown): CurrentWeather {
   if (ordinaryRain && rate === 0 || qualified && precipitation && (rate === null || rate === 0 || wx.coverage === 'VC')) code = cloud(p);
   const current: CurrentWeather = { time: p.timestamp as number, temperature: number(p.tempC), feelsLike: number(p.feelslikeC),
     humidity: percent(p.humidity), wind: positive(p.windSpeedKPH), code, isDay: p.isDay, uv: positive(p.uvi),
-    precipitationRate: rate, cloudCover: percent(p.sky) };
+    precipitationRate: rate, precipitationProbability: percent(p.pop), cloudCover: percent(p.sky) };
   current.conditionLabel = currentWeatherInfo(current).label;
   return current;
 }
