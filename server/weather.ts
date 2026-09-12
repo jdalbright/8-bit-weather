@@ -37,7 +37,10 @@ async function load(section: WeatherSection, lat: number, lon: number, tz?: stri
     let part: Partial<WeatherPart>;
     let zone: string;
     if (section === 'forecast') {
-      const [hourly,daily] = await Promise.all([provider(`forecasts/${location}`, { filter:'1hr', limit:'49' }),provider(`forecasts/${location}`, { filter:'day', limit:'7' })]);
+      // Include the hour in progress: the default starts at the next hour and
+      // leaves its preceding probability interval unavailable after normalization.
+      const from = String(Math.floor(now / 3600000) * 3600);
+      const [hourly,daily] = await Promise.all([provider(`forecasts/${location}`, { filter:'1hr', limit:'49', from }),provider(`forecasts/${location}`, { filter:'day', limit:'7' })]);
       zone = timezone(daily); part = { hourly: hoursFrom(hourly), daily: daysFrom(daily) };
       if (!part.hourly?.length || !part.daily?.length) throw new ProviderError(502);
     } else if (section === 'history') {

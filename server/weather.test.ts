@@ -1,6 +1,7 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { handleWeather, resetWeatherCache } from './weather';
 import { codedWeather, currentFrom, daysFrom, hoursFrom, rainFrom } from '../src/lib/xweather';
+import { precipitationForHour } from '../src/lib/weather';
 const now = Date.parse('2026-09-11T14:00:00Z');
 function raw(overrides: Record<string,unknown> = {}) { return {success:true,response:[{profile:{tz:'America/New_York'},periods:[{timestamp:now/1000,tempC:24,feelslikeC:25,humidity:60,pop:0,windSpeedKPH:5,isDay:true,sky:90,cloudsCoded:'BK',weatherPrimaryCoded:':L:R',precipRateMM:0,precipMM:0,uvi:4,...overrides}]}]}; }
 function request(section='current',extra='') { return new Request(`https://example.com/api/weather?latitude=35.78&longitude=-78.64&section=${section}${extra}`); }
@@ -48,6 +49,26 @@ it('includes the current hour when the history range end is exclusive', async ()
   expect(data.hourly.at(-1).time).toBe(Date.parse('2026-09-12T00:00:00Z')/1000);
 });
 describe('weather endpoint',()=> {
+ it.each(['2026-09-12T00:50:00Z', '2026-11-01T06:30:00Z', '2026-03-08T07:30:00Z'])('provides this-hour probability at %s', async instant => {
+  vi.setSystemTime(Date.parse(instant));
+  const hour = Math.floor(Date.parse(instant)/3600000)*3600;
+  vi.stubGlobal('fetch', vi.fn(async (url: URL) => {
+    const data = raw();
+    if (url.searchParams.get('filter') === '1hr') {
+      // Model the live default: without an explicit start, the first period is
+      // next hour. Probability 37 belongs to the requested starting hour.
+      const start = Number(url.searchParams.get('from') ?? hour+3600);
+      data.response[0].periods = Array.from({length:49}, (_, i) => ({...data.response[0].periods[0], timestamp:start+i*3600, pop:i ? 12 : 37}));
+    }
+    return Response.json(data);
+  }));
+  const response = await handleWeather(request('forecast'));
+  const data = await response.json();
+  expect(response.status).toBe(200);
+  expect(precipitationForHour(data.hourly, hour)).toBe(37);
+  expect(precipitationForHour(data.hourly, hour+3600)).toBe(12);
+  expect(data.hourly.at(-1).time).toBe(hour+48*3600);
+ });
  it('keeps credentials upstream and shares cached requests across callers',async()=> {
   const fetcher=vi.fn(async(...args: unknown[])=> { void args; return Response.json(raw()); });vi.stubGlobal('fetch',fetcher);
   const [a,b]=await Promise.all([handleWeather(request()),handleWeather(request())]);
