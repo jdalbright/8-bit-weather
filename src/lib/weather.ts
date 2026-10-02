@@ -4,6 +4,7 @@ export const FRESH_FOR = 15 * 60 * 1000;
 export const STALE_AFTER = 45 * 60 * 1000;
 export const CURRENT_INTERVAL = 15 * 60 * 1000;
 export const WEATHER_CHECK_INTERVAL = 60 * 1000;
+export const RADAR_CONDITION_MAX_AGE = 8 * 60 * 1000;
 const names: Record<number, [WeatherKind, string]> = {
   0: ['clear', 'Clear skies'], 1: ['clear', 'Mostly sunny'], 2: ['partly-cloudy', 'Partly cloudy'],
   3: ['cloudy', 'Overcast'], 45: ['fog', 'Foggy'], 48: ['fog', 'Freezing fog'],
@@ -26,6 +27,7 @@ export function weatherInfo(code: number | null, isDay = true): { kind: WeatherK
  * Future rain/probabilities describe other intervals and cannot confirm rain now.
  */
 export function currentWeatherCode(current: CurrentWeather): number | null {
+  if (current.radarPrecipitation) return current.code;
   const { code, rain, showers, cloudCover } = current;
   if (code !== null && [51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)
     && rain === 0 && showers === 0 && cloudCover != null && Number.isFinite(cloudCover) && cloudCover >= 0 && cloudCover <= 100) {
@@ -42,7 +44,27 @@ export function currentWeatherInfo(current: CurrentWeather, isDay = current.isDa
   // Cached provider labels may describe chance/nearby weather that was already
   // resolved to cloud cover. Keep text aligned with the code used by the scene.
   const label = info.label === 'Rainy' ? 'Rain' : info.label === 'Snowy' ? 'Snow' : info.label;
-  return { ...info, label };
+  return { ...info, label: current.radarPrecipitation ? `${current.radarPrecipitation.kind === 'rain' ? 'Rain' : current.radarPrecipitation.kind === 'snow' ? 'Snow' : 'Hail'} on radar` : label };
+}
+export function staleCurrent(snapshot: WeatherSnapshot, now: number, online = true): boolean {
+  const radar = snapshot.current.radarPrecipitation;
+  return !online || now < snapshot.fetchedAt || now - snapshot.fetchedAt >= STALE_AFTER
+    || now - snapshot.current.time * 1000 > 3600000
+    || !!radar && (now < radar.time * 1000 || now - radar.time * 1000 >= RADAR_CONDITION_MAX_AGE);
+}
+/** Report present precipitation without manufacturing a forecast probability.
+ * A storm alone need not be producing precipitation at the selected location.
+ */
+export function currentPrecipitation(current: CurrentWeather): string | null {
+  const code = currentWeatherCode(current);
+  if (code === 100) return 'Wintry mix';
+  if (code === 101) return 'Sleet';
+  if (code === 102 || code === 96 || code === 99) return 'Hail';
+  const { kind } = weatherInfo(code);
+  if (kind === 'rain') return 'Rain';
+  if (kind === 'snow') return 'Snow';
+  return current.precipitationRate != null && Number.isFinite(current.precipitationRate) && current.precipitationRate > 0
+    ? 'Falling' : null;
 }
 export function temperature(value: number | null | undefined, units: Units): string {
   if (value == null || !Number.isFinite(value)) return '—';

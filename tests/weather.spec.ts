@@ -38,7 +38,7 @@ test('searches, saves, switches places, changes units, and persists choices', as
   await page.goto('/'); await page.getByRole('button', { name: 'Search for a city' }).click();
   await page.getByRole('searchbox', { name: 'Find a city' }).fill('Asheville');
   await page.getByRole('button', { name: 'Asheville North Carolina, United States', exact: true }).click();
-  await loaded(page); expect(requests).toBe(4); await expect(page.locator('.day-row')).toHaveCount(7); await expect(page.locator('.hour')).toHaveCount(24);
+  await loaded(page); expect(requests).toBe(4); await expect(page.locator('.day-row')).toHaveCount(7); await expect(page.locator('.hour')).toHaveCount(48);
   await expect(page.getByRole('heading', {name:'72° Fahrenheit'})).toBeVisible();
   await page.getByRole('button', { name: 'Settings', exact: true }).click();
   await page.getByRole('button', { name: '°C / km/h', exact: true }).click();

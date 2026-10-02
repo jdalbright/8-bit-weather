@@ -1,0 +1,261 @@
+[
+  {
+    "icaoId": "KEUG",
+    "receiptTime": "2026-09-13T17:24:13.859Z",
+    "obsTime": 1789320060,
+    "reportTime": "2026-09-13T17:21:00.000Z",
+    "temp": 15,
+    "dewp": 12.2,
+    "wdir": 190,
+    "wspd": 12,
+    "visib": 6,
+    "altim": 1018.4,
+    "qcField": 12,
+    "wxString": "-RA BR",
+    "precip": 0.005,
+    "metarType": "SPECI",
+    "rawOb": "SPECI KEUG 131721Z 19012KT 6SM -RA BR SCT015 BKN020 OVC035 15/12 A3007 RMK AO2 RAB19 P0000 T01500122 $",
+    "lat": 44.1331,
+    "lon": -123.2156,
+    "elev": 109,
+    "name": "Eugene/Mahlon Sweet Fld, OR, US",
+    "cover": "OVC",
+    "clouds": [
+      {
+        "cover": "SCT",
+        "base": 1500
+      },
+      {
+        "cover": "BKN",
+        "base": 2000
+      },
+      {
+        "cover": "OVC",
+        "base": 3500
+      }
+    ],
+    "fltCat": "MVFR"
+  },
+  {
+    "icaoId": "KBOS",
+    "receiptTime": "2026-09-13T17:22:10.161Z",
+    "obsTime": 1789319880,
+    "reportTime": "2026-09-13T17:18:00.000Z",
+    "temp": 18.9,
+    "dewp": 18.3,
+    "wdir": 140,
+    "wspd": 10,
+    "visib": 4,
+    "altim": 1013,
+    "qcField": 4,
+    "wxString": "RA BR",
+    "precip": 0.08,
+    "metarType": "SPECI",
+    "rawOb": "SPECI KBOS 131718Z 14010KT 4SM RA BR OVC110 19/18 A2991 RMK AO2 P0008 T01890183",
+    "lat": 42.3606,
+    "lon": -71.0097,
+    "elev": 4,
+    "name": "Boston/Logan Intl, MA, US",
+    "cover": "OVC",
+    "clouds": [
+      {
+        "cover": "OVC",
+        "base": 11000
+      }
+    ],
+    "fltCat": "MVFR"
+  },
+  {
+    "icaoId": "KJFK",
+    "receiptTime": "2026-09-13T17:18:13.044Z",
+    "obsTime": 1789319640,
+    "reportTime": "2026-09-13T17:14:00.000Z",
+    "temp": 22.8,
+    "dewp": 21.1,
+    "wdir": 360,
+    "wspd": 8,
+    "visib": "10+",
+    "altim": 1011.9,
+    "qcField": 12,
+    "wxString": "-RA",
+    "precip": 0.005,
+    "metarType": "SPECI",
+    "rawOb": "SPECI KJFK 131714Z 36008KT 10SM -RA FEW006 BKN010 BKN023 BKN140 OVC250 23/21 A2988 RMK AO2 RAB13 P0000 T02280211 $",
+    "lat": 40.6392,
+    "lon": -73.7639,
+    "elev": 3,
+    "name": "New York/JF Kennedy Intl, NY, US",
+    "cover": "BKN",
+    "clouds": [
+      {
+        "cover": "FEW",
+        "base": 600
+      },
+      {
+        "cover": "BKN",
+        "base": 1000
+      },
+      {
+        "cover": "BKN",
+        "base": 2300
+      },
+      {
+        "cover": "BKN",
+        "base": 14000
+      }
+    ],
+    "fltCat": "MVFR"
+  },
+  {
+    "icaoId": "KEUG",
+    "receiptTime": "2026-09-13T16:58:14.670Z",
+    "obsTime": 1789318440,
+    "reportTime": "2026-09-13T17:00:00.000Z",
+    "temp": 14.4,
+    "dewp": 11.7,
+    "wdir": 170,
+    "wspd": 6,
+    "visib": "10+",
+    "altim": 1018,
+    "slp": 1018,
+    "qcField": 12,
+    "metarType": "METAR",
+    "rawOb": "METAR KEUG 131654Z 17006KT 10SM SCT014 BKN035 BKN090 14/12 A3006 RMK AO2 SLP180 T01440117 $",
+    "lat": 44.1331,
+    "lon": -123.2156,
+    "elev": 109,
+    "name": "Eugene/Mahlon Sweet Fld, OR, US",
+    "cover": "BKN",
+    "clouds": [
+      {
+        "cover": "SCT",
+        "base": 1400
+      },
+      {
+        "cover": "BKN",
+        "base": 3500
+      },
+      {
+        "cover": "BKN",
+        "base": 9000
+      }
+    ],
+    "fltCat": "VFR"
+  },
+  {
+    "icaoId": "KBOS",
+    "receiptTime": "2026-09-13T16:58:14.509Z",
+    "obsTime": 1789318440,
+    "reportTime": "2026-09-13T17:00:00.000Z",
+    "temp": 18.9,
+    "dewp": 18.3,
+    "wdir": 120,
+    "wspd": 7,
+    "visib": 2.5,
+    "altim": 1013.3,
+    "slp": 1013.1,
+    "qcField": 4,
+    "wxString": "+RA BR",
+    "precip": 0.27,
+    "metarType": "METAR",
+    "rawOb": "METAR KBOS 131654Z 12007KT 2 1/2SM +RA BR SCT008 BKN095 OVC120 19/18 A2992 RMK AO2 SLP131 P0027 T01890183",
+    "lat": 42.3606,
+    "lon": -71.0097,
+    "elev": 4,
+    "name": "Boston/Logan Intl, MA, US",
+    "cover": "OVC",
+    "clouds": [
+      {
+        "cover": "SCT",
+        "base": 800
+      },
+      {
+        "cover": "BKN",
+        "base": 9500
+      },
+      {
+        "cover": "OVC",
+        "base": 12000
+      }
+    ],
+    "fltCat": "IFR"
+  },
+  {
+    "icaoId": "KJFK",
+    "receiptTime": "2026-09-13T16:54:09.743Z",
+    "obsTime": 1789318260,
+    "reportTime": "2026-09-13T17:00:00.000Z",
+    "temp": 22.8,
+    "dewp": 21.7,
+    "wdir": 350,
+    "wspd": 6,
+    "visib": "10+",
+    "altim": 1011.9,
+    "slp": 1011.9,
+    "qcField": 12,
+    "precip": 0.03,
+    "metarType": "METAR",
+    "rawOb": "METAR KJFK 131651Z 35006KT 10SM FEW007 BKN023 BKN029 OVC130 23/22 A2988 RMK AO2 RAE22 SLP119 P0003 T02280217 $",
+    "lat": 40.6392,
+    "lon": -73.7639,
+    "elev": 3,
+    "name": "New York/JF Kennedy Intl, NY, US",
+    "cover": "OVC",
+    "clouds": [
+      {
+        "cover": "FEW",
+        "base": 700
+      },
+      {
+        "cover": "BKN",
+        "base": 2300
+      },
+      {
+        "cover": "BKN",
+        "base": 2900
+      },
+      {
+        "cover": "OVC",
+        "base": 13000
+      }
+    ],
+    "fltCat": "MVFR"
+  },
+  {
+    "icaoId": "KBOS",
+    "receiptTime": "2026-09-13T16:48:07.750Z",
+    "obsTime": 1789317900,
+    "reportTime": "2026-09-13T16:45:00.000Z",
+    "temp": 18.9,
+    "dewp": 18.3,
+    "wdir": 130,
+    "wspd": 8,
+    "visib": 2,
+    "altim": 1013.6,
+    "qcField": 4,
+    "wxString": "RA BR",
+    "precip": 0.24,
+    "metarType": "SPECI",
+    "rawOb": "SPECI KBOS 131645Z 13008KT 2SM RA BR SCT008 BKN095 OVC120 19/18 A2993 RMK AO2 P0024 T01890183",
+    "lat": 42.3606,
+    "lon": -71.0097,
+    "elev": 4,
+    "name": "Boston/Logan Intl, MA, US",
+    "cover": "OVC",
+    "clouds": [
+      {
+        "cover": "SCT",
+        "base": 800
+      },
+      {
+        "cover": "BKN",
+        "base": 9500
+      },
+      {
+        "cover": "OVC",
+        "base": 12000
+      }
+    ],
+    "fltCat": "IFR"
+  }
+]

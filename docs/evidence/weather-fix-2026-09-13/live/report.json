@@ -1,0 +1,222 @@
+{
+  "startedAt": "2026-09-13T17:25:01.054Z",
+  "method": "Live production provider input plus the local server NOAA reconciliation; not a deployed fix.",
+  "comparisons": [
+    {
+      "name": "Raleigh",
+      "latitude": 35.7796,
+      "longitude": -78.6382,
+      "url": "https://8-bit-weather.vercel.app/api/weather?latitude=35.7796&longitude=-78.6382&section=current",
+      "startedAt": "2026-09-13T17:25:01.314Z",
+      "completedAt": "2026-09-13T17:25:02.474Z",
+      "provider": {
+        "provider": "xweather",
+        "latitude": 35.7796,
+        "longitude": -78.6382,
+        "timezone": "America/New_York",
+        "updatedAt": 1789320301510,
+        "expiresAt": 1789320901510,
+        "current": {
+          "time": 1789320300,
+          "temperature": 31.43,
+          "feelsLike": 36.61,
+          "humidity": 63,
+          "wind": 10.75,
+          "code": 3,
+          "isDay": true,
+          "uv": 7,
+          "precipitationRate": 0,
+          "precipitationProbability": 0,
+          "cloudCover": 79,
+          "conditionLabel": "Overcast"
+        }
+      },
+      "radar": null,
+      "after": {
+        "time": 1789320300,
+        "temperature": 31.43,
+        "feelsLike": 36.61,
+        "humidity": 63,
+        "wind": 10.75,
+        "code": 3,
+        "isDay": true,
+        "uv": 7,
+        "precipitationRate": 0,
+        "precipitationProbability": 0,
+        "cloudCover": 79,
+        "conditionLabel": "Overcast"
+      }
+    },
+    {
+      "name": "KORF",
+      "latitude": 36.9037,
+      "longitude": -76.1927,
+      "url": "https://8-bit-weather.vercel.app/api/weather?latitude=36.9037&longitude=-76.1927&section=current",
+      "startedAt": "2026-09-13T17:25:02.475Z",
+      "completedAt": "2026-09-13T17:25:03.608Z",
+      "provider": {
+        "provider": "xweather",
+        "latitude": 36.9037,
+        "longitude": -76.1927,
+        "timezone": "America/New_York",
+        "updatedAt": 1789320302531,
+        "expiresAt": 1789320902531,
+        "current": {
+          "time": 1789320300,
+          "temperature": 26.93,
+          "feelsLike": 30.45,
+          "humidity": 89,
+          "wind": 9.04,
+          "code": 3,
+          "isDay": true,
+          "uv": 7,
+          "precipitationRate": 0,
+          "precipitationProbability": 0,
+          "cloudCover": 100,
+          "conditionLabel": "Overcast"
+        }
+      },
+      "radar": null,
+      "after": {
+        "time": 1789320300,
+        "temperature": 26.93,
+        "feelsLike": 30.45,
+        "humidity": 89,
+        "wind": 9.04,
+        "code": 3,
+        "isDay": true,
+        "uv": 7,
+        "precipitationRate": 0,
+        "precipitationProbability": 0,
+        "cloudCover": 100,
+        "conditionLabel": "Overcast"
+      }
+    },
+    {
+      "name": "KGNV",
+      "latitude": 29.6917,
+      "longitude": -82.276,
+      "url": "https://8-bit-weather.vercel.app/api/weather?latitude=29.6917&longitude=-82.276&section=current",
+      "startedAt": "2026-09-13T17:25:03.608Z",
+      "completedAt": "2026-09-13T17:25:04.681Z",
+      "provider": {
+        "provider": "xweather",
+        "latitude": 29.6917,
+        "longitude": -82.276,
+        "timezone": "America/New_York",
+        "updatedAt": 1789320303913,
+        "expiresAt": 1789320903913,
+        "current": {
+          "time": 1789320300,
+          "temperature": 31.07,
+          "feelsLike": 35.8,
+          "humidity": 63,
+          "wind": 12.53,
+          "code": 3,
+          "isDay": true,
+          "uv": 9,
+          "precipitationRate": 0,
+          "precipitationProbability": 0,
+          "cloudCover": 77,
+          "conditionLabel": "Overcast"
+        }
+      },
+      "radar": null,
+      "after": {
+        "time": 1789320300,
+        "temperature": 31.07,
+        "feelsLike": 35.8,
+        "humidity": 63,
+        "wind": 12.53,
+        "code": 3,
+        "isDay": true,
+        "uv": 9,
+        "precipitationRate": 0,
+        "precipitationProbability": 0,
+        "cloudCover": 77,
+        "conditionLabel": "Overcast"
+      }
+    },
+    {
+      "name": "KAVL",
+      "latitude": 35.4318,
+      "longitude": -82.5379,
+      "url": "https://8-bit-weather.vercel.app/api/weather?latitude=35.4318&longitude=-82.5379&section=current",
+      "startedAt": "2026-09-13T17:25:04.681Z",
+      "completedAt": "2026-09-13T17:25:05.490Z",
+      "provider": {
+        "provider": "xweather",
+        "latitude": 35.4318,
+        "longitude": -82.5379,
+        "timezone": "America/New_York",
+        "updatedAt": 1789320304736,
+        "expiresAt": 1789320904736,
+        "current": {
+          "time": 1789320300,
+          "temperature": 28.25,
+          "feelsLike": 29.26,
+          "humidity": 55,
+          "wind": 18.02,
+          "code": 1,
+          "isDay": true,
+          "uv": 8,
+          "precipitationRate": 0,
+          "precipitationProbability": 0,
+          "cloudCover": 22,
+          "conditionLabel": "Mostly sunny"
+        }
+      },
+      "radar": null,
+      "after": {
+        "time": 1789320300,
+        "temperature": 28.25,
+        "feelsLike": 29.26,
+        "humidity": 55,
+        "wind": 18.02,
+        "code": 1,
+        "isDay": true,
+        "uv": 8,
+        "precipitationRate": 0,
+        "precipitationProbability": 0,
+        "cloudCover": 22,
+        "conditionLabel": "Mostly sunny"
+      }
+    }
+  ],
+  "incidentReplay": {
+    "input": {
+      "time": 1789233720,
+      "temperature": 26.12,
+      "feelsLike": 26.12,
+      "humidity": 86,
+      "wind": 3.4,
+      "code": 3,
+      "isDay": true,
+      "uv": 5,
+      "precipitationRate": 0,
+      "precipitationProbability": 0,
+      "cloudCover": 84,
+      "conditionLabel": "Overcast"
+    },
+    "archive": "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/PrecipFlag_00.00/20260912/MRMS_PrecipFlag_00.00_20260912-172200.grib2.gz",
+    "after": {
+      "time": 1789233720,
+      "temperature": 26.12,
+      "feelsLike": 26.12,
+      "humidity": 86,
+      "wind": 3.4,
+      "code": 63,
+      "isDay": true,
+      "uv": 5,
+      "precipitationRate": null,
+      "precipitationProbability": null,
+      "cloudCover": 84,
+      "conditionLabel": "Rain on radar",
+      "radarPrecipitation": {
+        "time": 1789233720,
+        "kind": "rain"
+      }
+    },
+    "evaluatedAt": "2026-09-12T17:22:05.563Z"
+  }
+}

@@ -36,6 +36,8 @@ export interface CurrentWeather {
   precipitationRate?: number | null;
   /** Probability supplied with current conditions, separate from hourly forecasts. */
   precipitationProbability?: number | null;
+  /** Independent, point-sampled NOAA surface precipitation type; Unix seconds. */
+  radarPrecipitation?: { time: number; kind: 'rain' | 'snow' | 'hail' };
   /** Current model amounts in mm; optional for older saved forecasts. */
   rain?: number | null;
   showers?: number | null;

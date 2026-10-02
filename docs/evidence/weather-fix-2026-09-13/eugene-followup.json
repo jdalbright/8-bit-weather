@@ -1,0 +1,116 @@
+{
+  "checkedAt": "2026-09-13T17:36:34.536Z",
+  "source": "https://aviationweather.gov/api/data/metar?ids=KEUG&format=json&hours=2",
+  "observations": [
+    {
+      "icaoId": "KEUG",
+      "receiptTime": "2026-09-13T17:24:13.859Z",
+      "obsTime": 1789320060,
+      "reportTime": "2026-09-13T17:21:00.000Z",
+      "temp": 15,
+      "dewp": 12.2,
+      "wdir": 190,
+      "wspd": 12,
+      "visib": 6,
+      "altim": 1018.4,
+      "qcField": 12,
+      "wxString": "-RA BR",
+      "precip": 0.005,
+      "metarType": "SPECI",
+      "rawOb": "SPECI KEUG 131721Z 19012KT 6SM -RA BR SCT015 BKN020 OVC035 15/12 A3007 RMK AO2 RAB19 P0000 T01500122 $",
+      "lat": 44.1331,
+      "lon": -123.2156,
+      "elev": 109,
+      "name": "Eugene/Mahlon Sweet Fld, OR, US",
+      "cover": "OVC",
+      "clouds": [
+        {
+          "cover": "SCT",
+          "base": 1500
+        },
+        {
+          "cover": "BKN",
+          "base": 2000
+        },
+        {
+          "cover": "OVC",
+          "base": 3500
+        }
+      ],
+      "fltCat": "MVFR"
+    },
+    {
+      "icaoId": "KEUG",
+      "receiptTime": "2026-09-13T16:58:14.670Z",
+      "obsTime": 1789318440,
+      "reportTime": "2026-09-13T17:00:00.000Z",
+      "temp": 14.4,
+      "dewp": 11.7,
+      "wdir": 170,
+      "wspd": 6,
+      "visib": "10+",
+      "altim": 1018,
+      "slp": 1018,
+      "qcField": 12,
+      "metarType": "METAR",
+      "rawOb": "METAR KEUG 131654Z 17006KT 10SM SCT014 BKN035 BKN090 14/12 A3006 RMK AO2 SLP180 T01440117 $",
+      "lat": 44.1331,
+      "lon": -123.2156,
+      "elev": 109,
+      "name": "Eugene/Mahlon Sweet Fld, OR, US",
+      "cover": "BKN",
+      "clouds": [
+        {
+          "cover": "SCT",
+          "base": 1400
+        },
+        {
+          "cover": "BKN",
+          "base": 3500
+        },
+        {
+          "cover": "BKN",
+          "base": 9000
+        }
+      ],
+      "fltCat": "VFR"
+    },
+    {
+      "icaoId": "KEUG",
+      "receiptTime": "2026-09-13T15:58:08.399Z",
+      "obsTime": 1789314840,
+      "reportTime": "2026-09-13T16:00:00.000Z",
+      "temp": 12.8,
+      "dewp": 11.7,
+      "wdir": 150,
+      "wspd": 6,
+      "visib": "10+",
+      "altim": 1017.7,
+      "slp": 1017.6,
+      "qcField": 12,
+      "precip": 0.005,
+      "metarType": "METAR",
+      "rawOb": "METAR KEUG 131554Z 15006KT 10SM FEW025 BKN045 BKN080 13/12 A3005 RMK AO2 RAE01 SLP176 P0000 T01280117 $",
+      "lat": 44.1331,
+      "lon": -123.2156,
+      "elev": 109,
+      "name": "Eugene/Mahlon Sweet Fld, OR, US",
+      "cover": "BKN",
+      "clouds": [
+        {
+          "cover": "FEW",
+          "base": 2500
+        },
+        {
+          "cover": "BKN",
+          "base": 4500
+        },
+        {
+          "cover": "BKN",
+          "base": 8000
+        }
+      ],
+      "fltCat": "VFR"
+    }
+  ]
+}

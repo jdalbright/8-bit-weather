@@ -1,0 +1,45 @@
+{
+  "name": "KAVL",
+  "latitude": 35.4318,
+  "longitude": -82.5379,
+  "url": "https://8-bit-weather.vercel.app/api/weather?latitude=35.4318&longitude=-82.5379&section=current",
+  "startedAt": "2026-09-13T17:25:04.681Z",
+  "completedAt": "2026-09-13T17:25:05.490Z",
+  "provider": {
+    "provider": "xweather",
+    "latitude": 35.4318,
+    "longitude": -82.5379,
+    "timezone": "America/New_York",
+    "updatedAt": 1789320304736,
+    "expiresAt": 1789320904736,
+    "current": {
+      "time": 1789320300,
+      "temperature": 28.25,
+      "feelsLike": 29.26,
+      "humidity": 55,
+      "wind": 18.02,
+      "code": 1,
+      "isDay": true,
+      "uv": 8,
+      "precipitationRate": 0,
+      "precipitationProbability": 0,
+      "cloudCover": 22,
+      "conditionLabel": "Mostly sunny"
+    }
+  },
+  "radar": null,
+  "after": {
+    "time": 1789320300,
+    "temperature": 28.25,
+    "feelsLike": 29.26,
+    "humidity": 55,
+    "wind": 18.02,
+    "code": 1,
+    "isDay": true,
+    "uv": 8,
+    "precipitationRate": 0,
+    "precipitationProbability": 0,
+    "cloudCover": 22,
+    "conditionLabel": "Mostly sunny"
+  }
+}

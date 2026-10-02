@@ -50,6 +50,18 @@ struct WidgetTests {
         let place = WidgetPlace(id: "gps:35.77,-78.63&name=Raleigh + town/é", name: "Raleigh", latitude: 35.7796, longitude: -78.6382)
         let raw = Data(#"{"provider":"xweather","latitude":35.7796,"longitude":-78.6382,"timezone":"America/New_York","updatedAt":1789060000000,"current":{"time":1789060000,"temperature":24,"code":2,"isDay":true},"daily":[{"date":"2026-09-10","high":27,"low":18},{"date":"2026-09-11","high":28,"low":19}]}"#.utf8)
         let forecast = try WidgetWeatherClient.parse(raw, for: place, now: now)
+        let radarRaw = String(data: raw, encoding: .utf8)!.replacingOccurrences(of: #""code":2,"#, with: #""code":63,"radarPrecipitation":{"time":1789060000,"kind":"rain"},"#)
+        let radarForecast = try WidgetWeatherClient.parse(Data(radarRaw.utf8), for: place, now: now)
+        let radarPayload = WidgetPayload(version: 1, place: place, units: "imperial", weather: radarForecast, landscape: "raleigh", updatedAt: now.timeIntervalSince1970 * 1000)
+        check(radarPayload.condition == "Rain on radar", "Widget identifies the independent precipitation source")
+        check(!radarForecast.isStale(at: now.addingTimeInterval(7 * 60)), "Recent radar remains usable")
+        check(radarForecast.isStale(at: now.addingTimeInterval(8 * 60)), "Radar evidence expires after eight minutes")
+        check(radarForecast.timelineDates(from: now).contains(now.addingTimeInterval(8 * 60)), "Widget schedules the radar expiry even without another network refresh")
+        var invalidRadar = radarForecast
+        invalidRadar.current.radarPrecipitation?.kind = "storm"
+        check(!invalidRadar.matches(place), "Radar cannot invent a lightning observation")
+        let radarRoundTrip = try JSONDecoder().decode(WidgetForecast.self, from: JSONEncoder().encode(radarForecast))
+        check(radarRoundTrip.current.radarPrecipitation?.kind == "rain", "Persistence retains radar provenance")
         for (code, label) in [(3,"Overcast"),(61,"Light rain possible"),(100,"Wintry mix possible"),(101,"Sleet possible")] {
             let modified = String(data: raw, encoding: .utf8)!
                 .replacingOccurrences(of: #""code":2,"#, with: "\"code\":\(code),\"conditionLabel\":\"\(label)\",")

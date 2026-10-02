@@ -1,0 +1,45 @@
+{
+  "name": "Raleigh",
+  "latitude": 35.7796,
+  "longitude": -78.6382,
+  "url": "https://8-bit-weather.vercel.app/api/weather?latitude=35.7796&longitude=-78.6382&section=current",
+  "startedAt": "2026-09-13T17:25:01.314Z",
+  "completedAt": "2026-09-13T17:25:02.474Z",
+  "provider": {
+    "provider": "xweather",
+    "latitude": 35.7796,
+    "longitude": -78.6382,
+    "timezone": "America/New_York",
+    "updatedAt": 1789320301510,
+    "expiresAt": 1789320901510,
+    "current": {
+      "time": 1789320300,
+      "temperature": 31.43,
+      "feelsLike": 36.61,
+      "humidity": 63,
+      "wind": 10.75,
+      "code": 3,
+      "isDay": true,
+      "uv": 7,
+      "precipitationRate": 0,
+      "precipitationProbability": 0,
+      "cloudCover": 79,
+      "conditionLabel": "Overcast"
+    }
+  },
+  "radar": null,
+  "after": {
+    "time": 1789320300,
+    "temperature": 31.43,
+    "feelsLike": 36.61,
+    "humidity": 63,
+    "wind": 10.75,
+    "code": 3,
+    "isDay": true,
+    "uv": 7,
+    "precipitationRate": 0,
+    "precipitationProbability": 0,
+    "cloudCover": 79,
+    "conditionLabel": "Overcast"
+  }
+}

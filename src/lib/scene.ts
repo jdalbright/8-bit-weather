@@ -1,5 +1,5 @@
 import type { HourWeather, SceneState, WeatherSnapshot } from '../types';
-import { currentWeatherCode, localDate, STALE_AFTER, weatherInfo } from './weather';
+import { currentWeatherCode, localDate, staleCurrent, weatherInfo } from './weather';
 
 const HALF_TWILIGHT = 30 * 60;
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
@@ -21,8 +21,7 @@ export function precipitationIntensity(code: number | null): number {
 export function deriveScene(snapshot: WeatherSnapshot | null, now: number, online = true): SceneState {
   if (!snapshot) return welcomeScene;
   const { current } = snapshot;
-  const stale = !online || now < snapshot.fetchedAt || now - snapshot.fetchedAt >= STALE_AFTER
-    || now - current.time * 1000 > 3600000;
+  const stale = staleCurrent(snapshot, now, online);
   // Saved weather keeps the light of its observation, rather than inventing a current scene.
   const time = stale ? current.time : now / 1000;
   return sceneAt(snapshot, time, { ...current, code: currentWeatherCode(current) });

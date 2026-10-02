@@ -40,6 +40,10 @@ export function validSnapshot(value: unknown): value is WeatherSnapshot {
   if (s.provider !== undefined && !['xweather', 'open-meteo'].includes(s.provider)) return false;
   if (s.provider === 'xweather' && (!s.sectionTimes || ![s.sectionTimes.current,s.sectionTimes.forecast,s.refreshAfter].every(Number.isFinite))) return false;
   if (s.current.conditionLabel !== undefined && (typeof s.current.conditionLabel !== 'string' || s.current.conditionLabel.length > 120)) return false;
+  const radar = s.current.radarPrecipitation;
+  if (radar !== undefined && (!radar || !Number.isFinite(radar.time) || radar.time <= 0
+    || !['rain', 'snow', 'hail'].includes(radar.kind)
+    || s.current.code !== { rain: 63, snow: 73, hail: 102 }[radar.kind])) return false;
   try { new Intl.DateTimeFormat('en', { timeZone: s.timezone }); } catch { return false; }
   const measurement = (n: unknown) => n === null || typeof n === 'number' && Number.isFinite(n);
   const label = (s: unknown) => s === undefined || typeof s === 'string' && s.length <= 120;

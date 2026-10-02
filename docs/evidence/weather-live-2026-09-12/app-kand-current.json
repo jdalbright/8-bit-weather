@@ -1,0 +1,1 @@
+{"provider":"xweather","latitude":34.498,"longitude":-82.7092,"timezone":"America/New_York","updatedAt":1789237187194,"expiresAt":1789237787194,"current":{"time":1789237140,"temperature":26.36,"feelsLike":26.36,"humidity":82,"wind":15,"code":61,"isDay":true,"uv":4,"precipitationRate":0.91,"precipitationProbability":100,"cloudCover":98,"conditionLabel":"Light rain"}}

@@ -1,0 +1,45 @@
+{
+  "base": "9664ea75ec8a803e459fe6b59835e009c8ca5637",
+  "files": {
+    "server/current-precipitation.ts": "5d696e9977de7d088e63d77af626a4668e1f4bc7706fc43f6821f2f0a0d2269f",
+    "server/current-precipitation.test.ts": "8d5638bb831803e4210d1ac2104b7f77debfe77ca001410630fcd5c60e15020c",
+    "server/weather.ts": "abb99addfeb7f2be30ba70eebc56cbdc98266fe1ac9fe86df6b29bf2d5c14c01",
+    "server/weather.test.ts": "4b17926da5f8dfc505a2131a3050ab8f620e4136a144a706b622622310abc2d4",
+    "src/types.ts": "257f76a1d4380f4591f36364c78083bb5a7b6fbe3aff4a5534798f561900382c",
+    "src/lib/xweather.ts": "b89b2b3bbe4c1cfc2934b4f78d9882dd7ad17567308e936c5a90f917832eb9cf",
+    "src/lib/weather.ts": "7526d271fc2a7c0b9b3a7f750da0b8adea1c41b49cea1f833f3046835660414c",
+    "src/lib/weather.test.ts": "1eb657de285574f44576786385788c1e131deb4781200bd1b8ed52ad441e69e2",
+    "src/lib/scene.ts": "6f12ddb15cf876002c71af0f31ec0d13d5c9772637f6cdd6a57de045e04a6535",
+    "src/lib/storage.ts": "593067362ab627f3b19972bb1571942c1c48eab76c04097f108db78e19f550af",
+    "src/lib/storage.test.ts": "ce5d66beac5198fdc37c8c6dc349211b386e6306df5917272ec347907665986a",
+    "ios/Shared/WidgetWeather.swift": "b6fe5cfc5f4f64e9097a2f7d7ecaabde404c51300abbda76f0890ea3d73d3615",
+    "scripts/widget-tests.swift": "2d2d67cb0aae48651e294a2abf4a3ae55e6eb633445fb8f91dec46a26edeb49a",
+    "scripts/check-current-weather-live.mjs": "109677bbcceedc3201ae37ad37c9c683e223235f4aec81ec66e1f10ff84102e6",
+    "tests/xweather.spec.ts": "0f106d79934b0f88aeb0461c9abe99d7769ebfe9f9b727b9f762941e38cc067d",
+    "native-tests/current-precipitation.spec.ts": "3d7fcad1011fbb6b388b36a94e91665676463daaa2ab7d66f45ac633a6dcc2b5",
+    "docs/xweather.md": "e710f7c19b81e14e296633887f2ba64996e885bd4caac5d09b8c3cb1e82be39d",
+    "src/components/Today.tsx": "ebe08411a75bcd776988c2d41e364d31869808f418ed56affaa5210619df504d",
+    "src/App.test.tsx": "8f6422714a7c2439fd154045843c43f252255f9ada3a5f80052aedf68454eab3",
+    "scripts/check-server.mjs": "0d52f10e34ab80c4bca0843d7f7f20e15ef06fcdd8f639036f46996178ca1ba7",
+    "docs/evidence/weather-fix-2026-09-13/README.md": "3195f02c0255f7bd91b7f7b9f7c51f0f9157ca1579cffeb3bf5699bb5de3a63f"
+  },
+  "state": "Local release candidate; not deployed. Other in-progress features excluded.",
+  "validation": {
+    "clientTests": 434,
+    "serverTests": 187,
+    "optionalSkipped": 4,
+    "browserTests": 22,
+    "build": "passed",
+    "lint": "passed",
+    "nodeEsmSmoke": "passed",
+    "nodeRuntime": "22.23.2",
+    "testNodeOptions": "--no-experimental-webstorage"
+  },
+  "productionBaseVerified": {
+    "deploymentId": "dpl_HQgJuXDqcM5D2yLmUaK5eiHXgVrN",
+    "alias": "8-bit-weather.vercel.app",
+    "state": "READY",
+    "commit": "9664ea75ec8a803e459fe6b59835e009c8ca5637",
+    "checkedAt": "2026-09-13T17:36:00Z"
+  }
+}

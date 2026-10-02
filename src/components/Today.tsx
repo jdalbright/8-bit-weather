@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { BriefingProvider, Discovery, HourWeather, Place, SceneState, Units, WeatherSnapshot } from '../types';
-import { currentWeatherInfo, forecastWeatherInfo, dayLabel, futureDays, localDate, localTime, percent, precipitationForHour, STALE_AFTER, temperature, updatedLabel, weatherInfo, windSpeed } from '../lib/weather';
+import { currentPrecipitation, currentWeatherInfo, forecastWeatherInfo, dayLabel, futureDays, localDate, localTime, percent, precipitationForHour, staleCurrent, temperature, updatedLabel, weatherInfo, windSpeed } from '../lib/weather';
 import { Icon, WeatherIcon } from './Icons';
 import { Scenery } from './Scenery';
 import { landscapeForPlace } from '../lib/landscapes';
@@ -40,7 +40,8 @@ export default function Today({ bestTimeOutside = false, previewHour = null, pre
   const currentHour = snapshot?.hourly.find(hour => hour.time <= now / 1000 && hour.time + 3600 > now / 1000);
   const hasCurrentProbability = snapshot?.current.precipitationProbability !== undefined;
   const currentChance = hasCurrentProbability ? snapshot?.current.precipitationProbability : snapshot ? precipitationForHour(snapshot.hourly, currentHour?.time) : null;
-  const stale = !!snapshot && (!online || now < snapshot.fetchedAt || now - snapshot.fetchedAt >= STALE_AFTER || now - snapshot.current.time * 1000 > 3600000);
+  const precipitation = snapshot ? currentPrecipitation(snapshot.current) : null;
+  const stale = !!snapshot && staleCurrent(snapshot, now, online);
   const info = snapshot ? currentWeatherInfo(snapshot.current, scene.isDay) : weatherInfo(null);
   const rangeValues = days.flatMap(day => [day.low, day.high]).filter((n): n is number => n !== null);
   const minimum = Math.min(...rangeValues), maximum = Math.max(...rangeValues);
@@ -71,6 +72,7 @@ export default function Today({ bestTimeOutside = false, previewHour = null, pre
         <p className="condition">{snapshot ? displayInfo.label : loading ? 'Gathering the forecast…' : 'Forecast unavailable'}</p>
         {previewHour && snapshot ? <p className="feels-like">Chance of precipitation: {percent(precipitationForHour(snapshot.hourly, previewHour.time))}</p> : snapshot ? <p className="feels-like">Feels like {temperature(snapshot.current.feelsLike, units)}<span aria-hidden="true"> · </span>H {temperature(today?.high, units)} / L {temperature(today?.low, units)}</p> : null}
         {snapshot && !previewHour && !stale ? <p className="saved-observation">As of {localTime(snapshot.current.time, snapshot.timezone, { hour: 'numeric', minute: '2-digit' })}</p> : null}
+        {snapshot?.current.radarPrecipitation && !previewHour ? <p className="saved-observation"><a href="https://radar.weather.gov/" target="_blank" rel="noreferrer">NOAA radar</a> · {localTime(snapshot.current.radarPrecipitation.time, snapshot.timezone, { hour: 'numeric', minute: '2-digit' })}</p> : null}
         {stale ? <p className="saved-observation">Saved forecast · {localTime(previewHour ? snapshot!.fetchedAt / 1000 : snapshot!.current.time, snapshot!.timezone, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</p> : null}
       </div>}
     </Scenery>
@@ -81,7 +83,7 @@ export default function Today({ bestTimeOutside = false, previewHour = null, pre
       {stale ? <div className="offline-notice" role="status">{!online ? 'You’re offline. Showing your saved forecast.' : 'This forecast is getting old. Refresh for the latest.'}</div> : null}
       <h2 className="current-conditions-title">Current conditions</h2>
       <dl className="current-stats" aria-label="Current conditions">
-        <div><dt><Icon name="drop" className="rain-stat" size={24}/><span aria-hidden="true">Precip chance</span><span className="sr-only">{hasCurrentProbability ? 'Current precipitation chance' : 'Chance of precipitation this hour'}</span></dt><dd>{percent(currentChance)}<span className="stat-context" aria-hidden="true">{hasCurrentProbability ? 'Now' : 'This hour'}</span></dd></div>
+        <div><dt><Icon name="drop" className="rain-stat" size={24}/><span aria-hidden="true">{precipitation ? 'Precipitation' : 'Precip chance'}</span><span className="sr-only">{precipitation ? 'Current precipitation' : hasCurrentProbability ? 'Current precipitation chance' : 'Chance of precipitation this hour'}</span></dt><dd>{precipitation ?? percent(currentChance)}<span className="stat-context">{stale ? 'Saved' : precipitation || hasCurrentProbability ? 'Now' : 'This hour'}</span></dd></div>
         <div className="stat-simple"><dt><Icon name="wind" className="wind-stat" size={24}/><span>Wind</span></dt><dd>{currentWind}{currentWindUnit ? <> <small className="stat-unit">{currentWindUnit}</small></> : null}</dd></div>
         <div className="stat-simple"><dt><Icon name="drop" className="humidity-stat" size={24}/><span>Humidity</span></dt><dd>{percent(snapshot.current.humidity)}</dd></div>
         <div className="uv-stat"><dt className="sr-only">UV index</dt><dd><button className="uv-stat-button" aria-label={`UV index ${uv?.current ? `${uv.current.index}, ${uv.current.level.label}` : 'unavailable'}, ${uvExpanded ? 'hide' : 'show'} details`}
@@ -105,15 +107,17 @@ export default function Today({ bestTimeOutside = false, previewHour = null, pre
         {hours.length ? <div ref={hourlyRef} className="hourly-rail" data-pull-refresh-ignore tabIndex={0} aria-label="Hourly forecast, scroll for more hours">
           {hours.map(hour => { const isCurrentHour = hour.time <= now / 1000 && hour.time + 3600 > now / 1000;
             const useCurrent = isCurrentHour && !stale;
+            const precipitationLabel = useCurrent && precipitation ? 'Precipitation: ' : 'Chance of precipitation: ';
+            const precipitationValue = useCurrent && precipitation ? precipitation : percent(useCurrent && hasCurrentProbability ? currentChance : precipitationForHour(snapshot.hourly, hour.time));
             return <button className="hour" key={hour.time} type="button"
               aria-pressed={previewHour ? previewHour.time === hour.time : isCurrentHour}
-              aria-label={`${isCurrentHour ? 'Now' : forecastTimeLabel(hour.time, snapshot.timezone)}, ${(useCurrent ? info : forecastWeatherInfo(hour, hour.isDay)).label}, ${temperature(useCurrent ? snapshot.current.temperature : hour.temperature, units)}, Chance of precipitation: ${percent(useCurrent && hasCurrentProbability ? currentChance : precipitationForHour(snapshot.hourly, hour.time))}`}
+              aria-label={`${isCurrentHour ? 'Now' : forecastTimeLabel(hour.time, snapshot.timezone)}, ${(useCurrent ? info : forecastWeatherInfo(hour, hour.isDay)).label}, ${temperature(useCurrent ? snapshot.current.temperature : hour.temperature, units)}, ${precipitationLabel}${precipitationValue}`}
               onClick={() => { const time = isCurrentHour ? null : hour.time; if (onSelectForecast && time !== (previewHour?.time ?? null)) triggerHaptic('selection'); onSelectForecast?.(time); }}>
             <span className="hour-day" aria-hidden="true">{localDate(hour.time * 1000, snapshot.timezone) === todayDate ? 'Today' : localTime(hour.time, snapshot.timezone, { weekday: 'short' })}</span>
             <span className="hour-label">{isCurrentHour ? 'Now' : localTime(hour.time, snapshot.timezone, { hour: 'numeric' })}</span>
             <WeatherIcon kind={(useCurrent ? info : weatherInfo(hour.code)).kind} isDay={useCurrent ? scene.isDay : hour.isDay} size={30}/><span className="sr-only">{(useCurrent ? info : forecastWeatherInfo(hour, hour.isDay)).label}</span>
             <span className="hour-temperature">{temperature(useCurrent ? snapshot.current.temperature : hour.temperature, units)}</span>
-            <span className="hour-precipitation"><Icon name="drop" size={10}/><span className="sr-only">Chance of precipitation: </span>{percent(useCurrent && hasCurrentProbability ? currentChance : precipitationForHour(snapshot.hourly, hour.time))}</span>
+            <span className="hour-precipitation"><Icon name="drop" size={10}/><span className="sr-only">{precipitationLabel}</span>{precipitationValue}</span>
           </button>; })}</div> : <p className="empty-forecast">This hourly forecast has expired. Connect and refresh for the next 48 hours.</p>}
       </section>
       <SunTimes day={today} timezone={snapshot.timezone}/>

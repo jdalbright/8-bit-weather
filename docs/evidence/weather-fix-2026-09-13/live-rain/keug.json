@@ -1,0 +1,45 @@
+{
+  "name": "KEUG",
+  "latitude": 44.1331,
+  "longitude": -123.2156,
+  "url": "https://8-bit-weather.vercel.app/api/weather?latitude=44.1331&longitude=-123.2156&section=current",
+  "startedAt": "2026-09-13T17:29:58.064Z",
+  "completedAt": "2026-09-13T17:29:59.598Z",
+  "provider": {
+    "provider": "xweather",
+    "latitude": 44.1331,
+    "longitude": -123.2156,
+    "timezone": "America/Los_Angeles",
+    "updatedAt": 1789320598608,
+    "expiresAt": 1789321198608,
+    "current": {
+      "time": 1789320540,
+      "temperature": 15.14,
+      "feelsLike": 15.14,
+      "humidity": 82,
+      "wind": 21.33,
+      "code": 3,
+      "isDay": true,
+      "uv": 1,
+      "precipitationRate": 0,
+      "precipitationProbability": 0,
+      "cloudCover": 100,
+      "conditionLabel": "Overcast"
+    }
+  },
+  "radar": null,
+  "after": {
+    "time": 1789320540,
+    "temperature": 15.14,
+    "feelsLike": 15.14,
+    "humidity": 82,
+    "wind": 21.33,
+    "code": 3,
+    "isDay": true,
+    "uv": 1,
+    "precipitationRate": 0,
+    "precipitationProbability": 0,
+    "cloudCover": 100,
+    "conditionLabel": "Overcast"
+  }
+}

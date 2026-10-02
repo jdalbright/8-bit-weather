@@ -40,3 +40,16 @@ it('pairs current rain with the interval ahead and exposes hourly conditions and
   expect(first).toHaveTextContent('Thunderstorms');
   expect(first).toHaveTextContent('Chance of precipitation: 80%');
 });
+
+it('labels offline rain as saved and keeps the hourly forecast probability intact', () => {
+  const snapshot = normalizeWeather(forecastFixture(fixtureTime, 61), asheville, fixtureTime);
+  snapshot.current.precipitationProbability = 0;
+  cacheWeather(snapshot);
+  render(<App/>);
+  const stats = screen.getByText('Current precipitation', { exact: true }).closest('div')!;
+  expect(stats).toHaveTextContent('RainSaved');
+  expect(stats).not.toHaveTextContent('0%');
+  expect(stats).not.toHaveTextContent('Now');
+  const first = within(screen.getByRole('region', { name: 'Next 48 hours' })).getByText('Now').closest('.hour')!;
+  expect(first).toHaveTextContent('Chance of precipitation: 5%');
+});

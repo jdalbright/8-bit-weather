@@ -1,0 +1,48 @@
+{
+  "name": "KBOS",
+  "latitude": 42.3606,
+  "longitude": -71.0097,
+  "url": "https://8-bit-weather.vercel.app/api/weather?latitude=42.3606&longitude=-71.0097&section=current",
+  "startedAt": "2026-09-13T17:29:59.601Z",
+  "completedAt": "2026-09-13T17:30:00.585Z",
+  "provider": {
+    "provider": "xweather",
+    "latitude": 42.3606,
+    "longitude": -71.0097,
+    "timezone": "America/New_York",
+    "updatedAt": 1789320599682,
+    "expiresAt": 1789321199682,
+    "current": {
+      "time": 1789320540,
+      "temperature": 19,
+      "feelsLike": 19,
+      "humidity": 94,
+      "wind": 16.6,
+      "code": 63,
+      "isDay": true,
+      "uv": 0,
+      "precipitationRate": 6.05,
+      "precipitationProbability": 100,
+      "cloudCover": 100,
+      "conditionLabel": "Rain"
+    }
+  },
+  "radar": {
+    "time": 1789320480,
+    "kind": "rain"
+  },
+  "after": {
+    "time": 1789320540,
+    "temperature": 19,
+    "feelsLike": 19,
+    "humidity": 94,
+    "wind": 16.6,
+    "code": 63,
+    "isDay": true,
+    "uv": 0,
+    "precipitationRate": 6.05,
+    "precipitationProbability": 100,
+    "cloudCover": 100,
+    "conditionLabel": "Rain"
+  }
+}

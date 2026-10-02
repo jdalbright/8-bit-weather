@@ -1,0 +1,296 @@
+[
+  {
+    "icaoId": "KAVL",
+    "receiptTime": "2026-09-13T16:58:14.464Z",
+    "obsTime": 1789318440,
+    "reportTime": "2026-09-13T17:00:00.000Z",
+    "temp": 27.8,
+    "dewp": 18.3,
+    "wdir": 350,
+    "wspd": 10,
+    "wgst": 18,
+    "visib": "10+",
+    "altim": 1019.7,
+    "slp": 1016.7,
+    "qcField": 4,
+    "metarType": "METAR",
+    "rawOb": "METAR KAVL 131654Z 35010G18KT 10SM FEW030 28/18 A3011 RMK AO2 SLP167 T02780183",
+    "lat": 35.4318,
+    "lon": -82.5379,
+    "elev": 646,
+    "name": "Asheville Muni, NC, US",
+    "cover": "FEW",
+    "clouds": [
+      {
+        "cover": "FEW",
+        "base": 3000
+      }
+    ],
+    "fltCat": "VFR"
+  },
+  {
+    "icaoId": "KGNV",
+    "receiptTime": "2026-09-13T16:56:56.470Z",
+    "obsTime": 1789318380,
+    "reportTime": "2026-09-13T17:00:00.000Z",
+    "temp": 30.6,
+    "dewp": 23.9,
+    "wdir": 320,
+    "wspd": 8,
+    "visib": "10+",
+    "altim": 1018.4,
+    "slp": 1017.9,
+    "qcField": 4,
+    "wxString": "-RA",
+    "precip": 0.005,
+    "metarType": "METAR",
+    "rawOb": "METAR KGNV 131653Z 32008KT 10SM -RA SCT033 SCT040 BKN048 31/24 A3007 RMK AO2 RAB47 SLP179 P0000 T03060239",
+    "lat": 29.6917,
+    "lon": -82.276,
+    "elev": 41,
+    "name": "Gainesville Rgnl, FL, US",
+    "cover": "BKN",
+    "clouds": [
+      {
+        "cover": "SCT",
+        "base": 3300
+      },
+      {
+        "cover": "SCT",
+        "base": 4000
+      },
+      {
+        "cover": "BKN",
+        "base": 4800
+      }
+    ],
+    "fltCat": "VFR"
+  },
+  {
+    "icaoId": "KORF",
+    "receiptTime": "2026-09-13T16:54:08.594Z",
+    "obsTime": 1789318260,
+    "reportTime": "2026-09-13T17:00:00.000Z",
+    "temp": 26.7,
+    "dewp": 25,
+    "wdir": 220,
+    "wspd": 5,
+    "visib": "10+",
+    "altim": 1013.6,
+    "slp": 1013.5,
+    "qcField": 4,
+    "precip": 0.56,
+    "metarType": "METAR",
+    "rawOb": "METAR KORF 131651Z 22005KT 10SM FEW047 BKN070 OVC095 27/25 A2993 RMK AO2 LTG DSNT E RAE39 SLP135 P0056 T02670250",
+    "lat": 36.9037,
+    "lon": -76.1927,
+    "elev": 5,
+    "name": "Norfolk Intl, VA, US",
+    "cover": "OVC",
+    "clouds": [
+      {
+        "cover": "FEW",
+        "base": 4700
+      },
+      {
+        "cover": "BKN",
+        "base": 7000
+      },
+      {
+        "cover": "OVC",
+        "base": 9500
+      }
+    ],
+    "fltCat": "VFR"
+  },
+  {
+    "icaoId": "KRDU",
+    "receiptTime": "2026-09-13T16:54:08.671Z",
+    "obsTime": 1789318260,
+    "reportTime": "2026-09-13T17:00:00.000Z",
+    "temp": 28.3,
+    "dewp": 22.8,
+    "wdir": 250,
+    "wspd": 4,
+    "visib": "10+",
+    "altim": 1015.3,
+    "slp": 1014.5,
+    "qcField": 12,
+    "metarType": "METAR",
+    "rawOb": "METAR KRDU 131651Z 25004KT 10SM SCT029 BKN035 BKN042 BKN250 28/23 A2998 RMK AO2 SLP145 T02830228 $",
+    "lat": 35.8923,
+    "lon": -78.782,
+    "elev": 121,
+    "name": "Raleigh-Durham Intl, NC, US",
+    "cover": "BKN",
+    "clouds": [
+      {
+        "cover": "SCT",
+        "base": 2900
+      },
+      {
+        "cover": "BKN",
+        "base": 3500
+      },
+      {
+        "cover": "BKN",
+        "base": 4200
+      },
+      {
+        "cover": "BKN",
+        "base": 25000
+      }
+    ],
+    "fltCat": "VFR"
+  },
+  {
+    "icaoId": "KRDU",
+    "receiptTime": "2026-09-13T16:46:04.517Z",
+    "obsTime": 1789317720,
+    "reportTime": "2026-09-13T16:42:00.000Z",
+    "temp": 28.3,
+    "dewp": 22.2,
+    "wdir": 300,
+    "wspd": 5,
+    "visib": "10+",
+    "altim": 1015.3,
+    "qcField": 12,
+    "metarType": "SPECI",
+    "rawOb": "SPECI KRDU 131642Z 30005KT 10SM SCT029 BKN035 BKN042 BKN250 28/22 A2998 RMK AO2 T02830222 $",
+    "lat": 35.8923,
+    "lon": -78.782,
+    "elev": 121,
+    "name": "Raleigh-Durham Intl, NC, US",
+    "cover": "BKN",
+    "clouds": [
+      {
+        "cover": "SCT",
+        "base": 2900
+      },
+      {
+        "cover": "BKN",
+        "base": 3500
+      },
+      {
+        "cover": "BKN",
+        "base": 4200
+      },
+      {
+        "cover": "BKN",
+        "base": 25000
+      }
+    ],
+    "fltCat": "VFR"
+  },
+  {
+    "icaoId": "KORF",
+    "receiptTime": "2026-09-13T16:42:07.046Z",
+    "obsTime": 1789317480,
+    "reportTime": "2026-09-13T16:38:00.000Z",
+    "temp": 25.6,
+    "dewp": 24.4,
+    "wdir": 240,
+    "wspd": 4,
+    "visib": 3,
+    "altim": 1014,
+    "qcField": 4,
+    "wxString": "-RA BR",
+    "precip": 0.56,
+    "metarType": "SPECI",
+    "rawOb": "SPECI KORF 131638Z 24004KT 3SM -RA BR SCT020 BKN037 OVC070 26/24 A2994 RMK AO2 LTG DSNT NE AND E P0056 T02560244",
+    "lat": 36.9037,
+    "lon": -76.1927,
+    "elev": 5,
+    "name": "Norfolk Intl, VA, US",
+    "cover": "OVC",
+    "clouds": [
+      {
+        "cover": "SCT",
+        "base": 2000
+      },
+      {
+        "cover": "BKN",
+        "base": 3700
+      },
+      {
+        "cover": "OVC",
+        "base": 7000
+      }
+    ],
+    "fltCat": "MVFR"
+  },
+  {
+    "icaoId": "KORF",
+    "receiptTime": "2026-09-13T16:38:12.885Z",
+    "obsTime": 1789317240,
+    "reportTime": "2026-09-13T16:34:00.000Z",
+    "temp": 25,
+    "dewp": 24.4,
+    "wdir": "VRB",
+    "wspd": 3,
+    "visib": 2,
+    "altim": 1014.3,
+    "qcField": 4,
+    "wxString": "-RA BR",
+    "precip": 0.56,
+    "metarType": "SPECI",
+    "rawOb": "SPECI KORF 131634Z VRB03KT 2SM -RA BR SCT020 BKN038 OVC065 25/24 A2995 RMK AO2 VIS 1/2V5 LTG DSNT NE P0056 T02500244",
+    "lat": 36.9037,
+    "lon": -76.1927,
+    "elev": 5,
+    "name": "Norfolk Intl, VA, US",
+    "cover": "OVC",
+    "clouds": [
+      {
+        "cover": "SCT",
+        "base": 2000
+      },
+      {
+        "cover": "BKN",
+        "base": 3800
+      },
+      {
+        "cover": "OVC",
+        "base": 6500
+      }
+    ],
+    "fltCat": "IFR"
+  },
+  {
+    "icaoId": "KORF",
+    "receiptTime": "2026-09-13T16:36:05.481Z",
+    "obsTime": 1789317180,
+    "reportTime": "2026-09-13T16:33:00.000Z",
+    "temp": 25,
+    "dewp": 24.4,
+    "wdir": "VRB",
+    "wspd": 3,
+    "visib": 1.75,
+    "altim": 1014.3,
+    "qcField": 4,
+    "wxString": "+RA BR",
+    "precip": 0.55,
+    "metarType": "SPECI",
+    "rawOb": "SPECI KORF 131633Z VRB03KT 1 3/4SM +RA BR FEW014 BKN038 OVC065 25/24 A2995 RMK AO2 VIS 1/2V5 LTG DSNT NE P0055 T02500244",
+    "lat": 36.9037,
+    "lon": -76.1927,
+    "elev": 5,
+    "name": "Norfolk Intl, VA, US",
+    "cover": "OVC",
+    "clouds": [
+      {
+        "cover": "FEW",
+        "base": 1400
+      },
+      {
+        "cover": "BKN",
+        "base": 3800
+      },
+      {
+        "cover": "OVC",
+        "base": 6500
+      }
+    ],
+    "fltCat": "IFR"
+  }
+]

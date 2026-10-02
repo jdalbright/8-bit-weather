@@ -1,0 +1,109 @@
+{
+  "compiledAt": "2026-09-12T18:30:33.894Z",
+  "rows": [
+    {
+      "station": "KRDU",
+      "coordinates": [
+        35.8923,
+        -78.782
+      ],
+      "noaaTime": "2026-09-12T18:07:00.000Z",
+      "appTime": "2026-09-12T18:19:00.000Z",
+      "gapMinutes": 12,
+      "temperatureDifferenceC": -0.07,
+      "noaaRaw": "SPECI KRDU 121807Z 11009KT 10SM TS FEW033CB BKN075 BKN110 BKN150 27/22 A3002 RMK AO2 RAE06 TSB06 OCNL LTGIC NE TS NE MOV NE TCU SW P0000 T02720222",
+      "app": {
+        "time": 1789237140,
+        "temperature": 27.13,
+        "feelsLike": 29.52,
+        "humidity": 75,
+        "wind": 16.2,
+        "code": 95,
+        "isDay": true,
+        "uv": 3,
+        "precipitationRate": 0,
+        "precipitationProbability": 0,
+        "cloudCover": 80,
+        "conditionLabel": "Thunderstorms"
+      }
+    },
+    {
+      "station": "KAVL",
+      "coordinates": [
+        35.4318,
+        -82.5379
+      ],
+      "noaaTime": "2026-09-12T18:04:00.000Z",
+      "appTime": "2026-09-12T18:19:00.000Z",
+      "gapMinutes": 15,
+      "temperatureDifferenceC": -0.03,
+      "noaaRaw": "SPECI KAVL 121804Z 00000KT 3SM R35/5500VP6000FT +RA BR SCT021 BKN046 OVC055 22/21 A3008 RMK AO2 P0004 T02220211",
+      "app": {
+        "time": 1789237140,
+        "temperature": 22.17,
+        "feelsLike": 22.17,
+        "humidity": 95,
+        "wind": 5.89,
+        "code": 65,
+        "isDay": true,
+        "uv": 7,
+        "precipitationRate": 0.04,
+        "precipitationProbability": 100,
+        "cloudCover": 100,
+        "conditionLabel": "Heavy rain"
+      }
+    },
+    {
+      "station": "KAND",
+      "coordinates": [
+        34.498,
+        -82.7092
+      ],
+      "noaaTime": "2026-09-12T18:09:00.000Z",
+      "appTime": "2026-09-12T18:19:00.000Z",
+      "gapMinutes": 10,
+      "temperatureDifferenceC": 0.26,
+      "noaaRaw": "SPECI KAND 121809Z AUTO 21008KT 9SM -RA SCT020 BKN050 OVC065 26/23 A3001 RMK AO2 RAB02 P0000 T02610228",
+      "app": {
+        "time": 1789237140,
+        "temperature": 26.36,
+        "feelsLike": 26.36,
+        "humidity": 82,
+        "wind": 15,
+        "code": 61,
+        "isDay": true,
+        "uv": 4,
+        "precipitationRate": 0.91,
+        "precipitationProbability": 100,
+        "cloudCover": 98,
+        "conditionLabel": "Light rain"
+      }
+    },
+    {
+      "station": "KJNX",
+      "coordinates": [
+        35.5369,
+        -78.3934
+      ],
+      "noaaTime": "2026-09-12T17:55:00.000Z",
+      "appTime": "2026-09-12T18:19:00.000Z",
+      "gapMinutes": 24,
+      "temperatureDifferenceC": -0.15,
+      "noaaRaw": "METAR KJNX 121755Z AUTO 18006KT 10SM FEW036 SCT047 SCT085 31/23 A2999 RMK AO2 10319 20229",
+      "app": {
+        "time": 1789237140,
+        "temperature": 30.85,
+        "feelsLike": 35.33,
+        "humidity": 63,
+        "wind": 11.58,
+        "code": 2,
+        "isDay": true,
+        "uv": 4,
+        "precipitationRate": 0,
+        "precipitationProbability": 0,
+        "cloudCover": 44,
+        "conditionLabel": "Partly cloudy"
+      }
+    }
+  ]
+}

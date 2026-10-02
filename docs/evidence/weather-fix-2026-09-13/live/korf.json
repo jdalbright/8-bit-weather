@@ -1,0 +1,45 @@
+{
+  "name": "KORF",
+  "latitude": 36.9037,
+  "longitude": -76.1927,
+  "url": "https://8-bit-weather.vercel.app/api/weather?latitude=36.9037&longitude=-76.1927&section=current",
+  "startedAt": "2026-09-13T17:25:02.475Z",
+  "completedAt": "2026-09-13T17:25:03.608Z",
+  "provider": {
+    "provider": "xweather",
+    "latitude": 36.9037,
+    "longitude": -76.1927,
+    "timezone": "America/New_York",
+    "updatedAt": 1789320302531,
+    "expiresAt": 1789320902531,
+    "current": {
+      "time": 1789320300,
+      "temperature": 26.93,
+      "feelsLike": 30.45,
+      "humidity": 89,
+      "wind": 9.04,
+      "code": 3,
+      "isDay": true,
+      "uv": 7,
+      "precipitationRate": 0,
+      "precipitationProbability": 0,
+      "cloudCover": 100,
+      "conditionLabel": "Overcast"
+    }
+  },
+  "radar": null,
+  "after": {
+    "time": 1789320300,
+    "temperature": 26.93,
+    "feelsLike": 30.45,
+    "humidity": 89,
+    "wind": 9.04,
+    "code": 3,
+    "isDay": true,
+    "uv": 7,
+    "precipitationRate": 0,
+    "precipitationProbability": 0,
+    "cloudCover": 100,
+    "conditionLabel": "Overcast"
+  }
+}

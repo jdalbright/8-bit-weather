@@ -1,0 +1,180 @@
+{
+  "startedAt": "2026-09-13T17:29:57.890Z",
+  "method": "Live production provider input plus the local server NOAA reconciliation; not a deployed fix.",
+  "comparisons": [
+    {
+      "name": "KEUG",
+      "latitude": 44.1331,
+      "longitude": -123.2156,
+      "url": "https://8-bit-weather.vercel.app/api/weather?latitude=44.1331&longitude=-123.2156&section=current",
+      "startedAt": "2026-09-13T17:29:58.064Z",
+      "completedAt": "2026-09-13T17:29:59.598Z",
+      "provider": {
+        "provider": "xweather",
+        "latitude": 44.1331,
+        "longitude": -123.2156,
+        "timezone": "America/Los_Angeles",
+        "updatedAt": 1789320598608,
+        "expiresAt": 1789321198608,
+        "current": {
+          "time": 1789320540,
+          "temperature": 15.14,
+          "feelsLike": 15.14,
+          "humidity": 82,
+          "wind": 21.33,
+          "code": 3,
+          "isDay": true,
+          "uv": 1,
+          "precipitationRate": 0,
+          "precipitationProbability": 0,
+          "cloudCover": 100,
+          "conditionLabel": "Overcast"
+        }
+      },
+      "radar": null,
+      "after": {
+        "time": 1789320540,
+        "temperature": 15.14,
+        "feelsLike": 15.14,
+        "humidity": 82,
+        "wind": 21.33,
+        "code": 3,
+        "isDay": true,
+        "uv": 1,
+        "precipitationRate": 0,
+        "precipitationProbability": 0,
+        "cloudCover": 100,
+        "conditionLabel": "Overcast"
+      }
+    },
+    {
+      "name": "KBOS",
+      "latitude": 42.3606,
+      "longitude": -71.0097,
+      "url": "https://8-bit-weather.vercel.app/api/weather?latitude=42.3606&longitude=-71.0097&section=current",
+      "startedAt": "2026-09-13T17:29:59.601Z",
+      "completedAt": "2026-09-13T17:30:00.585Z",
+      "provider": {
+        "provider": "xweather",
+        "latitude": 42.3606,
+        "longitude": -71.0097,
+        "timezone": "America/New_York",
+        "updatedAt": 1789320599682,
+        "expiresAt": 1789321199682,
+        "current": {
+          "time": 1789320540,
+          "temperature": 19,
+          "feelsLike": 19,
+          "humidity": 94,
+          "wind": 16.6,
+          "code": 63,
+          "isDay": true,
+          "uv": 0,
+          "precipitationRate": 6.05,
+          "precipitationProbability": 100,
+          "cloudCover": 100,
+          "conditionLabel": "Rain"
+        }
+      },
+      "radar": {
+        "time": 1789320480,
+        "kind": "rain"
+      },
+      "after": {
+        "time": 1789320540,
+        "temperature": 19,
+        "feelsLike": 19,
+        "humidity": 94,
+        "wind": 16.6,
+        "code": 63,
+        "isDay": true,
+        "uv": 0,
+        "precipitationRate": 6.05,
+        "precipitationProbability": 100,
+        "cloudCover": 100,
+        "conditionLabel": "Rain"
+      }
+    },
+    {
+      "name": "KJFK",
+      "latitude": 40.6392,
+      "longitude": -73.7639,
+      "url": "https://8-bit-weather.vercel.app/api/weather?latitude=40.6392&longitude=-73.7639&section=current",
+      "startedAt": "2026-09-13T17:30:00.586Z",
+      "completedAt": "2026-09-13T17:30:01.790Z",
+      "provider": {
+        "provider": "xweather",
+        "latitude": 40.6392,
+        "longitude": -73.7639,
+        "timezone": "America/New_York",
+        "updatedAt": 1789320600638,
+        "expiresAt": 1789321200638,
+        "current": {
+          "time": 1789320600,
+          "temperature": 23.31,
+          "feelsLike": 23.31,
+          "humidity": 87,
+          "wind": 15.32,
+          "code": 61,
+          "isDay": true,
+          "uv": 2,
+          "precipitationRate": 0.28,
+          "precipitationProbability": 100,
+          "cloudCover": 79,
+          "conditionLabel": "Light rain"
+        }
+      },
+      "radar": null,
+      "after": {
+        "time": 1789320600,
+        "temperature": 23.31,
+        "feelsLike": 23.31,
+        "humidity": 87,
+        "wind": 15.32,
+        "code": 61,
+        "isDay": true,
+        "uv": 2,
+        "precipitationRate": 0.28,
+        "precipitationProbability": 100,
+        "cloudCover": 79,
+        "conditionLabel": "Light rain"
+      }
+    }
+  ],
+  "incidentReplay": {
+    "input": {
+      "time": 1789233720,
+      "temperature": 26.12,
+      "feelsLike": 26.12,
+      "humidity": 86,
+      "wind": 3.4,
+      "code": 3,
+      "isDay": true,
+      "uv": 5,
+      "precipitationRate": 0,
+      "precipitationProbability": 0,
+      "cloudCover": 84,
+      "conditionLabel": "Overcast"
+    },
+    "archive": "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/PrecipFlag_00.00/20260912/MRMS_PrecipFlag_00.00_20260912-172200.grib2.gz",
+    "after": {
+      "time": 1789233720,
+      "temperature": 26.12,
+      "feelsLike": 26.12,
+      "humidity": 86,
+      "wind": 3.4,
+      "code": 63,
+      "isDay": true,
+      "uv": 5,
+      "precipitationRate": null,
+      "precipitationProbability": null,
+      "cloudCover": 84,
+      "conditionLabel": "Rain on radar",
+      "radarPrecipitation": {
+        "time": 1789233720,
+        "kind": "rain"
+      }
+    },
+    "evaluatedAt": "2026-09-12T17:22:05.563Z"
+  }
+}

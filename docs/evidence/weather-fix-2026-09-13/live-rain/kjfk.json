@@ -1,0 +1,45 @@
+{
+  "name": "KJFK",
+  "latitude": 40.6392,
+  "longitude": -73.7639,
+  "url": "https://8-bit-weather.vercel.app/api/weather?latitude=40.6392&longitude=-73.7639&section=current",
+  "startedAt": "2026-09-13T17:30:00.586Z",
+  "completedAt": "2026-09-13T17:30:01.790Z",
+  "provider": {
+    "provider": "xweather",
+    "latitude": 40.6392,
+    "longitude": -73.7639,
+    "timezone": "America/New_York",
+    "updatedAt": 1789320600638,
+    "expiresAt": 1789321200638,
+    "current": {
+      "time": 1789320600,
+      "temperature": 23.31,
+      "feelsLike": 23.31,
+      "humidity": 87,
+      "wind": 15.32,
+      "code": 61,
+      "isDay": true,
+      "uv": 2,
+      "precipitationRate": 0.28,
+      "precipitationProbability": 100,
+      "cloudCover": 79,
+      "conditionLabel": "Light rain"
+    }
+  },
+  "radar": null,
+  "after": {
+    "time": 1789320600,
+    "temperature": 23.31,
+    "feelsLike": 23.31,
+    "humidity": 87,
+    "wind": 15.32,
+    "code": 61,
+    "isDay": true,
+    "uv": 2,
+    "precipitationRate": 0.28,
+    "precipitationProbability": 100,
+    "cloudCover": 79,
+    "conditionLabel": "Light rain"
+  }
+}

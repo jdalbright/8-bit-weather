@@ -1,0 +1,112 @@
+{
+    "@context": [
+        "https://geojson.org/geojson-ld/geojson-context.jsonld",
+        {
+            "@version": "1.1",
+            "wx": "https://api.weather.gov/ontology#",
+            "s": "https://schema.org/",
+            "geo": "http://www.opengis.net/ont/geosparql#",
+            "unit": "http://codes.wmo.int/common/unit/",
+            "@vocab": "https://api.weather.gov/ontology#",
+            "geometry": {
+                "@id": "s:GeoCoordinates",
+                "@type": "geo:wktLiteral"
+            },
+            "city": "s:addressLocality",
+            "state": "s:addressRegion",
+            "distance": {
+                "@id": "s:Distance",
+                "@type": "s:QuantitativeValue"
+            },
+            "bearing": {
+                "@type": "s:QuantitativeValue"
+            },
+            "value": {
+                "@id": "s:value"
+            },
+            "unitCode": {
+                "@id": "s:unitCode",
+                "@type": "@id"
+            },
+            "forecastOffice": {
+                "@type": "@id"
+            },
+            "forecastGridData": {
+                "@type": "@id"
+            },
+            "publicZone": {
+                "@type": "@id"
+            },
+            "county": {
+                "@type": "@id"
+            }
+        }
+    ],
+    "id": "https://api.weather.gov/points/35.7796,-78.6382",
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            -78.6382,
+            35.7796
+        ]
+    },
+    "properties": {
+        "@id": "https://api.weather.gov/points/35.7796,-78.6382",
+        "@type": "wx:Point",
+        "cwa": "RAH",
+        "type": "land",
+        "forecastOffice": "https://api.weather.gov/offices/RAH",
+        "gridId": "RAH",
+        "gridX": 75,
+        "gridY": 57,
+        "forecast": "https://api.weather.gov/gridpoints/RAH/75,57/forecast",
+        "forecastHourly": "https://api.weather.gov/gridpoints/RAH/75,57/forecast/hourly",
+        "forecastGridData": "https://api.weather.gov/gridpoints/RAH/75,57",
+        "observationStations": "https://api.weather.gov/gridpoints/RAH/75,57/stations",
+        "relativeLocation": {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -78.6410418,
+                    35.831868
+                ]
+            },
+            "properties": {
+                "city": "Raleigh",
+                "state": "NC",
+                "distance": {
+                    "unitCode": "wmoUnit:m",
+                    "value": 0
+                },
+                "bearing": {
+                    "unitCode": "wmoUnit:degree_(angle)",
+                    "value": 0
+                }
+            }
+        },
+        "forecastZone": "https://api.weather.gov/zones/forecast/NCZ041",
+        "county": "https://api.weather.gov/zones/county/NCC183",
+        "fireWeatherZone": "https://api.weather.gov/zones/fire/NCZ041",
+        "timeZone": "America/New_York",
+        "radarStation": "KRAX",
+        "astronomicalData": {
+            "sunrise": "2026-09-11T06:54:18-04:00",
+            "sunset": "2026-09-11T19:27:53-04:00",
+            "transit": "2026-09-11T13:11:06-04:00",
+            "civilTwilightBegin": "2026-09-11T06:28:39-04:00",
+            "civilTwilightEnd": "2026-09-11T19:53:32-04:00",
+            "nauticalTwilightBegin": "2026-09-11T05:58:24-04:00",
+            "nauticalTwilightEnd": "2026-09-11T20:23:47-04:00",
+            "astronomicalTwilightBegin": "2026-09-11T05:27:28-04:00",
+            "astronomicalTwilightEnd": "2026-09-11T20:54:43-04:00"
+        },
+        "nwr": {
+            "transmitter": "WNG706",
+            "sameCode": "037183",
+            "areaBroadcast": "https://api.weather.gov/radio/WNG706/broadcast",
+            "pointBroadcast": "https://api.weather.gov/points/35.7796,-78.6382/radio"
+        }
+    }
+}

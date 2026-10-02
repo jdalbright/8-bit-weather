@@ -28,12 +28,21 @@ struct WidgetPlace: Codable, Equatable, Sendable {
     }
 }
 
+struct WidgetRadarPrecipitation: Codable, Sendable {
+    var time: Double
+    var kind: String
+
+    var code: Int? { ["rain": 63, "snow": 73, "hail": 102][kind] }
+    var valid: Bool { time.isFinite && (1...40_000_000_000).contains(time) && code != nil }
+}
+
 struct WidgetCurrent: Codable, Sendable {
     var time: Double
     var temperature: Double?
     var code: Int?
     var isDay: Bool
     var conditionLabel: String? = nil
+    var radarPrecipitation: WidgetRadarPrecipitation? = nil
 }
 
 struct WidgetDay: Codable, Sendable {
@@ -90,6 +99,7 @@ struct WidgetForecast: Codable, Sendable {
             && abs(longitude - place.longitude) < 0.001 && fetchedAt.isFinite
             && (0...40_000_000_000_000).contains(fetchedAt)
             && current.time.isFinite && (0...40_000_000_000).contains(current.time)
+            && (current.radarPrecipitation == nil || (current.radarPrecipitation!.valid && current.radarPrecipitation!.code == current.code))
             && (current.temperature == nil || (current.temperature!.isFinite && abs(current.temperature!) < 1000))
             && daily.allSatisfy { day in
                 (day.high == nil || (day.high!.isFinite && abs(day.high!) < 1000))
@@ -110,11 +120,13 @@ struct WidgetForecast: Codable, Sendable {
 
     var staleDate: Date {
         // Matches shared web rules: 45-minute cache age or 60-minute observation age.
-        Date(timeIntervalSince1970: min(fetchedAt / 1000 + 45 * 60, current.time + 60 * 60))
+        Date(timeIntervalSince1970: min(fetchedAt / 1000 + 45 * 60, current.time + 60 * 60,
+                                       current.radarPrecipitation.map { $0.time + 8 * 60 } ?? .infinity))
     }
 
     func isStale(at date: Date) -> Bool {
-        date.timeIntervalSince1970 < fetchedAt / 1000 || date.timeIntervalSince1970 < current.time || date >= staleDate
+        date.timeIntervalSince1970 < fetchedAt / 1000 || date.timeIntervalSince1970 < current.time
+            || (current.radarPrecipitation.map { date.timeIntervalSince1970 < $0.time } ?? false) || date >= staleDate
     }
 
     func timelineDates(from now: Date) -> [Date] {
@@ -186,6 +198,9 @@ struct WidgetPayload: Codable, Sendable {
 
     var condition: String {
         guard let code = weather?.current.code else { return "Conditions unavailable" }
+        if let radar = weather?.current.radarPrecipitation, radar.valid, radar.code == code {
+            return "\(radar.kind.capitalized) on radar"
+        }
         switch code {
         case 0: return weather?.current.isDay == false ? "Clear night" : "Clear skies"
         case 1: return weather?.current.isDay == false ? "Mostly clear" : "Mostly sunny"

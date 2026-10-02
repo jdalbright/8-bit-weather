@@ -1,0 +1,7 @@
+{
+  "url": "https://opengeo.ncep.noaa.gov/geoserver/conus/conus_pcpn_typ/ows?service=WMS&version=1.1.1&request=GetFeatureInfo&layers=conus_pcpn_typ&query_layers=conus_pcpn_typ&styles=radar_precip_type&info_format=application%2Fjson&srs=EPSG%3A4326&bbox=-73.77390000000001%2C40.629200000000004%2C-73.7539%2C40.6492&width=101&height=101&x=50&y=50&time=2026-09-13T17%3A28%3A00.000Z",
+  "startedAt": "2026-09-13T17:30:00.587Z",
+  "completedAt": "2026-09-13T17:30:00.643Z",
+  "status": 200,
+  "body": "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\",\"id\":\"\",\"geometry\":null,\"properties\":{\"RED_BAND\":0,\"GREEN_BAND\":0,\"BLUE_BAND\":0,\"ALPHA_BAND\":0}}],\"totalFeatures\":\"unknown\",\"numberReturned\":1,\"timeStamp\":\"2026-09-13T17:30:00.649Z\",\"crs\":null}"
+}

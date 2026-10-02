@@ -1,13 +1,16 @@
 import { createHash } from 'node:crypto';
 import { currentFrom, daysFrom, hoursFrom, rainFrom, timezone, type WeatherPart, type WeatherSection } from '../src/lib/xweather.js';
 import { localDate } from '../src/lib/weather.js';
-const TTL = { current: 600, rain: 600, forecast: 3600, history: 3600 };
+import { CURRENT_REFRESH, RADAR_MAX_AGE, fetchCurrentPrecipitation, reconcileCurrentPrecipitation, resetCurrentPrecipitation } from './current-precipitation.js';
+const TTL = { current: CURRENT_REFRESH / 1000, rain: 600, forecast: 3600, history: 3600 };
+// Recheck free radar more often without multiplying Xweather quota usage.
+const currentModels = new Map<string, { current: ReturnType<typeof currentFrom>; timezone: string; expires: number }>();
 const cache = new Map<string, WeatherPart>();
 const pending = new Map<string, Promise<WeatherPart>>();
 const limits = new Map<string, { count: number; until: number }>();
 let retryAt = 0;
 class ProviderError extends Error { constructor(public status: number, public retry = 60) { super('weather_unavailable'); } }
-export function resetWeatherCache() { cache.clear(); pending.clear(); limits.clear(); retryAt = 0; }
+export function resetWeatherCache() { cache.clear(); currentModels.clear(); pending.clear(); limits.clear(); retryAt = 0; resetCurrentPrecipitation(); }
 function quotaError(retrySeconds: number): ProviderError {
   const now = Date.now();
   retryAt = Math.max(retryAt, now + retrySeconds * 1000);
@@ -61,11 +64,26 @@ async function load(section: WeatherSection, lat: number, lon: number, tz?: stri
       const end=start+Math.floor((now/1000-start)/3600)*3600+1;
       const raw = await provider(`conditions/${location}`, { from:String(start), to:String(end) });
       part = { hourly: hoursFrom(raw) };
+    } else if (section === 'current') {
+      const model = async () => {
+        const previous = currentModels.get(location);
+        if (previous && now < previous.expires) return previous;
+        const raw = await provider(`conditions/${location}`, {});
+        const result = { current: currentFrom(raw), timezone: timezone(raw), expires: now + 600_000 };
+        if (currentModels.size >= 256) currentModels.delete(currentModels.keys().next().value!);
+        currentModels.set(location, result);
+        return result;
+      };
+      const [conditions, radar] = await Promise.all([model(), fetchCurrentPrecipitation(lat, lon)]);
+      zone = conditions.timezone;
+      part = { current: reconcileCurrentPrecipitation(conditions.current, radar) };
     } else {
       const raw = await provider(`conditions/${location}`, section === 'rain' ? {filter:'minutelyprecip,1min',limit:'60'} : {});
-      zone = timezone(raw); part = section === 'current' ? {current:currentFrom(raw)} : {minutely:rainFrom(raw)};
+      zone = timezone(raw); part = {minutely:rainFrom(raw)};
     }
-    const result: WeatherPart = { provider:'xweather', latitude:lat, longitude:lon, timezone:zone, updatedAt:now, expiresAt:now+TTL[section]*1000, ...part };
+    const radar = part.current?.radarPrecipitation;
+    const expiresAt = Math.min(now+TTL[section]*1000, radar ? radar.time*1000+RADAR_MAX_AGE : Infinity);
+    const result: WeatherPart = { provider:'xweather', latitude:lat, longitude:lon, timezone:zone, updatedAt:now, expiresAt, ...part };
     if (cache.size >= 256) cache.delete(cache.keys().next().value!);
     cache.set(key,result); return result;
   })();

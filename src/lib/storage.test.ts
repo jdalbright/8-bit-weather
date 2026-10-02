@@ -11,6 +11,15 @@ describe('device persistence', () => {
     clearSavedData();
     expect(loadState().preferences.bestTimeOutside).toBe(false);
   });
+  it('round-trips radar corrections and rejects contradictory or malformed metadata', () => {
+    const snapshot = normalizeWeather(forecastFixture(),asheville);
+    snapshot.current = {...snapshot.current,code:63,radarPrecipitation:{time:snapshot.current.time,kind:'rain'}};
+    cacheWeather(snapshot);expect(cachedWeather(asheville)).toEqual(snapshot);
+    for (const radar of [{kind:'storm',time:snapshot.current.time},{kind:'rain',time:'now'},null,{kind:'snow',time:snapshot.current.time}]) {
+      localStorage.setItem(`${STORAGE_KEY}:forecasts`,JSON.stringify([{...snapshot,current:{...snapshot.current,radarPrecipitation:radar}}]));
+      expect(cachedWeather(asheville)).toBeNull();
+    }
+  });
   it('selects locale defaults and safely recovers from corrupt state', () => { expect(defaultPreferences('en-US').units).toBe('imperial'); expect(defaultPreferences('en-GB').units).toBe('metric'); localStorage.setItem(STORAGE_KEY, '{broken'); expect(loadState().selected).toBeNull(); });
   it('round-trips preferences and places and clears only this app’s data', () => {
     const preferences = { ...defaultPreferences('en-US'), musicVolume: 0.6, reducedMotion: true };

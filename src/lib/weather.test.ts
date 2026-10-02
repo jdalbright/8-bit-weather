@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cacheMatches, dayLabel, futureDays, isFresh, localDate, localTime, normalizeWeather, percent, precipitationForHour, temperature, updatedLabel, weatherInfo, windSpeed } from './weather';
+import { cacheMatches, currentPrecipitation, currentWeatherInfo, dayLabel, futureDays, isFresh, localDate, localTime, normalizeWeather, percent, precipitationForHour, staleCurrent, temperature, updatedLabel, weatherInfo, windSpeed } from './weather';
 import { asheville, fixtureTime, forecastFixture } from '../test/fixtures';
 
 describe('forecast interpretation', () => {
@@ -51,5 +51,29 @@ describe('provider interval and calendar conventions', () => {
     data.hourly.splice(1, 1);
     expect(precipitationForHour(data.hourly, data.hourly[0].time)).toBeNull();
     expect(precipitationForHour(data.hourly, undefined)).toBeNull();
+  });
+});
+
+describe('present precipitation is distinct from forecast probability', () => {
+  it('labels radar evidence explicitly and marks it saved after eight minutes or offline', () => {
+    const snapshot = normalizeWeather(forecastFixture(),asheville,fixtureTime);
+    snapshot.current = {...snapshot.current,code:63,radarPrecipitation:{time:fixtureTime/1000,kind:'rain'}};
+    expect(currentWeatherInfo(snapshot.current)).toEqual({kind:'rain',label:'Rain on radar'});
+    expect(staleCurrent(snapshot,fixtureTime+7*60000)).toBe(false);
+    expect(staleCurrent(snapshot,fixtureTime+8*60000)).toBe(true);
+    expect(staleCurrent(snapshot,fixtureTime,false)).toBe(true);
+  });
+  it.each([
+    [61, 0, 'Rain'], [71, null, 'Snow'], [100, null, 'Wintry mix'], [101, 0, 'Sleet'], [102, 0, 'Hail'],
+    [3, 0.2, 'Falling'], [null, 0.2, 'Falling'], [95, 0.2, 'Falling'],
+    [95, 0, null], [95, null, null], [3, 0, null], [null, null, null], [3, NaN, null],
+  ] as const)('describes code %s and rate %s without altering the supplied probability', (code, precipitationRate, expected) => {
+    const current = { ...normalizeWeather(forecastFixture(), asheville).current, code, precipitationRate, precipitationProbability: 0 };
+    expect(currentPrecipitation(current)).toBe(expected);
+    expect(current.precipitationProbability).toBe(0);
+  });
+  it('does not resurrect a legacy rain code already resolved to dry cloud conditions', () => {
+    const current = { ...normalizeWeather(forecastFixture(), asheville).current, code: 61, rain: 0, showers: 0, cloudCover: 90 };
+    expect(currentPrecipitation(current)).toBeNull();
   });
 });

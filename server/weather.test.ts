@@ -2,10 +2,15 @@ import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { handleWeather, resetWeatherCache } from './weather';
 import { codedWeather, currentFrom, daysFrom, hoursFrom, rainFrom } from '../src/lib/xweather';
 import { precipitationForHour } from '../src/lib/weather';
+import { fetchCurrentPrecipitation } from './current-precipitation';
+vi.mock('./current-precipitation', async importOriginal => ({
+ ...await importOriginal<typeof import('./current-precipitation')>(),
+ fetchCurrentPrecipitation: vi.fn(async () => null),
+}));
 const now = Date.parse('2026-09-11T14:00:00Z');
 function raw(overrides: Record<string,unknown> = {}) { return {success:true,response:[{profile:{tz:'America/New_York'},periods:[{timestamp:now/1000,tempC:24,feelslikeC:25,humidity:60,pop:0,windSpeedKPH:5,isDay:true,sky:90,cloudsCoded:'BK',weatherPrimaryCoded:':L:R',precipRateMM:0,precipMM:0,uvi:4,...overrides}]}]}; }
 function request(section='current',extra='') { return new Request(`https://example.com/api/weather?latitude=35.78&longitude=-78.64&section=${section}${extra}`); }
-beforeEach(()=> {resetWeatherCache();vi.useFakeTimers();vi.setSystemTime(now);vi.stubEnv('XWEATHER_CLIENT_ID','test-id');vi.stubEnv('XWEATHER_CLIENT_SECRET','test-secret');});
+beforeEach(()=> {resetWeatherCache();vi.mocked(fetchCurrentPrecipitation).mockResolvedValue(null);vi.useFakeTimers();vi.setSystemTime(now);vi.stubEnv('XWEATHER_CLIENT_ID','test-id');vi.stubEnv('XWEATHER_CLIENT_SECRET','test-secret');});
 afterEach(()=> {vi.useRealTimers();vi.unstubAllEnvs();vi.unstubAllGlobals();});
 describe('Xweather condition interpretation',()=> {
  it.each([0,21,100,null])('retains the current conditions probability independently from hourly forecasts: %s', pop => {
@@ -14,10 +19,13 @@ describe('Xweather condition interpretation',()=> {
  it.each([-1,101,'0',undefined])('keeps invalid current probability unavailable: %s', pop => {
   expect(currentFrom(raw({pop})).precipitationProbability).toBeNull();
  });
- it('resolves explicit dry rain and preserves active or missing-rate rain',()=> {
-  expect(currentFrom(raw()).code).toBe(3);
+ it('preserves an explicit rain report even when its separate rate estimate is zero',()=> {
+  expect(currentFrom(raw())).toMatchObject({code:61,conditionLabel:'Light rain',precipitationProbability:0});
   expect(currentFrom(raw({precipRateMM:0.3})).code).toBe(61);
   expect(currentFrom(raw({precipRateMM:null})).code).toBe(61);
+ });
+ it.each(['C','S','L','VC','IS','SC'])('keeps zero-rate %s rain qualified rather than declaring active rain', coverage => {
+  expect(currentFrom(raw({weatherPrimaryCoded:`${coverage}:L:R`,precipRateMM:0})).code).toBe(3);
  });
  it.each(['C','S','L','VC','IS','SC'])('does not animate %s precipitation without local evidence',coverage=> {
   const result=currentFrom(raw({weatherPrimaryCoded:`${coverage}:L:R`,precipRateMM:null}));
@@ -65,6 +73,26 @@ it('includes the current hour when the history range end is exclusive', async ()
   expect(data.hourly.at(-1).time).toBe(Date.parse('2026-09-12T00:00:00Z')/1000);
 });
 describe('weather endpoint',()=> {
+ it('rechecks current radar after two minutes without spending another Xweather access, and removes a prior correction when radar no longer confirms it', async () => {
+  const fetcher = vi.fn(async () => Response.json(raw({weatherPrimaryCoded:'::OV'})));vi.stubGlobal('fetch',fetcher);
+  vi.mocked(fetchCurrentPrecipitation).mockResolvedValue({time:now/1000,kind:'rain'});
+  const first = await handleWeather(request());const wet = await first.json();
+  expect(wet.current).toMatchObject({code:63,conditionLabel:'Rain on radar',precipitationProbability:null});
+  expect(wet.expiresAt-wet.updatedAt).toBe(120000);
+  vi.setSystemTime(now+120001);vi.mocked(fetchCurrentPrecipitation).mockResolvedValue(null);
+  const later = await (await handleWeather(request())).json();
+  expect(later.current).toMatchObject({code:3,precipitationProbability:0});
+  expect(later.current.radarPrecipitation).toBeUndefined();
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  expect(fetchCurrentPrecipitation).toHaveBeenCalledTimes(2);
+ });
+ it('expires the CDN response before radar evidence exceeds its freshness limit', async () => {
+  vi.stubGlobal('fetch',vi.fn(async () => Response.json(raw({weatherPrimaryCoded:'::OV'}))));
+  vi.mocked(fetchCurrentPrecipitation).mockResolvedValue({time:now/1000-7*60,kind:'rain'});
+  const response = await handleWeather(request());const data = await response.json();
+  expect(data.expiresAt).toBe(now+60000);
+  expect(response.headers.get('Vercel-CDN-Cache-Control')).toBe('public, s-maxage=60');
+ });
  it.each(['2026-09-12T00:50:00Z', '2026-11-01T06:30:00Z', '2026-03-08T07:30:00Z'])('provides this-hour probability at %s', async instant => {
   vi.setSystemTime(Date.parse(instant));
   const hour = Math.floor(Date.parse(instant)/3600000)*3600;

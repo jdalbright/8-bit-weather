@@ -1,0 +1,46 @@
+{
+  "source": "https://noaa-mrms-pds.s3.amazonaws.com/CONUS/PrecipFlag_00.00/20260912/MRMS_PrecipFlag_00.00_20260912-172200.grib2.gz",
+  "sha256": "f465281b58d3bf5fe7af69b041ce34ca0ae7390d840168aa60efadaed0b54585",
+  "decoder": "ECMWF eccodes 2.48.0",
+  "gridDate": 20260912,
+  "gridTime": 1722,
+  "target": {
+    "latitude": 35.7796,
+    "longitude": -78.6382
+  },
+  "nearestCells": [
+    {
+      "lat": 35.77500000000382,
+      "lon": 281.3649985323317,
+      "value": 6.0,
+      "distance": 0.5869456280618717,
+      "index": 13459136
+    },
+    {
+      "lat": 35.77500000000382,
+      "lon": 281.35499853261746,
+      "value": 6.0,
+      "distance": 0.798369576221171,
+      "index": 13459135
+    },
+    {
+      "lat": 35.78500000000382,
+      "lon": 281.3649985323317,
+      "value": 6.0,
+      "distance": 0.6658074364041663,
+      "index": 13452136
+    },
+    {
+      "lat": 35.78500000000382,
+      "lon": 281.35499853261746,
+      "value": 6.0,
+      "distance": 0.8579927233362828,
+      "index": 13452135
+    }
+  ],
+  "flagMeaning": "6 = convection; NOAA MRMS PrecipFlag table",
+  "correctionInput": {
+    "time": 1789233720,
+    "kind": "rain"
+  }
+}

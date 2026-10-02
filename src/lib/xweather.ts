@@ -50,10 +50,11 @@ export function currentFrom(raw: unknown): CurrentWeather {
   let code = wx.code;
   const rate = positive(p.precipRateMM);
   const qualified = ['C','S','L','IS','SC','VC','PA'].includes(wx.coverage);
-  const ordinaryRain = code !== null && [51,53,55,61,63,65,80,81,82].includes(code);
   // A chance/nearby description must not animate precipitation at this location.
+  // An unqualified rain report is separate evidence from the rate estimate;
+  // a zero rate must not silently rewrite that report as cloudy weather.
   const precipitation = code !== null && code >= 51;
-  if (ordinaryRain && rate === 0 || qualified && precipitation && (rate === null || rate === 0 || wx.coverage === 'VC')) code = cloud(p);
+  if (qualified && precipitation && (rate === null || rate === 0 || wx.coverage === 'VC')) code = cloud(p);
   const current: CurrentWeather = { time: p.timestamp as number, temperature: number(p.tempC), feelsLike: number(p.feelslikeC),
     humidity: percent(p.humidity), wind: positive(p.windSpeedKPH), code, isDay: p.isDay, uv: positive(p.uvi),
     precipitationRate: rate, precipitationProbability: percent(p.pop), cloudCover: percent(p.sky) };

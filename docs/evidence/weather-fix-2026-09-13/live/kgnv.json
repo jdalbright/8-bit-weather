@@ -1,0 +1,45 @@
+{
+  "name": "KGNV",
+  "latitude": 29.6917,
+  "longitude": -82.276,
+  "url": "https://8-bit-weather.vercel.app/api/weather?latitude=29.6917&longitude=-82.276&section=current",
+  "startedAt": "2026-09-13T17:25:03.608Z",
+  "completedAt": "2026-09-13T17:25:04.681Z",
+  "provider": {
+    "provider": "xweather",
+    "latitude": 29.6917,
+    "longitude": -82.276,
+    "timezone": "America/New_York",
+    "updatedAt": 1789320303913,
+    "expiresAt": 1789320903913,
+    "current": {
+      "time": 1789320300,
+      "temperature": 31.07,
+      "feelsLike": 35.8,
+      "humidity": 63,
+      "wind": 12.53,
+      "code": 3,
+      "isDay": true,
+      "uv": 9,
+      "precipitationRate": 0,
+      "precipitationProbability": 0,
+      "cloudCover": 77,
+      "conditionLabel": "Overcast"
+    }
+  },
+  "radar": null,
+  "after": {
+    "time": 1789320300,
+    "temperature": 31.07,
+    "feelsLike": 35.8,
+    "humidity": 63,
+    "wind": 12.53,
+    "code": 3,
+    "isDay": true,
+    "uv": 9,
+    "precipitationRate": 0,
+    "precipitationProbability": 0,
+    "cloudCover": 77,
+    "conditionLabel": "Overcast"
+  }
+}
