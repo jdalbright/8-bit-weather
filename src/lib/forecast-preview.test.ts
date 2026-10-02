@@ -7,11 +7,11 @@ import { forecastHours, forecastTimeLabel, resolveForecastSelection } from './fo
 
 const snapshot = () => normalizeWeather(forecastFixture(), asheville, fixtureTime);
 describe('forecast selection', () => {
-  it('keeps Now and future steps within the same 24-hour rail, including partial and missing data', () => {
+  it('keeps Now and future steps within the same 48-hour rail, including partial and missing data', () => {
     const weather = snapshot();
-    expect(forecastHours(weather, fixtureTime + 1800000)).toHaveLength(24);
+    expect(forecastHours(weather, fixtureTime + 1800000)).toHaveLength(48);
     weather.hourly.splice(2, 1);
-    expect(forecastHours(weather, fixtureTime)).toHaveLength(23);
+    expect(forecastHours(weather, fixtureTime)).toHaveLength(47);
     expect(forecastHours(weather, fixtureTime + 3 * 86400000)).toEqual([]);
     expect(forecastHours(null, fixtureTime)).toEqual([]);
   });

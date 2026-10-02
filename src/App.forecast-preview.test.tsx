@@ -5,8 +5,10 @@ import { asheville, fixtureTime, forecastFixture } from './test/fixtures';
 import { normalizeWeather, STALE_AFTER } from './lib/weather';
 import { defaultPreferences, saveState } from './lib/storage';
 import type { Place, WeatherSnapshot } from './types';
+import { outdoorSnapshot } from './test/outdoor-fixtures';
 
 const mocks = vi.hoisted(() => ({ weather: {} as { snapshot: WeatherSnapshot | null; now: number; online: boolean; loading: boolean; error: string | null; refresh: () => Promise<void> }, widget: vi.fn(async () => {}), briefing: vi.fn(), locate: vi.fn() }));
+vi.mock('./lib/outdoor-client', () => ({ generateOutdoorRecommendation: vi.fn(async () => ({ version: '1:outdoor', start: Date.parse('2026-09-08T16:00Z') / 1000, text: 'Mild air and light wind.', generatedAt: Date.now(), expiresAt: Date.now() + 900000 })) }));
 vi.mock('./hooks/useWeather', () => ({ useWeather: () => mocks.weather }));
 vi.mock('./lib/widget', () => ({ syncWidget: mocks.widget }));
 vi.mock('./lib/api', async importOriginal => ({ ...await importOriginal<object>(), locate: mocks.locate }));
@@ -97,4 +99,26 @@ it('resets preview when GPS keeps its ID but changes coordinates', async () => {
   await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Use my location' })));
   mocks.weather.snapshot = { ...mocks.weather.snapshot!, latitude: 36 };
   rerender(<App/>); expect(slider()).toHaveValue('0');
+});
+
+it('previews an outdoor recommendation beyond 24 hours, scrolls with reduced motion, and preserves current data', async () => {
+  mocks.weather.snapshot = outdoorSnapshot();
+  saveState({ preferences: { ...defaultPreferences('en-US'), reducedMotion: true }, places: [asheville], selected: asheville });
+  const { container } = render(<App/>);
+  const before = structuredClone(mocks.weather.snapshot);
+  const current = container.querySelector('.current-stats')!.textContent;
+  const writes = mocks.widget.mock.calls.length;
+  fireEvent.click(within(screen.getByRole('region', { name: 'Best time outside' })).getByRole('button', { name: 'Tomorrow' }));
+  await act(async () => fireEvent.click(screen.getByRole('button', { name: 'Ask OpenAI' })));
+  fireEvent.click(screen.getByRole('button', { name: 'Preview this hour' }));
+  expect(slider()).toHaveValue('26');
+  expect(slider()).toHaveFocus();
+  expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ block: 'start', behavior: 'instant' });
+  expect(container.querySelector('.hour[aria-pressed="true"]')).toBe(container.querySelectorAll('.hour')[26]);
+  expect(container.querySelector('.current-stats')!.textContent).toBe(current);
+  expect(mocks.widget).toHaveBeenCalledTimes(writes);
+  expect(mocks.weather.snapshot).toEqual(before);
+  expect(mocks.briefing).toHaveBeenLastCalledWith(expect.objectContaining({ snapshot: before, now: mocks.weather.now }));
+  fireEvent.click(screen.getByRole('button', { name: 'Back to now' }));
+  expect(slider()).toHaveValue('0');
 });

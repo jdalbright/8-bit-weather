@@ -71,7 +71,7 @@ describe('rain outlook interactions', () => {
     for (const state of hiddenStates) {
       rerender(<Today {...props} {...state}/>);
       expect(screen.queryByRole('region', { name: 'Rain outlook' })).not.toBeInTheDocument();
-      expect(screen.getByRole('heading', { name: 'Next 24 hours' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Next 48 hours' })).toBeInTheDocument();
       expect(screen.getByRole('heading', { name: '7-day forecast' })).toBeInTheDocument();
     }
     rerender(<Today {...props}/>);

@@ -4,7 +4,7 @@ import { cacheMatches, localTime } from './weather';
 export interface ForecastSelection { placeId: string; latitude: number; longitude: number; time: number }
 
 export function forecastHours(snapshot: WeatherSnapshot | null, now: number) {
-  return snapshot?.hourly.filter(hour => hour.time + 3600 > now / 1000 && hour.time < now / 1000 + 86400).slice(0, 24) ?? [];
+  return snapshot?.hourly.filter(hour => hour.time + 3600 > now / 1000 && hour.time < now / 1000 + 172800).slice(0, 48) ?? [];
 }
 
 export function resolveForecastSelection(selection: ForecastSelection | null, place: Place | null, snapshot: WeatherSnapshot | null, now: number) {

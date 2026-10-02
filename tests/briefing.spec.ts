@@ -39,7 +39,7 @@ test('AI failures leave weather usable and expose an accessible retry', async ({
   await expect(page.getByRole('region', { name: 'Weather briefing' })).toContainText('unavailable right now');
   await expect(page.getByRole('heading', { name: '7-day forecast' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Retry briefing' })).toBeDisabled();
-  await expect(page.locator('.hour')).toHaveCount(24);
+  await expect(page.locator('.hour')).toHaveCount(48);
 });
 test('shows a saved briefing offline and never routes API navigation to the app shell', async ({ page, context }) => {
   await page.route('**/api/weather-briefing', route => {

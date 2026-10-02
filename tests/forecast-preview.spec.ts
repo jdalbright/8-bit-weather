@@ -49,7 +49,7 @@ test('keyboard preview, hourly taps, responsive scenery and return to now', asyn
   await page.getByRole('button', { name: 'Back to now' }).click();
   await expect(slider).toBeFocused(); await expect(slider).toHaveValue('0');
   await expect(page.locator('.current-temperature')).toHaveText('72°');
-  await slider.press('End'); await expect(slider).toHaveValue('23');
+  await slider.press('End'); await expect(slider).toHaveValue('47');
   await slider.press('Home'); await expect(slider).toHaveValue('0');
   expect(errors).toEqual([]);
 });

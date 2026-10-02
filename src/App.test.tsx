@@ -35,7 +35,7 @@ it('pairs current rain with the interval ahead and exposes hourly conditions and
   render(<App/>);
   const stats = screen.getByText('Chance of precipitation this hour').closest('div')!;
   expect(stats).toHaveTextContent('80%');
-  const hourly = screen.getByRole('region', { name: 'Next 24 hours' });
+  const hourly = screen.getByRole('region', { name: 'Next 48 hours' });
   const first = within(hourly).getByText('Now').closest('.hour')!;
   expect(first).toHaveTextContent('Thunderstorms');
   expect(first).toHaveTextContent('Chance of precipitation: 80%');

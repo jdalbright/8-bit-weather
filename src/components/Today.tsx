@@ -14,6 +14,7 @@ import { ForecastTimeTravel } from './ForecastTimeTravel';
 import { forecastHours, forecastTimeLabel } from '../lib/forecast-preview';
 import { triggerHaptic } from '../lib/native-experience';
 import { useHourlyScrollHaptics } from '../hooks/useHourlyScrollHaptics';
+import { BestTimeOutside } from './BestTimeOutside';
 
 interface Props {
   previewHour?: HourWeather | null; previewScene?: SceneState | null; onSelectForecast?: (time: number | null) => void;
@@ -26,6 +27,8 @@ interface Props {
 export default function Today({ previewHour = null, previewScene = null, onSelectForecast, briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, decorativeAnimate = animate, loading, retryAfterMs = 0, error, online, now, locating, onRadar, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
   const displayScene = previewScene ?? scene;
   const hourlyRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLInputElement>(null);
   const [uvExpanded, setUvExpanded] = useState(false);
   const days = snapshot ? futureDays(snapshot.daily, snapshot.timezone, now) : [];
   const todayDate = snapshot ? localDate(now, snapshot.timezone) : '';
@@ -50,7 +53,7 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
   const waitLabel = `${Math.ceil(retryAfterMs / 60000)} ${retryAfterMs > 60000 ? 'minutes' : 'minute'}`;
   const refreshDisabled = loading || !online || retryAfterMs > 0;
   return <main id="main-content" tabIndex={-1} className="today-view">
-    <div className="forecast-scene" data-preview={!!previewHour}>
+    <div ref={sceneRef} className="forecast-scene" data-preview={!!previewHour}>
     <Scenery key={snapshot ? `${place?.id}:${place?.latitude}:${place?.longitude}` : 'loading'} scene={displayScene} landscape={landscapeForPlace(place)} animate={decorativeAnimate} onDiscover={onDiscover} className={!place ? 'welcome-scene' : ''}>
       {!place ? <div className="welcome-content">
         <h1>Find your weather</h1>
@@ -71,7 +74,7 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
       </div>}
     </Scenery>
     </div>
-    {snapshot && futureHours.length > 0 && onSelectForecast ? <ForecastTimeTravel hours={futureHours} selected={previewHour} timezone={snapshot.timezone} onSelect={onSelectForecast}/> : null}
+    {snapshot && futureHours.length > 0 && onSelectForecast ? <ForecastTimeTravel inputRef={previewRef} hours={futureHours} selected={previewHour} timezone={snapshot.timezone} onSelect={onSelectForecast}/> : null}
     {error ? <div className="notice error-notice" role="alert"><p>{error}</p>{place ? <button className="text-button" onClick={onRefresh} disabled={refreshDisabled}>{retryAfterMs > 0 ? `Try again in ${waitLabel}` : 'Try again'} <Icon name="refresh" size={14}/></button> : null}</div> : null}
     {snapshot ? <>
       {stale ? <div className="offline-notice" role="status">{!online ? 'You’re offline. Showing your saved forecast.' : 'This forecast is getting old. Refresh for the latest.'}</div> : null}
@@ -89,9 +92,15 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
         <div className="uv-disclosure-content"><UvDetails key={`${snapshot.placeId}:${uv.today}`} forecast={uv} timezone={snapshot.timezone} now={now} isDay={scene.isDay} online={online}/></div>
       </div> : null}
       {rainOutlook ? <RainOutlook key={snapshot.placeId} onRadar={onRadar} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
+      <BestTimeOutside snapshot={snapshot} now={now} online={online} units={units} onPreview={onSelectForecast ? time => {
+        if (time !== previewHour?.time) triggerHaptic('selection');
+        onSelectForecast(time);
+        previewRef.current?.focus({ preventScroll: true });
+        sceneRef.current?.scrollIntoView({ block: 'start', behavior: animate ? 'smooth' : 'instant' });
+      } : undefined}/>
       <WeatherBriefing provider={briefingProvider} onProviderChange={onBriefingProviderChange} snapshot={snapshot} units={units} online={online} now={now}/>
       <section className="hourly-section" aria-labelledby="hourly-title">
-        <div className="section-heading"><h2 id="hourly-title">Next 24 hours</h2><button className="icon-button scroll-hours" aria-label="Scroll hourly forecast forward" onClick={() => { beginHourlyScroll(); hourlyRef.current?.scrollBy({ left: 220, behavior: animate ? 'smooth' : 'instant' }); }}><Icon name="next" size={17}/></button></div>
+        <div className="section-heading"><h2 id="hourly-title">Next 48 hours</h2><button className="icon-button scroll-hours" aria-label="Scroll hourly forecast forward" onClick={() => { beginHourlyScroll(); hourlyRef.current?.scrollBy({ left: 220, behavior: animate ? 'smooth' : 'instant' }); }}><Icon name="next" size={17}/></button></div>
         {hours.length ? <div ref={hourlyRef} className="hourly-rail" data-pull-refresh-ignore tabIndex={0} aria-label="Hourly forecast, scroll for more hours">
           {hours.map(hour => { const isCurrentHour = hour.time <= now / 1000 && hour.time + 3600 > now / 1000;
             const useCurrent = isCurrentHour && !stale;
@@ -99,11 +108,12 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
               aria-pressed={previewHour ? previewHour.time === hour.time : isCurrentHour}
               aria-label={`${isCurrentHour ? 'Now' : forecastTimeLabel(hour.time, snapshot.timezone)}, ${(useCurrent ? info : forecastWeatherInfo(hour, hour.isDay)).label}, ${temperature(useCurrent ? snapshot.current.temperature : hour.temperature, units)}, Chance of precipitation: ${percent(useCurrent && hasCurrentProbability ? currentChance : precipitationForHour(snapshot.hourly, hour.time))}`}
               onClick={() => { const time = isCurrentHour ? null : hour.time; if (onSelectForecast && time !== (previewHour?.time ?? null)) triggerHaptic('selection'); onSelectForecast?.(time); }}>
+            <span className="hour-day" aria-hidden="true">{localDate(hour.time * 1000, snapshot.timezone) === todayDate ? 'Today' : localTime(hour.time, snapshot.timezone, { weekday: 'short' })}</span>
             <span className="hour-label">{isCurrentHour ? 'Now' : localTime(hour.time, snapshot.timezone, { hour: 'numeric' })}</span>
             <WeatherIcon kind={(useCurrent ? info : weatherInfo(hour.code)).kind} isDay={useCurrent ? scene.isDay : hour.isDay} size={30}/><span className="sr-only">{(useCurrent ? info : forecastWeatherInfo(hour, hour.isDay)).label}</span>
             <span className="hour-temperature">{temperature(useCurrent ? snapshot.current.temperature : hour.temperature, units)}</span>
             <span className="hour-precipitation"><Icon name="drop" size={10}/><span className="sr-only">Chance of precipitation: </span>{percent(useCurrent && hasCurrentProbability ? currentChance : precipitationForHour(snapshot.hourly, hour.time))}</span>
-          </button>; })}</div> : <p className="empty-forecast">This hourly forecast has expired. Connect and refresh for the next 24 hours.</p>}
+          </button>; })}</div> : <p className="empty-forecast">This hourly forecast has expired. Connect and refresh for the next 48 hours.</p>}
       </section>
       <SunTimes day={today} timezone={snapshot.timezone}/>
       <section className="daily-section" aria-labelledby="daily-title">

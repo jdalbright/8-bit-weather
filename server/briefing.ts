@@ -1,4 +1,6 @@
 import OpenAI from 'openai';
+import { providerCooldown } from './provider-cooldown.js';
+import { generateOutdoor } from './outdoor.js';
 import { BRIEFING_PATH, BRIEFING_TTL, BRIEFING_VERSION, forecastUsable, parseBriefingForecast } from '../src/lib/briefing.js';
 
 import { briefingInstructions } from '../src/lib/briefing-prompt.js';
@@ -6,19 +8,6 @@ import { OPENAI_BRIEFING_REVISION, openAIBriefingFacts, validOpenAISummary } fro
 export { briefingInstructions } from '../src/lib/briefing-prompt.js';
 
 const MAX_BODY_BYTES = 12000;
-
-function providerCooldown(headers: Headers | undefined): string {
-  const milliseconds = Number(headers?.get('retry-after-ms'));
-  if (Number.isFinite(milliseconds) && milliseconds > 0) return String(Math.ceil(milliseconds / 1000));
-  const value = headers?.get('retry-after');
-  if (value) {
-    const seconds = Number(value);
-    if (Number.isFinite(seconds) && seconds > 0) return String(Math.ceil(seconds));
-    const date = Date.parse(value);
-    if (Number.isFinite(date) && date > Date.now()) return String(Math.ceil((date - Date.now()) / 1000));
-  }
-  return '60';
-}
 
 function json(data: unknown, status = 200, extra: Record<string, string> = {}) {
   return Response.json(data, { status, headers: { 'Cache-Control': 'no-store', ...extra } });
@@ -94,6 +83,7 @@ async function generateBriefing(request: Request): Promise<Response> {
   let raw: unknown;
   try { raw = await readBody(request); }
   catch (error) { return json({ code: 'invalid_request' }, error instanceof Error && error.message === 'body_too_large' ? 413 : 400); }
+  if (raw && typeof raw === 'object' && 'kind' in raw && raw.kind === 'outdoor') return generateOutdoor(raw, request.signal);
   const forecast = parseBriefingForecast(raw);
   if (!forecast) return json({ code: 'invalid_forecast' }, 400);
   const now = Date.now();

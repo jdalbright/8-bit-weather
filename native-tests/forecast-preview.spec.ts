@@ -36,7 +36,7 @@ test('hourly haptics follow selection and scrolling and respect the haptics sett
   await page.route('**/api/weather?**', route => route.fulfill({ json: apiFixture(forecastFixture(Date.now()), route.request().url()), headers: { 'access-control-allow-origin': '*' } }));
   await page.goto('/');
   const tiles = page.locator('.hour');
-  await expect(tiles).toHaveCount(24);
+  await expect(tiles).toHaveCount(48);
   const pulses = () => bridge.calls.filter(call => call.method === 'triggerHaptic');
   expect(pulses()).toHaveLength(0);
   await tiles.nth(1).click();
