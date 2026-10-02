@@ -29,6 +29,7 @@ function OutdoorCard({ snapshot, now, ...props }: Props) {
 }
 
 function Recommendation({ request, now, online, units, onPreview }: Omit<Props, 'snapshot'> & { request: OutdoorRequest }) {
+  const statusId = useId();
   const [recommendation, setRecommendation] = useState<OutdoorRecommendation | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<OutdoorError | null>(null);
@@ -52,10 +53,11 @@ function Recommendation({ request, now, online, units, onPreview }: Omit<Props, 
   const window = valid && eligible.status === 'recommended' ? eligible.windows.find(hour => hour.start === recommendation.start) : undefined;
   const clock = (time: number) => localTime(time, request.forecast.timezone, { hour: 'numeric', minute: '2-digit' });
   const empty = {
-    'no-comfortable-window': 'No comfortable window',
-    'no-daylight': 'No daylight remaining',
-    unavailable: 'Forecast details unavailable',
+    'no-comfortable-window': 'No comfortable window: no clear or cloudy daylight hour is available. Try the other day.',
+    'no-daylight': 'No daylight remaining for a full hour. Try the other day.',
+    unavailable: 'Forecast details unavailable. Refresh the weather to check again.',
   } as const;
+  const compromise = eligible.status === 'recommended' && !eligible.windows[0].meetsPreferences;
   const generate = async () => {
     if (pending.current || !online || outdoorWindows(request.forecast, Math.max(now, Date.now()), request.day, request.period).status !== 'recommended') return;
     const controller = new AbortController();
@@ -71,8 +73,9 @@ function Recommendation({ request, now, online, units, onPreview }: Omit<Props, 
     }
   };
   return <>
-    <div className="outdoor-result" role="status" aria-live="polite" aria-atomic="true" aria-busy={loading}>
+    <div id={statusId} className="outdoor-result" role="status" aria-live="polite" aria-atomic="true" aria-busy={loading}>
       {window && recommendation ? <>
+        {!window.meetsPreferences ? <p className="outdoor-notice">Best available hour · Conditions fall outside the comfort preferences.</p> : null}
         <p className="outdoor-time"><time dateTime={new Date(window.start * 1000).toISOString()}>{clock(window.start)}</time><span>–</span><time dateTime={new Date(window.end * 1000).toISOString()}>{clock(window.end)}</time></p>
         <dl className="outdoor-conditions">
           <div><dt>Temperature</dt><dd aria-label={`${temperature(window.temperature, units)} ${units === 'imperial' ? 'Fahrenheit' : 'Celsius'}`}>{temperature(window.temperature, units)}</dd></div>
@@ -85,12 +88,14 @@ function Recommendation({ request, now, online, units, onPreview }: Omit<Props, 
       </> : eligible.status !== 'recommended' ? <p className="outdoor-notice">{empty[eligible.status]}</p>
         : loading ? <span className="sr-only">AI is finding a good hour for you…</span>
         : !online ? <p className="outdoor-notice">Connect to generate an AI recommendation.</p>
-        : error ? <p className="outdoor-notice">{error.message}</p> : null}
+        : error ? <p className="outdoor-notice">{error.message}</p>
+        : compromise ? <p className="outdoor-notice">No hour meets every comfort preference. Ask OpenAI for the best available option and its tradeoffs.</p> : null}
     </div>
-    {(window ? !!onPreview : eligible.status === 'recommended') ? <button className="outdoor-action"
+    {(!window || !!onPreview) ? <button className="outdoor-action"
       aria-label={window ? 'Preview this hour' : undefined}
+      aria-describedby={!window ? statusId : undefined}
       title={window ? undefined : 'Ask OpenAI for an outdoor recommendation'}
-      disabled={!window && (loading || !online || !!error && Math.max(clockNow, retryClock) < error.retryAt)}
+      disabled={!window && (eligible.status !== 'recommended' || loading || !online || !!error && Math.max(clockNow, retryClock) < error.retryAt)}
       onClick={() => {
         if (!window) { void generate(); return; }
         if (validOutdoorRecommendation(recommendation, request, Math.max(now, Date.now()))) onPreview?.(window.start);

@@ -111,4 +111,33 @@ for (const scenario of ['poor weather', 'missing measurements'] as const) test(`
   const card = page.getByRole('region', { name: 'Best time outside' });
   await expect(card).toContainText(scenario === 'poor weather' ? 'No comfortable window' : 'Forecast details unavailable');
   await expect(card.getByRole('button', { name: 'Preview this hour' })).toHaveCount(0);
+  await expect(card.getByRole('button', { name: 'Ask OpenAI' })).toBeVisible();
+  await expect(card.getByRole('button', { name: 'Ask OpenAI' })).toBeDisabled();
+  expect(state.outdoorRequests).toBe(0);
+});
+
+test('keeps Ask OpenAI available on a hot day and previews the best available hour', async ({ page }, info) => {
+  const state = await mockOutdoor(page);
+  state.forecast.hourly.temperature_2m.fill(32);
+  state.outdoorText = 'The light wind is a plus, though the heat remains a drawback.';
+  await page.goto('/');
+  const card = page.getByRole('region', { name: 'Best time outside' });
+  await expect(card).toContainText('No hour meets every comfort preference');
+  await expect(card.getByRole('button', { name: 'Ask OpenAI' })).toBeEnabled();
+  expect(state.outdoorRequests).toBe(0);
+  await card.getByRole('button', { name: 'Ask OpenAI' }).click();
+  await expect(card).toContainText('Best available hour');
+  await expect(card).toContainText('heat remains a drawback');
+  await expect(card).toContainText('90°');
+  for (const width of [320, 390, 1024]) {
+    await page.setViewportSize({ width, height: 844 });
+    await card.scrollIntoViewIfNeeded();
+    expect(await card.evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+    await expect(card.getByRole('button', { name: 'Preview this hour' })).toBeInViewport();
+    await page.screenshot({ path: `/tmp/8bit-outdoor-hot-${info.project.name}-${width}.png` });
+  }
+  await card.getByRole('button', { name: 'Preview this hour' }).click();
+  await expect(page.getByRole('slider', { name: 'Forecast preview time' })).toHaveValue('1');
+  expect(state.outdoorRequests).toBe(1);
+  expect(state.errors).toEqual([]);
 });

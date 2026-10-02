@@ -8,7 +8,8 @@ import { BRIEFING_TTL, BRIEFING_VERSION } from '../../src/lib/briefing';
 export async function mockOutdoor(page: Page) {
   const now = fixtureTime + 1800000;
   await page.clock.setFixedTime(now);
-  const state = { forecast: outdoorForecast(), weatherRequests: 0, briefingRequests: 0, outdoorRequests: 0, outdoorFailure: false, outdoorGeneratedAt: now, errors: [] as string[] };
+  const state = { forecast: outdoorForecast(), weatherRequests: 0, briefingRequests: 0, outdoorRequests: 0, outdoorFailure: false, outdoorGeneratedAt: now,
+    outdoorText: 'Mild air and light wind make this a pleasant hour outside.', errors: [] as string[] };
   page.on('pageerror', error => state.errors.push(error.message));
   page.on('console', message => { if (['error', 'warning'].includes(message.type())) state.errors.push(message.text()); });
   await page.route('**/api/weather?**', route => {
@@ -23,7 +24,7 @@ export async function mockOutdoor(page: Page) {
       const eligible = outdoorWindows(body.forecast, now, body.day, body.period);
       if (eligible.status !== 'recommended') throw new Error('No mock outdoor candidates');
       return route.fulfill({ headers: { 'access-control-allow-origin': '*' }, json: {
-        version: OUTDOOR_VERSION, start: (body.day === 'tomorrow' ? eligible.windows.find(hour => hour.start === Date.parse('2026-09-08T16:00Z') / 1000) : null)?.start ?? eligible.windows[0].start, text: 'Mild air and light wind make this a pleasant hour outside.', generatedAt: state.outdoorGeneratedAt, expiresAt: state.outdoorGeneratedAt + 900000,
+        version: OUTDOOR_VERSION, start: (body.day === 'tomorrow' ? eligible.windows.find(hour => hour.start === Date.parse('2026-09-08T16:00Z') / 1000) : null)?.start ?? eligible.windows[0].start, text: state.outdoorText, generatedAt: state.outdoorGeneratedAt, expiresAt: state.outdoorGeneratedAt + 900000,
       } });
     }
     state.briefingRequests++;

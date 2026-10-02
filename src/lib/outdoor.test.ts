@@ -18,10 +18,22 @@ describe('best time outside', () => {
     expect(choose(snapshot)).toMatchObject({ status: 'recommended', window: { start: fixtureTime / 1000 + 3600, end: fixtureTime / 1000 + 7200, temperature: 22, precipitation: 10, wind: 8, uv: 3 } });
     expect(snapshot).toEqual(before);
   });
-  it.each([{ code: 61 }, { code: 95 }, { code: 71 }, { code: 45 }, { temperature: 31 }, { temperature: 9 }, { wind: 21 }, { uv: 6 }, { precipitation: 31 }])('does not recommend an uncomfortable forecast: %j', change => {
+  it.each([{ code: 61 }, { code: 95 }, { code: 71 }, { code: 45 }])('withholds a recommendation for unsuitable weather conditions: %j', change => {
     const snapshot = outdoorSnapshot();
     snapshot.hourly.forEach(hour => Object.assign(hour, change));
     expect(choose(snapshot)).toEqual({ status: 'no-comfortable-window' });
+  });
+  it.each([{ temperature: 31 }, { temperature: 9 }, { wind: 21 }, { uv: 6 }, { precipitation: 31 }])('offers a best-available hour when comfort preferences cannot be met: %j', change => {
+    const snapshot = outdoorSnapshot();
+    snapshot.hourly.forEach(hour => Object.assign(hour, change));
+    expect(choose(snapshot)).toMatchObject({ status: 'recommended', window: { meetsPreferences: false } });
+  });
+  it('prefers an hour within the comfort limits over a hotter hour with less rain chance', () => {
+    const snapshot = outdoorSnapshot();
+    snapshot.hourly.forEach(hour => { hour.temperature = 32; hour.precipitation = 0; });
+    snapshot.hourly[3].temperature = 24;
+    snapshot.hourly[4].precipitation = 20;
+    expect(choose(snapshot)).toMatchObject({ status: 'recommended', window: { start: snapshot.hourly[3].time, meetsPreferences: true } });
   });
   it.each(['temperature', 'wind', 'uv', 'precipitation', 'code'] as const)('treats missing %s as unavailable, never favorable', field => {
     const snapshot = outdoorSnapshot();
@@ -109,7 +121,7 @@ describe('best time outside', () => {
     snapshot.daily[0] = { ...snapshot.daily[0], sunrise: Date.parse('2026-09-07T01:30Z') / 1000, sunset: Date.parse('2026-09-07T13:30Z') / 1000 };
     expect(choose(snapshot, 'today', 'morning', at)).toMatchObject({ window: { start: Date.parse('2026-09-07T05:00Z') / 1000 } });
     snapshot.hourly.find(hour => hour.time === Date.parse('2026-09-07T05:00Z') / 1000)!.wind = 30;
-    expect(choose(snapshot, 'today', 'morning', at).status).toBe('no-comfortable-window');
+    expect(choose(snapshot, 'today', 'morning', at)).toMatchObject({ status: 'recommended', window: { start: Date.parse('2026-09-07T05:00Z') / 1000, meetsPreferences: false } });
     expect(choose(snapshot, 'today', 'afternoon', at)).toMatchObject({ window: { start: Date.parse('2026-09-07T07:00Z') / 1000 } });
   });
 });

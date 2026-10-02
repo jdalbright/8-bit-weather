@@ -72,7 +72,31 @@ it('distinguishes poor conditions, missing data, and no remaining full daylight 
   const night = Date.parse('2026-09-07T23:30Z'); snapshot.sectionTimes.forecast = night;
   rerender(<BestTimeOutside snapshot={snapshot} now={night} online units="imperial"/>);
   expect(screen.getByRole('status')).toHaveTextContent('No daylight remaining');
-  expect(screen.queryByRole('button', { name: 'Ask OpenAI' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Ask OpenAI' })).toBeDisabled();
+  expect(generateOutdoorRecommendation).not.toHaveBeenCalled();
+});
+
+it('keeps generation available on a hot day and labels the result as a compromise', async () => {
+  const snapshot = outdoorSnapshot();
+  snapshot.hourly.forEach(hour => { hour.temperature = 32; });
+  render(<BestTimeOutside snapshot={snapshot} now={now} online units="imperial" onPreview={vi.fn()}/>);
+  expect(screen.getByRole('button', { name: 'Ask OpenAI' })).toBeEnabled();
+  expect(screen.getByRole('status')).toHaveTextContent('No hour meets every comfort preference');
+  generate();
+  await screen.findByRole('button', { name: 'Preview this hour' });
+  expect(screen.getByRole('status')).toHaveTextContent('Best available hour');
+  expect(screen.getByRole('status')).toHaveTextContent('Temperature90°');
+  expect(generateOutdoorRecommendation).toHaveBeenCalledTimes(1);
+});
+
+it('keeps the unavailable action visible and explains it without sending a request', () => {
+  const snapshot = outdoorSnapshot();
+  snapshot.hourly.forEach(hour => { hour.wind = null; });
+  render(<BestTimeOutside snapshot={snapshot} now={now} online units="imperial"/>);
+  const button = screen.getByRole('button', { name: 'Ask OpenAI' });
+  expect(button).toBeDisabled();
+  expect(button).toHaveAccessibleDescription(/Forecast details unavailable/);
+  fireEvent.click(button);
   expect(generateOutdoorRecommendation).not.toHaveBeenCalled();
 });
 

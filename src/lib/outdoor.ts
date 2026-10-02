@@ -5,6 +5,7 @@ export type OutdoorDay = 'today' | 'tomorrow';
 export type OutdoorPeriod = 'any' | 'morning' | 'afternoon' | 'evening';
 export interface OutdoorWindow {
   start: number; end: number; temperature: number; precipitation: number; wind: number; uv: number;
+  meetsPreferences: boolean;
 }
 export interface OutdoorForecast { timezone: string; sectionTimes?: { forecast: number }; hourly: HourWeather[]; daily: Pick<DayWeather, 'date' | 'sunrise' | 'sunset'>[] }
 export type OutdoorResult =
@@ -60,16 +61,20 @@ export function outdoorWindows(snapshot: OutdoorForecast, now: number, day: Outd
     if (!hour || start >= now / 1000 + 48 * HOUR || !finite(hour.temperature) || !finite(hour.wind) || hour.wind < 0
       || !finite(hour.uv) || hour.uv < 0 || !finite(precipitation) || precipitation < 0 || precipitation > 100
       || weatherInfo(hour.code).kind === 'unknown') { missing = true; continue; }
-    if (![0, 1, 2, 3].includes(hour.code!) || hour.temperature < 10 || hour.temperature > 30
-      || precipitation > 30 || hour.wind > 20 || hour.uv >= 6) continue;
-    candidates.push({ start, end, temperature: hour.temperature, precipitation, wind: hour.wind, uv: hour.uv });
+    if (![0, 1, 2, 3].includes(hour.code!)) continue;
+    const meetsPreferences = hour.temperature >= 10 && hour.temperature <= 30
+      && precipitation <= 30 && hour.wind <= 20 && hour.uv < 6;
+    candidates.push({ start, end, temperature: hour.temperature, precipitation, wind: hour.wind, uv: hour.uv, meetsPreferences });
   }
   candidates.sort((a, b) => {
     const left = rank(a), right = rank(b);
     for (let i = 0; i < left.length; i++) if (left[i] !== right[i]) return left[i] - right[i];
     return 0;
   });
-  if (candidates[0]) return { status: 'recommended', windows: candidates, forecastAt };
+  // Comfort preferences should rank the available hours, not erase the action
+  // on a warm day. Only offer a compromise when no hour meets all preferences.
+  const preferred = candidates.filter(hour => hour.meetsPreferences);
+  if (candidates[0]) return { status: 'recommended', windows: preferred.length ? preferred : candidates, forecastAt };
   if (!daylightHours) return { status: 'no-daylight' };
   return { status: missing ? 'unavailable' : 'no-comfortable-window' };
 }

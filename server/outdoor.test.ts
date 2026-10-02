@@ -36,6 +36,19 @@ it('generates a bounded choice beyond 24 hours using the protected route, and st
   expect(create).toHaveBeenCalledTimes(1);
 });
 
+it('generates for a hot day and sends the comfort tradeoff to OpenAI', async () => {
+  const body = payload();
+  body.forecast.hourly.forEach(hour => { hour.temperature = 32; });
+  create.mockResolvedValue({ status: 'completed', output_text: JSON.stringify({ start, text: 'The light wind is a plus, though the heat remains a drawback.' }) });
+  const response = await handleBriefing(request(body));
+  expect(response.status).toBe(200);
+  expect(await response.json()).toMatchObject({ start, text: expect.stringContaining('heat remains a drawback') });
+  const input = create.mock.calls[0][0];
+  expect(JSON.parse(input.input).windows).toEqual(expect.arrayContaining([expect.objectContaining({ temperature: 32, meetsPreferences: false })]));
+  expect(input.instructions).toContain('Explain the selected hour\'s relevant tradeoffs');
+  expect(create).toHaveBeenCalledTimes(1);
+});
+
 it.each(['missing', 'stale', 'storm', 'night', 'invalid timezone', 'oversized', 'disabled', 'origin'] as const)('makes no provider call for %s', async scenario => {
   const body = payload();
   if (scenario === 'missing') body.forecast.hourly.forEach(hour => { hour.uv = null; });
