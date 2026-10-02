@@ -17,6 +17,7 @@ import { useHourlyScrollHaptics } from '../hooks/useHourlyScrollHaptics';
 import { BestTimeOutside } from './BestTimeOutside';
 
 interface Props {
+  bestTimeOutside?: boolean;
   previewHour?: HourWeather | null; previewScene?: SceneState | null; onSelectForecast?: (time: number | null) => void;
   briefingProvider?: BriefingProvider; onBriefingProviderChange?: (provider: BriefingProvider) => void;
   place: Place | null; snapshot: WeatherSnapshot | null; scene: SceneState; units: Units; animate: boolean; decorativeAnimate?: boolean;
@@ -24,7 +25,7 @@ interface Props {
   onRadar?: () => void; onLocate: () => void; onPlaces: () => void; onRefresh: () => void;
   onDiscover: (discovery: Discovery) => void;
 }
-export default function Today({ previewHour = null, previewScene = null, onSelectForecast, briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, decorativeAnimate = animate, loading, retryAfterMs = 0, error, online, now, locating, onRadar, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
+export default function Today({ bestTimeOutside = false, previewHour = null, previewScene = null, onSelectForecast, briefingProvider, onBriefingProviderChange, place, snapshot, scene, units, animate, decorativeAnimate = animate, loading, retryAfterMs = 0, error, online, now, locating, onRadar, onLocate, onPlaces, onRefresh, onDiscover }: Props) {
   const displayScene = previewScene ?? scene;
   const hourlyRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
@@ -92,12 +93,12 @@ export default function Today({ previewHour = null, previewScene = null, onSelec
         <div className="uv-disclosure-content"><UvDetails key={`${snapshot.placeId}:${uv.today}`} forecast={uv} timezone={snapshot.timezone} now={now} isDay={scene.isDay} online={online}/></div>
       </div> : null}
       {rainOutlook ? <RainOutlook key={snapshot.placeId} onRadar={onRadar} outlook={rainOutlook} timezone={snapshot.timezone} units={units} now={now}/> : null}
-      <BestTimeOutside snapshot={snapshot} now={now} online={online} units={units} onPreview={onSelectForecast ? time => {
+      {bestTimeOutside ? <BestTimeOutside snapshot={snapshot} now={now} online={online} units={units} onPreview={onSelectForecast ? time => {
         if (time !== previewHour?.time) triggerHaptic('selection');
         onSelectForecast(time);
         previewRef.current?.focus({ preventScroll: true });
         sceneRef.current?.scrollIntoView({ block: 'start', behavior: animate ? 'smooth' : 'instant' });
-      } : undefined}/>
+      } : undefined}/> : null}
       <WeatherBriefing provider={briefingProvider} onProviderChange={onBriefingProviderChange} snapshot={snapshot} units={units} online={online} now={now}/>
       <section className="hourly-section" aria-labelledby="hourly-title">
         <div className="section-heading"><h2 id="hourly-title">Next 48 hours</h2><button className="icon-button scroll-hours" aria-label="Scroll hourly forecast forward" onClick={() => { beginHourlyScroll(); hourlyRef.current?.scrollBy({ left: 220, behavior: animate ? 'smooth' : 'instant' }); }}><Icon name="next" size={17}/></button></div>

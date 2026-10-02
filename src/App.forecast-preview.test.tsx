@@ -103,7 +103,7 @@ it('resets preview when GPS keeps its ID but changes coordinates', async () => {
 
 it('previews an outdoor recommendation beyond 24 hours, scrolls with reduced motion, and preserves current data', async () => {
   mocks.weather.snapshot = outdoorSnapshot();
-  saveState({ preferences: { ...defaultPreferences('en-US'), reducedMotion: true }, places: [asheville], selected: asheville });
+  saveState({ preferences: { ...defaultPreferences('en-US'), bestTimeOutside: true, reducedMotion: true }, places: [asheville], selected: asheville });
   const { container } = render(<App/>);
   const before = structuredClone(mocks.weather.snapshot);
   const current = container.querySelector('.current-stats')!.textContent;

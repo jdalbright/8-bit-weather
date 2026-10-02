@@ -3,7 +3,7 @@ import { asheville } from '../src/test/fixtures';
 import { mockOutdoor } from './support/outdoor';
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected: place, places: [place], preferences: { units: 'imperial', reducedMotion: true } })), asheville);
+  await page.addInitScript(place => localStorage.setItem('8bit-weather:v1', JSON.stringify({ selected: place, places: [place], preferences: { units: 'imperial', reducedMotion: true, bestTimeOutside: true } })), asheville);
 });
 
 test('generates only on request and previews tomorrow, fits mobile and desktop, and returns to now', async ({ page }, info) => {

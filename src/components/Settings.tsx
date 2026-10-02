@@ -36,6 +36,7 @@ export default function Settings({ preferences, onChange, audio, install, system
   return <main id="main-content" tabIndex={-1} className="utility-view settings-view">
     <div className="view-title"><Icon name="settings" size={26}/><h1>Settings</h1></div><p className="view-intro">Make yourself at home.</p>
     <section className="settings-section" aria-labelledby="units-title"><h2 id="units-title">Weather units</h2><div className="segmented-control" role="group" aria-label="Weather units"><button aria-pressed={preferences.units === 'imperial'} onClick={() => change('units', 'imperial')}>°F / mph</button><button aria-pressed={preferences.units === 'metric'} onClick={() => change('units', 'metric')}>°C / km/h</button></div></section>
+    <section className="settings-section" aria-labelledby="today-view-title"><h2 id="today-view-title">Today view</h2><div className="setting-row"><span><strong>Best time outside</strong><small>Show outdoor recommendations on Today.</small></span><Toggle label="Best time outside" checked={preferences.bestTimeOutside} onChange={() => change('bestTimeOutside', !preferences.bestTimeOutside)}/></div></section>
     {install.native ? <section className="settings-section" aria-labelledby="briefing-provider-title">
       <h2 id="briefing-provider-title">Weather briefing</h2>
       <div className="briefing-provider-options" role="group" aria-label="Briefing provider">

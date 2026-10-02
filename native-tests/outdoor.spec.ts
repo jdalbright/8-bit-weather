@@ -2,8 +2,10 @@ import { expect, test } from '@playwright/test';
 import { installBridge, savedState, storageKey } from './bridge';
 import { mockOutdoor } from '../tests/support/outdoor';
 
+const outdoorState = { ...savedState, preferences: { ...savedState.preferences, bestTimeOutside: true } };
+
 test('native outdoor filters preview tomorrow while preserving widgets and cloud request counts', async ({ page }, info) => {
-  const bridge = await installBridge(page);
+  const bridge = await installBridge(page, { [storageKey]: JSON.stringify(outdoorState) });
   const state = await mockOutdoor(page);
   await page.goto('/');
   await expect(page.locator('.briefing-copy')).toContainText('A mild forecast');
@@ -35,7 +37,7 @@ test('native outdoor filters preview tomorrow while preserving widgets and cloud
 });
 
 test('native saved recommendations work offline and navigation resets availability', async ({ page, context }) => {
-  await installBridge(page);
+  await installBridge(page, { [storageKey]: JSON.stringify(outdoorState) });
   await mockOutdoor(page);
   await page.goto('/');
   const card = page.getByRole('region', { name: 'Best time outside' });
@@ -55,7 +57,7 @@ test('native saved recommendations work offline and navigation resets availabili
 
 for (const fails of [false, true]) test(`outdoor uses only OpenAI with Apple briefings selected, including ${fails ? 'cloud failure' : 'success'}`, async ({ page }) => {
   const bridge = await installBridge(page, { [storageKey]: JSON.stringify({
-    ...savedState, preferences: { ...savedState.preferences, briefingProvider: 'apple' },
+    ...outdoorState, preferences: { ...outdoorState.preferences, briefingProvider: 'apple' },
   }) });
   bridge.control.appleAvailable = true;
   bridge.control.appleText = 'Temperatures stay mild today. Hourly precipitation chances peak at 10%.';

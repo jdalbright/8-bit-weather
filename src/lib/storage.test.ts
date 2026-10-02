@@ -4,6 +4,13 @@ import { normalizeWeather } from './weather';
 import { asheville, forecastFixture } from '../test/fixtures';
 
 describe('device persistence', () => {
+  it('keeps outdoor recommendations off for a new installation and after clearing saved data', () => {
+    expect(loadState().preferences.bestTimeOutside).toBe(false);
+    saveState({ preferences: { ...defaultPreferences(), bestTimeOutside: true }, places: [asheville], selected: asheville });
+    expect(loadState().preferences.bestTimeOutside).toBe(true);
+    clearSavedData();
+    expect(loadState().preferences.bestTimeOutside).toBe(false);
+  });
   it('selects locale defaults and safely recovers from corrupt state', () => { expect(defaultPreferences('en-US').units).toBe('imperial'); expect(defaultPreferences('en-GB').units).toBe('metric'); localStorage.setItem(STORAGE_KEY, '{broken'); expect(loadState().selected).toBeNull(); });
   it('round-trips preferences and places and clears only this app’s data', () => {
     const preferences = { ...defaultPreferences('en-US'), musicVolume: 0.6, reducedMotion: true };
@@ -63,4 +70,13 @@ it.each([undefined, 'invalid', false, true])('migrates haptics %s and preserves 
   expect(loaded.preferences).toEqual({ ...preferences, haptics: typeof haptics === 'boolean' ? haptics : true });
   expect(loaded.places).toEqual([asheville]); expect(loaded.selected).toEqual(asheville);
   saveState(loaded); expect(loadState()).toEqual(loaded);
+});
+
+it.each([undefined, null, 'true', 1, false, true])('migrates Best time outside %s without changing saved places or other settings', bestTimeOutside => {
+  const preferences = { ...defaultPreferences(), bestTimeOutside, units: 'metric' as const, music: false, briefingProvider: 'apple' as const };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ preferences, places: [asheville], selected: asheville }));
+  const loaded = loadState();
+  expect(loaded).toEqual({ preferences: { ...preferences, bestTimeOutside: bestTimeOutside === true }, places: [asheville], selected: asheville });
+  saveState(loaded);
+  expect(loadState()).toEqual(loaded);
 });
