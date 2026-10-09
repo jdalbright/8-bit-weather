@@ -88,7 +88,7 @@ async function generateBriefing(request: Request): Promise<Response> {
   if (!forecast) return json({ code: 'invalid_forecast' }, 400);
   const now = Date.now();
   if (!forecastUsable(forecast, now)) return json({ code: 'forecast_unavailable' }, 422);
-  const model = process.env.OPENAI_WEATHER_MODEL || 'gpt-5.6-luna';
+  const model = process.env.OPENAI_WEATHER_MODEL || 'gpt-6-luna';
   const started = Date.now();
   try {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 12000, maxRetries: 0 });

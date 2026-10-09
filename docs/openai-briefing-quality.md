@@ -78,10 +78,13 @@ npx playwright test --config playwright.native.config.ts native-tests/briefing.s
 
 ## Opt-in paired evaluation
 
+For the current GPT-6 migration, use the separate [model and prompt comparison](openai-gpt6-migration.md).
+The evaluation below retains its historical GPT-5.6 Luna default and earlier pipeline baseline.
+
 Run only after explicit authorization for 16 paid generation calls, with an existing
 server-side `OPENAI_API_KEY` available in the environment. Never put a key in the command,
 report, source control, or client bundle. Use the configured `OPENAI_WEATHER_MODEL` or the
-existing default `gpt-5.6-luna` for both pipelines.
+historical default `gpt-5.6-luna` for both pipelines.
 
 ```sh
 npm run test:briefing:compare
@@ -89,7 +92,8 @@ npm run test:briefing:compare
 
 This runs eight deterministic synthetic forecasts against the frozen original prompt/raw
 hourly facts and the new prompt/calculated facts. Forecast, reference time, model, reasoning,
-token limit, timeout, storage setting, and retry policy match within every pair. Requests
+timeout, storage setting, and retry policy match within every pair. The historical baseline
+has a 250-token output budget; the current candidate has 1,000 tokens. Requests
 are sequential, alternate baseline/candidate order, and never retry. Errors count as
 failed samples. This harness calls the SDK directly so fixed historical fixtures can be
 compared without weakening the endpoint's forecast freshness checks.

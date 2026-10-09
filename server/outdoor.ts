@@ -3,6 +3,8 @@ import { OUTDOOR_VERSION, outdoorInstructions, parseOutdoorRequest, validOutdoor
 import { outdoorWindows } from '../src/lib/outdoor.js';
 import { providerCooldown } from './provider-cooldown.js';
 
+export const OUTDOOR_PROMPT_REVISION = '2:gpt6-ranked-choice';
+
 const json = (data: unknown, status = 200, headers: Record<string, string> = {}) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store', ...headers } });
 
 /** Called only behind the briefing route's method, origin, activation, and body-size gates.
@@ -13,7 +15,7 @@ export async function generateOutdoor(raw: unknown, signal: AbortSignal): Promis
   const now = Date.now();
   const eligible = outdoorWindows(request.forecast, now, request.day, request.period);
   if (eligible.status !== 'recommended') return json({ code: 'forecast_unavailable' }, 422);
-  const model = process.env.OPENAI_WEATHER_MODEL || 'gpt-5.6-luna';
+  const model = process.env.OPENAI_WEATHER_MODEL || 'gpt-6-luna';
   try {
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 12000, maxRetries: 0 });
     const result = await client.responses.create({
@@ -31,11 +33,11 @@ export async function generateOutdoor(raw: unknown, signal: AbortSignal): Promis
     if (result.status !== 'completed' || !validOutdoorChoice(choice, request, generatedAt)) return json({ code: 'recommendation_unavailable' }, 502);
     const expiresAt = Math.min(generatedAt + 900000, eligible.forecastAt + 3600000, choice.start * 1000);
     if (expiresAt <= generatedAt) return json({ code: 'forecast_unavailable' }, 422);
-    console.info('outdoor_recommendation', { model, durationMs: generatedAt - now, inputTokens: result.usage?.input_tokens, outputTokens: result.usage?.output_tokens });
+    console.info('outdoor_recommendation', { model, promptRevision: OUTDOOR_PROMPT_REVISION, durationMs: generatedAt - now, inputTokens: result.usage?.input_tokens, outputTokens: result.usage?.output_tokens });
     return json({ version: OUTDOOR_VERSION, start: choice.start, text: choice.text.trim(), generatedAt, expiresAt });
   } catch (error) {
     const limited = error instanceof OpenAI.APIError && error.status === 429;
-    console.info('outdoor_recommendation', { model, durationMs: Date.now() - now, outcome: limited ? 'rate_limited' : 'unavailable' });
+    console.info('outdoor_recommendation', { model, promptRevision: OUTDOOR_PROMPT_REVISION, durationMs: Date.now() - now, outcome: limited ? 'rate_limited' : 'unavailable' });
     return json({ code: limited ? 'rate_limited' : 'recommendation_unavailable' }, limited ? 429 : 503,
       limited ? { 'Retry-After': providerCooldown(error.headers) } : {});
   }

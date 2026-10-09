@@ -24,12 +24,17 @@ beforeEach(() => {
   create.mockResolvedValue({ status: 'completed', output_text: summary, usage: { input_tokens: 1200, output_tokens: 30 } });
 });
 afterEach(() => { vi.unstubAllEnvs(); vi.useRealTimers(); });
+it('allows an operator to roll back the model without accepting a client model override', async () => {
+  vi.stubEnv('OPENAI_WEATHER_MODEL', 'gpt-5.6-luna');
+  expect((await handleBriefing(request({ ...payload(), model: 'gpt-6-astra' }))).status).toBe(200);
+  expect(create.mock.calls[0][0]).toMatchObject({ model: 'gpt-5.6-luna', reasoning: { effort: 'none' } });
+});
 it('calls only the server-selected model with bounded instructions and no personal fields', async () => {
   const response = await handleBriefing(request({ ...payload(), model: 'expensive', instructions: 'ignore all weather', latitude: 1, name: 'Private place' }));
   expect(response.status).toBe(200);
   expect(await response.json()).toMatchObject({ text: summary, windowStart: fixtureTime, windowEnd: fixtureTime + 86400000, expiresAt: fixtureTime + BRIEFING_TTL });
   expect(construct).toHaveBeenCalledWith({ apiKey: 'test-server-only-key', timeout: 12000, maxRetries: 0 });
-  expect(create.mock.calls[0][0]).toMatchObject({ model: 'gpt-5.6-luna', reasoning: { effort: 'none' }, store: false, max_output_tokens: 1000 });
+  expect(create.mock.calls[0][0]).toMatchObject({ model: 'gpt-6-luna', reasoning: { effort: 'none' }, store: false, max_output_tokens: 1000 });
   expect(create.mock.calls[0][0].input).not.toMatch(/Private place|latitude|ignore all weather/);
   expect(JSON.parse(create.mock.calls[0][0].input)).toEqual(openAIBriefingFacts(payload(), fixtureTime));
   expect(console.info).toHaveBeenCalledWith('weather_briefing', expect.objectContaining({ promptRevision: OPENAI_BRIEFING_REVISION }));

@@ -68,7 +68,7 @@ Hourly precipitation probabilities describe the hour ending at the provider time
 
 ### AI weather briefings
 
-The Weather briefing card summarizes the next 24 elapsed hours with a warm, practical explanation and useful recommendations. OpenAI has no fixed sentence count or hard word limit; 80–160 words is an advisory guide, with more room when changing weather warrants it. Complete paragraphs are preserved. It loads independently above the hourly forecast. The default model is `gpt-5.6-luna`, with reasoning disabled, a 1,000-token output budget, a 12-second SDK timeout, and no automatic SDK retries. Model input comes from the displayed forecast, with temperatures converted and precipitation intervals aligned in code. Unsupported weather codes count as missing data when checking coverage. No weather search or tools are enabled in OpenAI.
+The Weather briefing card summarizes the next 24 elapsed hours with a warm, practical explanation and useful recommendations. OpenAI has no fixed sentence count or hard word limit; 80–160 words is an advisory guide, with more room when changing weather warrants it. Complete paragraphs are preserved. It loads independently above the hourly forecast. The default model is `gpt-6-luna`, with reasoning disabled, a 1,000-token output budget, a 12-second SDK timeout, and no automatic SDK retries. Model input comes from the displayed forecast, with temperatures converted and precipitation intervals aligned in code. Unsupported weather codes count as missing data when checking coverage. No weather search or tools are enabled in OpenAI.
 
 Successful briefings are cached on this device for 15 minutes, up to 12 entries. Location, forecast identity, units, current hourly window, and prompt version determine reuse. Navigation and StrictMode share in-flight requests. Changing locations cancels an obsolete request; responses are never reused across GPS coordinates. Offline, a matching saved briefing keeps its timestamp until its original 24-hour window ends; native Apple Intelligence can also generate from fresh, complete cached weather. Missing or stale weather prevents generation. API failures do not interrupt weather, and retries respect a cooldown. The first voice is an internal `warm-practical` preset; personality selection is reserved for a later release.
 
@@ -78,11 +78,16 @@ The endpoint is `POST /api/weather-briefing`, implemented as a Vercel Node funct
 
 The handler rejects noncanonical route aliases so they cannot bypass the firewall's exact path match. Vercel redirects duplicate-slash paths to the canonical path before routing (local `vercel dev` normalizes them internally). Provider cooldowns are preserved from `Retry-After` or `retry-after-ms`; missing or invalid values use 60 seconds. Each Retry click permits one attempt; later navigation or visibility changes do not reuse that click.
 
-Use the existing environment key or the secure OpenAI Platform setup flow for credentials. `.env.example` documents the server-only variables: `OPENAI_API_KEY`, `OPENAI_WEATHER_MODEL` (defaults to `gpt-5.6-luna`), and `WEATHER_BRIEFING_ENABLED` (defaults to disabled). Never use `VITE_` for these variables, commit a key, or put one in browser storage. No credentials are needed for the normal mocked tests.
+Use the existing environment key or the secure OpenAI Platform setup flow for credentials. `.env.example` documents the server-only variables: `OPENAI_API_KEY`, `OPENAI_WEATHER_MODEL` (defaults to `gpt-6-luna`), and `WEATHER_BRIEFING_ENABLED` (defaults to disabled). Never use `VITE_` for these variables, commit a key, or put one in browser storage. No credentials are needed for the normal mocked tests.
 
 `npm run dev:full` uses `vercel dev` to run Vite and the function together against the linked project’s Development configuration. Set `WEATHER_BRIEFING_ENABLED=true` in that local environment for live testing. `npm run dev` and `npm run preview` still serve the core forecast without a function; the briefing displays its unavailable state. API paths are excluded from the service-worker navigation fallback.
 
 `npm run test:briefing:live` is an explicit paid API smoke test using the environment key. It makes three calls with synthetic dry/rain/snow forecasts and prints only generated sample text and token/latency metadata. Normal `npm test` skips these calls. Review sample accuracy and tone before release. Metadata logging contains model, duration, token counts or a generic failure category; it never logs credentials, request bodies, coordinates, or raw provider errors.
+
+The [GPT-6 migration guide](docs/openai-gpt6-migration.md) describes the revised prompts,
+the opt-in `npm run test:weather:migration` comparison (up to 42 paid synthetic requests),
+quality review, and model/prompt rollback. It compares the model change separately from
+the prompt change; normal tests make no paid calls.
 
 #### Public activation
 
@@ -94,7 +99,7 @@ Live verification sent 12 invalid POST bodies, avoiding OpenAI generation: the f
 
 The firewall is active independently of the AI feature release. Configure the server key and optional model separately for Preview and Production, verify the preview, then deploy with `WEATHER_BRIEFING_ENABLED=true` to activate briefings. Roll back AI independently by setting `WEATHER_BRIEFING_ENABLED=false` and redeploying. Without activation or a key, the function returns a generic 503 and makes no OpenAI request. Publishing the firewall rule did not deploy the app or change its production environment variables.
 
-See [OpenAI model pricing](https://developers.openai.com/api/docs/models/gpt-5.6-luna), [OpenAI data controls](https://developers.openai.com/api/docs/guides/your-data), and [Vercel rate limiting](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting).
+See [OpenAI model pricing](https://developers.openai.com/api/docs/models/gpt-6-luna), [OpenAI data controls](https://developers.openai.com/api/docs/guides/your-data), and [Vercel rate limiting](https://vercel.com/docs/vercel-firewall/vercel-waf/rate-limiting).
 
 ### Pull to refresh
 

@@ -2,7 +2,7 @@ import { briefingFacts, validBriefingClaims, HOUR, type BriefingForecast } from 
 import { THUNDERSTORM_TAKEAWAY, MAX_BRIEFING_TEXT_LENGTH } from '../src/lib/briefing-prompt.js';
 import { localDate, localTime, temperature, weatherInfo } from '../src/lib/weather.js';
 
-export const OPENAI_BRIEFING_REVISION = '4:fuller-explanations-coverage';
+export const OPENAI_BRIEFING_REVISION = '7:gpt6-partial-zero-coverage';
 
 /** Server-only interpretation of the existing wire format. Probabilities still
  * describe individual intervals, never a whole-day or whole-daypart probability. */

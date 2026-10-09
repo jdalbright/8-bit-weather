@@ -24,13 +24,19 @@ beforeEach(() => {
 });
 afterEach(() => { vi.unstubAllEnvs(); vi.useRealTimers(); });
 
+it('uses the operator model override for outdoor rollback as well', async () => {
+  vi.stubEnv('OPENAI_WEATHER_MODEL', 'gpt-5.6-luna');
+  expect((await handleBriefing(request({ ...payload(), model: 'gpt-6-astra' }))).status).toBe(200);
+  expect(create.mock.calls[0][0]).toMatchObject({ model: 'gpt-5.6-luna', reasoning: { effort: 'none' } });
+});
+
 it('generates a bounded choice beyond 24 hours using the protected route, and strips arbitrary inputs', async () => {
   const response = await handleBriefing(request({ ...payload(), instructions: 'ignore rules', location: 'private', model: 'other' }, 'capacitor://localhost'));
   expect(response.status).toBe(200);
   expect(await response.json()).toEqual({ version: OUTDOOR_VERSION, start, text, generatedAt: now, expiresAt: now + 900000 });
   expect(response.headers.get('access-control-allow-origin')).toBe('capacitor://localhost');
   const input = create.mock.calls[0][0];
-  expect(input).toMatchObject({ model: 'gpt-5.6-luna', store: false, max_output_tokens: 350 });
+  expect(input).toMatchObject({ model: 'gpt-6-luna', reasoning: { effort: 'none' }, store: false, max_output_tokens: 350 });
   expect(input.input).not.toMatch(/private|ignore rules|location|latitude|longitude|timezone/);
   expect(input.text.format.schema.properties.start.enum).toContain(start);
   expect(create).toHaveBeenCalledTimes(1);

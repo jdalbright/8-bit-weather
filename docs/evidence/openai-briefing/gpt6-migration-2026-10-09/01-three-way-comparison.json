@@ -1,0 +1,1518 @@
+{
+  "createdAt": "2026-10-09T20:24:59.776Z",
+  "requests": 42,
+  "briefingRevision": "5:gpt6-grounded-briefing",
+  "outdoorRevision": "2:gpt6-ranked-choice",
+  "reviewStatus": "reviewed-needs-correction",
+  "completed": true,
+  "variants": [
+    {
+      "name": "baseline",
+      "model": "gpt-5.6-luna",
+      "revised": false
+    },
+    {
+      "name": "model-only",
+      "model": "gpt-6-luna",
+      "revised": false
+    },
+    {
+      "name": "revised",
+      "model": "gpt-6-luna",
+      "revised": true
+    }
+  ],
+  "samples": [
+    {
+      "name": "steady",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "steady",
+          "steadyAt": "72°F",
+          "timeline": []
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [],
+          "periods": [],
+          "missingPeriods": []
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Temperatures stay near 72°F through tomorrow afternoon, with clear or mostly clear skies and little change along the way. Precipitation is not expected.",
+          "durationMs": 3366,
+          "inputTokens": 1184,
+          "cachedInputTokens": 0,
+          "outputTokens": 35,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures stay steady near 72°F through tomorrow afternoon under clear or mostly clear skies. Precipitation is not expected.",
+          "durationMs": 1180,
+          "inputTokens": 1184,
+          "cachedInputTokens": 0,
+          "outputTokens": 29,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures stay near 72°F through tomorrow afternoon, with clear or mostly clear skies. Precipitation is not expected.",
+          "durationMs": 1789,
+          "inputTokens": 1403,
+          "cachedInputTokens": 0,
+          "outputTokens": 29,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "overnight-cooling",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "79°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "52°F",
+              "period": "overnight"
+            },
+            {
+              "temperature": "66°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [],
+          "periods": [],
+          "missingPeriods": []
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures fall from 79°F this afternoon to 52°F overnight, then rise to 66°F tomorrow afternoon. Skies stay clear or mostly clear, and precipitation is not expected. A light layer will be useful for the cooler overnight stretch.",
+          "durationMs": 1798,
+          "inputTokens": 1215,
+          "cachedInputTokens": 0,
+          "outputTokens": 54,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures fall from 79°F this afternoon to 52°F overnight, then recover to 66°F tomorrow afternoon under clear or mostly clear skies. A warmer layer may be useful overnight. Precipitation is not expected.",
+          "durationMs": 1955,
+          "inputTokens": 1434,
+          "cachedInputTokens": 1237,
+          "outputTokens": 49,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Temperatures fall from 79°F this afternoon to 52°F overnight, then rise to 66°F tomorrow afternoon. Skies stay clear or mostly clear throughout, and rain chances stay low, peaking at 0%. A light layer will help with the overnight chill, with milder conditions returning by tomorrow afternoon.",
+          "durationMs": 2256,
+          "inputTokens": 1215,
+          "cachedInputTokens": 0,
+          "outputTokens": 68,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "warming",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "41°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "84°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [],
+          "periods": [],
+          "missingPeriods": []
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures rise from 41°F this afternoon to 84°F tomorrow afternoon under clear or mostly clear skies. Precipitation is not expected. A lighter layer may be more comfortable as temperatures climb.",
+          "durationMs": 1945,
+          "inputTokens": 1424,
+          "cachedInputTokens": 1237,
+          "outputTokens": 44,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Temperatures change dramatically, from 41°F this afternoon to 84°F tomorrow afternoon, under clear or mostly clear skies throughout. Precipitation is not expected. Dress for a cool start, with much warmer conditions by tomorrow afternoon.",
+          "durationMs": 1547,
+          "inputTokens": 1205,
+          "cachedInputTokens": 0,
+          "outputTokens": 51,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures rise from 41°F this afternoon to 84°F tomorrow afternoon, with clear or mostly clear skies throughout. Rain chances stay low, peaking at 0%. Dress for the sharp temperature difference, with warmer clothing this afternoon and lighter layers by tomorrow afternoon.",
+          "durationMs": 1698,
+          "inputTokens": 1205,
+          "cachedInputTokens": 0,
+          "outputTokens": 58,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "low-chances",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "steady",
+          "steadyAt": "72°F",
+          "timeline": []
+        },
+        "precipitation": {
+          "peakChancePercent": 20,
+          "pattern": "low-chances",
+          "peakPeriods": [],
+          "periods": [],
+          "missingPeriods": []
+        },
+        "conditions": [
+          {
+            "condition": "Partly cloudy",
+            "kind": "partly-cloudy",
+            "from": "this afternoon",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Temperatures stay near 72°F through tomorrow afternoon, with partly cloudy skies and little change along the way. Rain chances stay low, peaking at 20%.",
+          "durationMs": 1417,
+          "inputTokens": 1185,
+          "cachedInputTokens": 0,
+          "outputTokens": 37,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures stay steady near 72°F through tomorrow afternoon, with partly cloudy skies throughout. Rain chances stay low, peaking at 20%.",
+          "durationMs": 1186,
+          "inputTokens": 1185,
+          "cachedInputTokens": 0,
+          "outputTokens": 33,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures stay near 72°F through tomorrow afternoon, with partly cloudy skies. Rain chances stay low, peaking at 20%.",
+          "durationMs": 1033,
+          "inputTokens": 1404,
+          "cachedInputTokens": 1237,
+          "outputTokens": 31,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "showers",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "precipitation-timing",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "77°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "66°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 80,
+          "pattern": "highlight-peak-periods",
+          "peakPeriods": [
+            "this evening"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 80,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            }
+          ],
+          "missingPeriods": []
+        },
+        "conditions": [
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "this afternoon",
+            "through": "this afternoon"
+          },
+          {
+            "condition": "Light showers",
+            "kind": "rain",
+            "from": "this evening",
+            "through": "this evening"
+          },
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "overnight",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Light showers are most likely this evening, with rain chances reaching 80%; skies are otherwise overcast through tomorrow afternoon. Keep an umbrella handy if you’ll be out during the showers. Temperatures fall from 77°F this afternoon to 66°F tomorrow afternoon.",
+          "durationMs": 1758,
+          "inputTokens": 1334,
+          "cachedInputTokens": 0,
+          "outputTokens": 57,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Light showers are most likely this evening, with rain chances reaching 80%; an umbrella may be useful then. Overcast skies follow overnight and continue through tomorrow afternoon. Temperatures fall from 77°F this afternoon to 66°F tomorrow afternoon.",
+          "durationMs": 1320,
+          "inputTokens": 1553,
+          "cachedInputTokens": 1237,
+          "outputTokens": 53,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Light showers are most likely this evening, with precipitation chances reaching 80%, before overcast skies return overnight through tomorrow afternoon. Temperatures fall from 77°F this afternoon to 66°F tomorrow afternoon. Keep an umbrella handy for this evening’s showers; rain chances stay low at other times, peaking at 10%.",
+          "durationMs": 1791,
+          "inputTokens": 1334,
+          "cachedInputTokens": 0,
+          "outputTokens": 69,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "snow",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "snow-or-thunderstorms",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "30°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "25°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 80,
+          "pattern": "highlight-peak-periods",
+          "peakPeriods": [
+            "this evening"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 80,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            }
+          ],
+          "missingPeriods": []
+        },
+        "conditions": [
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "this afternoon",
+            "through": "this afternoon"
+          },
+          {
+            "condition": "Snowy",
+            "kind": "snow",
+            "from": "this evening",
+            "through": "this evening"
+          },
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "overnight",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Snow is in the forecast this evening, with precipitation chances reaching 80%. Overcast skies follow overnight and continue through tomorrow afternoon. Temperatures go from 30°F this afternoon to 25°F tomorrow afternoon.",
+          "durationMs": 1272,
+          "inputTokens": 1553,
+          "cachedInputTokens": 1237,
+          "outputTokens": 46,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Snow is most likely this evening, with precipitation chances reaching 80%, before overcast skies return overnight through tomorrow afternoon. Keep an umbrella handy for the evening snow. Temperatures are around 30°F this afternoon, then fall to 25°F by tomorrow afternoon.",
+          "durationMs": 1181,
+          "inputTokens": 1334,
+          "cachedInputTokens": 0,
+          "outputTokens": 57,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Snow is expected this evening, with precipitation chances reaching 80%, then cloudy skies are forecast overnight through tomorrow afternoon. Temperatures fall from 30°F this afternoon to 25°F tomorrow afternoon. Keep an umbrella handy for the evening snow, and dress warmly as temperatures drop.",
+          "durationMs": 1698,
+          "inputTokens": 1334,
+          "cachedInputTokens": 0,
+          "outputTokens": 59,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "thunderstorms",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "snow-or-thunderstorms",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "77°F",
+              "period": "this afternoon"
+            },
+            {
+              "temperature": "66°F",
+              "period": "tomorrow afternoon"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 80,
+          "pattern": "highlight-peak-periods",
+          "peakPeriods": [
+            "this evening"
+          ],
+          "periods": [
+            {
+              "period": "this afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "this evening",
+              "peakChancePercent": 80,
+              "missingIntervals": 0
+            },
+            {
+              "period": "overnight",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow morning",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            },
+            {
+              "period": "tomorrow afternoon",
+              "peakChancePercent": 10,
+              "missingIntervals": 0
+            }
+          ],
+          "missingPeriods": []
+        },
+        "conditions": [
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "this afternoon",
+            "through": "this afternoon"
+          },
+          {
+            "condition": "Thunderstorms",
+            "kind": "storm",
+            "from": "this evening",
+            "through": "this evening"
+          },
+          {
+            "condition": "Overcast",
+            "kind": "cloudy",
+            "from": "overnight",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": "If you hear thunder, move into a substantial building or an enclosed hard-topped vehicle."
+      },
+      "outputs": {
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Thunderstorms are most likely this evening, with precipitation chances reaching 80%, after overcast skies this afternoon. Cloudy conditions continue overnight through tomorrow afternoon, while rain chances stay low during the other periods, peaking at 10%. If you hear thunder, move into a substantial building or an enclosed hard-topped vehicle.\n\nTemperatures start at 77°F this afternoon and fall to 66°F by tomorrow afternoon.",
+          "durationMs": 2437,
+          "inputTokens": 1351,
+          "cachedInputTokens": 0,
+          "outputTokens": 88,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Thunderstorms are most likely this evening, with precipitation chances reaching 80%, then overcast skies continue overnight through tomorrow afternoon. If you hear thunder, move into a substantial building or an enclosed hard-topped vehicle.\n\nTemperatures fall from 77°F this afternoon to 66°F tomorrow afternoon.",
+          "durationMs": 1516,
+          "inputTokens": 1351,
+          "cachedInputTokens": 0,
+          "outputTokens": 63,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Thunderstorms are most likely this evening, with precipitation chances reaching 80%. Overcast skies are expected this afternoon, then again from overnight through tomorrow afternoon. Temperatures fall from 77°F this afternoon to 66°F tomorrow afternoon. If you hear thunder, move into a substantial building or an enclosed hard-topped vehicle.",
+          "durationMs": 1488,
+          "inputTokens": 1570,
+          "cachedInputTokens": 1237,
+          "outputTokens": 69,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "incomplete",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "partial",
+            "missingIntervals": 1
+          },
+          "precipitation": {
+            "status": "partial",
+            "missingIntervals": 1
+          },
+          "conditions": {
+            "status": "partial",
+            "missingIntervals": 1
+          }
+        },
+        "temperature": {
+          "pattern": "steady",
+          "steadyAt": "72°F",
+          "timeline": []
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [],
+          "periods": [],
+          "missingPeriods": [
+            "this evening"
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "this evening"
+          },
+          {
+            "condition": "Conditions unavailable",
+            "kind": "unknown",
+            "from": "this evening",
+            "through": "this evening"
+          },
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this evening",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures hold near 72°F in the available readings. Skies are clear or mostly clear this afternoon and again from this evening through tomorrow afternoon, but conditions are unavailable for part of this evening. Precipitation data is incomplete for this evening; in the available readings, precipitation chances stay low, peaking at 0%.",
+          "durationMs": 1633,
+          "inputTokens": 1227,
+          "cachedInputTokens": 0,
+          "outputTokens": 70,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Available temperature readings stay near 72°F. Precipitation chances peak at 0% in available readings, but precipitation data is incomplete for this evening. Skies are expected to be clear or mostly clear through tomorrow afternoon, though conditions are unavailable for this evening.",
+          "durationMs": 1392,
+          "inputTokens": 1446,
+          "cachedInputTokens": 1237,
+          "outputTokens": 57,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Temperatures remain near 72°F through tomorrow afternoon, with clear or mostly clear skies during the available periods. Precipitation data is incomplete for this evening, but the available readings show no measurable precipitation chance. Conditions are also unavailable for part of this evening, so skies and precipitation cannot be described fully then.",
+          "durationMs": 1663,
+          "inputTokens": 1227,
+          "cachedInputTokens": 0,
+          "outputTokens": 66,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "metric-incomplete",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Celsius",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "partial",
+            "missingIntervals": 1
+          },
+          "precipitation": {
+            "status": "partial",
+            "missingIntervals": 1
+          },
+          "conditions": {
+            "status": "partial",
+            "missingIntervals": 1
+          }
+        },
+        "temperature": {
+          "pattern": "steady",
+          "steadyAt": "22°C",
+          "timeline": []
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [],
+          "periods": [],
+          "missingPeriods": [
+            "this evening"
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "this evening"
+          },
+          {
+            "condition": "Conditions unavailable",
+            "kind": "unknown",
+            "from": "this evening",
+            "through": "this evening"
+          },
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this evening",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Available temperature readings stay near 22°C. Precipitation data is incomplete, with an available peak hourly chance of 0%; readings are missing this evening, so precipitation cannot be ruled out across the full outlook. Skies are expected to be clear or mostly clear this afternoon and again from this evening through tomorrow afternoon, though conditions are unavailable for part of this evening.",
+          "durationMs": 1619,
+          "inputTokens": 1446,
+          "cachedInputTokens": 1237,
+          "outputTokens": 78,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Temperatures hold near 22°C through tomorrow afternoon, based on the available readings. Skies are clear or mostly clear this afternoon and again from this evening through tomorrow afternoon, though conditions are unavailable for part of this evening.\n\nPrecipitation data is incomplete, with this evening missing from the forecast. For the available periods, rain chances stay low, peaking at 0%.",
+          "durationMs": 1847,
+          "inputTokens": 1227,
+          "cachedInputTokens": 0,
+          "outputTokens": 80,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures stay near 22°C in the available readings. Skies are expected to be clear or mostly clear through this afternoon, then again from this evening into tomorrow afternoon. Rain chances are low in the available precipitation readings, peaking at 0%; precipitation data is incomplete for this evening. Conditions data is also incomplete for this evening.",
+          "durationMs": 1441,
+          "inputTokens": 1227,
+          "cachedInputTokens": 0,
+          "outputTokens": 72,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "measurements-unavailable",
+      "kind": "briefing",
+      "facts": {
+        "from": "Fri, Sep 11, 2:30 PM EDT",
+        "until": "Sat, Sep 12, 2:30 PM EDT",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "unavailable",
+            "missingIntervals": 25
+          },
+          "precipitation": {
+            "status": "unavailable",
+            "missingIntervals": 25
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "unknown",
+          "steadyAt": null,
+          "timeline": []
+        },
+        "precipitation": {
+          "peakChancePercent": null,
+          "pattern": "unknown",
+          "peakPeriods": [],
+          "periods": [],
+          "missingPeriods": [
+            "this afternoon",
+            "this evening",
+            "overnight",
+            "tomorrow morning",
+            "tomorrow afternoon"
+          ]
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this afternoon",
+            "through": "tomorrow afternoon"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Clear or mostly clear skies continue from this afternoon through tomorrow afternoon. Temperature data is unavailable, and precipitation data is unavailable for the forecast period.",
+          "durationMs": 1511,
+          "inputTokens": 1199,
+          "cachedInputTokens": 0,
+          "outputTokens": 32,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Clear or mostly clear skies are expected through tomorrow afternoon. Temperature and precipitation data are unavailable, so the temperature outlook and precipitation chances are unknown.",
+          "durationMs": 1161,
+          "inputTokens": 1199,
+          "cachedInputTokens": 0,
+          "outputTokens": 32,
+          "reasoningTokens": 0,
+          "accepted": false
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Clear or mostly clear skies are expected through tomorrow afternoon. Temperature and precipitation data are unavailable, so temperatures and rain chances are unknown.",
+          "durationMs": 1353,
+          "inputTokens": 1418,
+          "cachedInputTokens": 1237,
+          "outputTokens": 30,
+          "reasoningTokens": 0,
+          "accepted": false
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "midnight-dst-reversal",
+      "kind": "briefing",
+      "facts": {
+        "from": "Sat, Oct 31, 11:30 PM EDT",
+        "until": "Sun, Nov 1, 10:30 PM EST",
+        "temperatureUnit": "Fahrenheit",
+        "lead": "temperature",
+        "coverage": {
+          "temperature": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "precipitation": {
+            "status": "complete",
+            "missingIntervals": 0
+          },
+          "conditions": {
+            "status": "complete",
+            "missingIntervals": 0
+          }
+        },
+        "temperature": {
+          "pattern": "changing",
+          "steadyAt": null,
+          "timeline": [
+            {
+              "temperature": "79°F",
+              "period": "this evening"
+            },
+            {
+              "temperature": "52°F",
+              "period": "tomorrow afternoon"
+            },
+            {
+              "temperature": "66°F",
+              "period": "tomorrow evening"
+            }
+          ]
+        },
+        "precipitation": {
+          "peakChancePercent": 0,
+          "pattern": "low-chances",
+          "peakPeriods": [],
+          "periods": [],
+          "missingPeriods": []
+        },
+        "conditions": [
+          {
+            "condition": "Clear or mostly clear skies",
+            "kind": "clear",
+            "from": "this evening",
+            "through": "tomorrow evening"
+          }
+        ],
+        "thunderstormTakeaway": null
+      },
+      "outputs": {
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Clear skies continue through tomorrow evening. Temperatures fall from 79°F this evening to 52°F tomorrow afternoon, then turn warmer, reaching 66°F tomorrow evening. Precipitation is not expected. A light layer may be useful for the cooler afternoon before temperatures rise again.",
+          "durationMs": 1832,
+          "inputTokens": 1216,
+          "cachedInputTokens": 0,
+          "outputTokens": 60,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "Temperatures fall from 79°F this evening to 52°F tomorrow afternoon, then rise to 66°F tomorrow evening. Clear or mostly clear skies continue through tomorrow evening, and precipitation is not expected. A warmer layer may be useful during the cooler afternoon.",
+          "durationMs": 1298,
+          "inputTokens": 1435,
+          "cachedInputTokens": 1237,
+          "outputTokens": 56,
+          "reasoningTokens": 0,
+          "accepted": true
+        },
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "Temperatures fall from 79°F this evening to 52°F tomorrow afternoon, then turn warmer again, reaching 66°F tomorrow evening. Clear or mostly clear skies continue through tomorrow evening. Rain chances stay low, peaking at 0%. A light layer will help with the cooler afternoon, especially after the sharp drop from this evening’s warmth.",
+          "durationMs": 2080,
+          "inputTokens": 1216,
+          "cachedInputTokens": 0,
+          "outputTokens": 74,
+          "reasoningTokens": 0,
+          "accepted": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "outdoor-tie",
+      "kind": "outdoor",
+      "facts": {
+        "temperatureUnit": "Celsius",
+        "windUnit": "km/h",
+        "windows": [
+          {
+            "start": 1788883200,
+            "end": 1788886800,
+            "temperature": 22,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": true
+          },
+          {
+            "start": 1788886800,
+            "end": 1788890400,
+            "temperature": 22,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": true
+          },
+          {
+            "start": 1788890400,
+            "end": 1788894000,
+            "temperature": 22,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": true
+          },
+          {
+            "start": 1788894000,
+            "end": 1788897600,
+            "temperature": 22,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": true
+          },
+          {
+            "start": 1788897600,
+            "end": 1788901200,
+            "temperature": 22,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": true
+          }
+        ]
+      },
+      "expectedStart": 1788883200,
+      "outputs": {
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "{\"start\":1788883200,\"text\":\"This window has mild temperatures, a low chance of precipitation, light wind, and modest UV for time outside.\"}",
+          "durationMs": 1399,
+          "inputTokens": 647,
+          "cachedInputTokens": 0,
+          "outputTokens": 44,
+          "reasoningTokens": 0,
+          "accepted": true,
+          "choosesTopRankedHour": true
+        },
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "{\"start\":1788883200,\"text\":\"Choose this earliest available window: mild conditions, a low chance of precipitation, light wind, and limited UV make it a practical time to spend outside.\"}",
+          "durationMs": 1391,
+          "inputTokens": 569,
+          "cachedInputTokens": 0,
+          "outputTokens": 52,
+          "reasoningTokens": 0,
+          "accepted": true,
+          "choosesTopRankedHour": true
+        },
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "{\"start\":1788883200,\"text\":\"This window has mild temperatures, a low chance of precipitation, light wind, and modest UV.\"}",
+          "durationMs": 1201,
+          "inputTokens": 569,
+          "cachedInputTokens": 0,
+          "outputTokens": 41,
+          "reasoningTokens": 0,
+          "accepted": true,
+          "choosesTopRankedHour": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "outdoor-heat",
+      "kind": "outdoor",
+      "facts": {
+        "temperatureUnit": "Celsius",
+        "windUnit": "km/h",
+        "windows": [
+          {
+            "start": 1788883200,
+            "end": 1788886800,
+            "temperature": 32,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": false
+          },
+          {
+            "start": 1788886800,
+            "end": 1788890400,
+            "temperature": 32,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": false
+          },
+          {
+            "start": 1788890400,
+            "end": 1788894000,
+            "temperature": 32,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": false
+          },
+          {
+            "start": 1788894000,
+            "end": 1788897600,
+            "temperature": 32,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": false
+          },
+          {
+            "start": 1788897600,
+            "end": 1788901200,
+            "temperature": 32,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": false
+          }
+        ]
+      },
+      "expectedStart": 1788883200,
+      "outputs": {
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "{\"start\":1788883200,\"text\":\"This earliest window has low precipitation chance, light wind, and modest UV, but the temperature is hotter than the preferred range; choose it only if you can tolerate the heat.\"}",
+          "durationMs": 1301,
+          "inputTokens": 569,
+          "cachedInputTokens": 0,
+          "outputTokens": 57,
+          "reasoningTokens": 0,
+          "accepted": true,
+          "choosesTopRankedHour": true
+        },
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "{\"start\":1788883200,\"text\":\"This hour has a low chance of precipitation, light wind, and low UV, but the heat may make time outside uncomfortable.\"}",
+          "durationMs": 1428,
+          "inputTokens": 569,
+          "cachedInputTokens": 0,
+          "outputTokens": 47,
+          "reasoningTokens": 0,
+          "accepted": true,
+          "choosesTopRankedHour": true
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "{\"start\":1788883200,\"text\":\"The chance of precipitation is low, though the temperature is quite hot; take that heat into account when deciding whether to head outside.\"}",
+          "durationMs": 1539,
+          "inputTokens": 647,
+          "cachedInputTokens": 0,
+          "outputTokens": 48,
+          "reasoningTokens": 0,
+          "accepted": true,
+          "choosesTopRankedHour": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    },
+    {
+      "name": "outdoor-ranking",
+      "kind": "outdoor",
+      "facts": {
+        "temperatureUnit": "Celsius",
+        "windUnit": "km/h",
+        "windows": [
+          {
+            "start": 1788886800,
+            "end": 1788890400,
+            "temperature": 22,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": true
+          },
+          {
+            "start": 1788897600,
+            "end": 1788901200,
+            "temperature": 24,
+            "precipitation": 10,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": true
+          },
+          {
+            "start": 1788890400,
+            "end": 1788894000,
+            "temperature": 24,
+            "precipitation": 10,
+            "wind": 12,
+            "uv": 3,
+            "meetsPreferences": true
+          },
+          {
+            "start": 1788883200,
+            "end": 1788886800,
+            "temperature": 24,
+            "precipitation": 20,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": true
+          },
+          {
+            "start": 1788894000,
+            "end": 1788897600,
+            "temperature": 22,
+            "precipitation": 20,
+            "wind": 8,
+            "uv": 3,
+            "meetsPreferences": true
+          }
+        ]
+      },
+      "expectedStart": 1788886800,
+      "outputs": {
+        "model-only": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "{\"start\":1788886800,\"text\":\"This window has a low chance of precipitation, mild temperatures, light wind, and low UV, making it a good choice for time outside.\"}",
+          "durationMs": 2493,
+          "inputTokens": 569,
+          "cachedInputTokens": 0,
+          "outputTokens": 50,
+          "reasoningTokens": 0,
+          "accepted": true,
+          "choosesTopRankedHour": true
+        },
+        "revised": {
+          "requestedModel": "gpt-6-luna",
+          "returnedModel": "gpt-6-luna",
+          "status": "completed",
+          "text": "{\"start\":1788886800,\"text\":\"This window has mild weather, a low chance of precipitation, light wind, and modest UV, making it a pleasant option for time outside.\"}",
+          "durationMs": 1972,
+          "inputTokens": 647,
+          "cachedInputTokens": 0,
+          "outputTokens": 50,
+          "reasoningTokens": 0,
+          "accepted": true,
+          "choosesTopRankedHour": true
+        },
+        "baseline": {
+          "requestedModel": "gpt-5.6-luna",
+          "returnedModel": "gpt-5.6-luna",
+          "status": "completed",
+          "text": "{\"start\":1788886800,\"text\":\"This earlier window offers a mild temperature, low precipitation chance, light wind, and low UV, making it the strongest overall choice among the available options.\"}",
+          "durationMs": 1807,
+          "inputTokens": 569,
+          "cachedInputTokens": 0,
+          "outputTokens": 52,
+          "reasoningTokens": 0,
+          "accepted": true,
+          "choosesTopRankedHour": true
+        }
+      },
+      "review": {
+        "factuallyCorrect": null,
+        "preferred": null,
+        "notes": ""
+      }
+    }
+  ],
+  "reviewNotes": "Model-only and revised each rejected the combined unavailable-measurement phrase (13/14 accepted); baseline accepted 14/14. Revised partial-condition prose also overstated a gap as the entire evening. Added separate unavailable statements and partial-daypart wording. Umbrella advice for snow appeared in baseline and model-only outputs."
+}
